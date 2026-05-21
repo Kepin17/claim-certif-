@@ -5,7 +5,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\Admin\CertificateAdminController;
 
 // User Routes
-Route::get('/claim-certificate', [CertificateController::class, 'index'])->name('certificate.index');
+Route::get('/', [CertificateController::class, 'index'])->name('certificate.index');
 Route::get('/claim-certificate/{slug}', [CertificateController::class, 'showClaimForm'])->name('certificate.claim-form');
 Route::post('/claim-certificate', [CertificateController::class, 'store'])->name('certificate.store')->middleware('throttle:5,1');
 Route::get('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track');
