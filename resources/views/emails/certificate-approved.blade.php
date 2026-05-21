@@ -86,29 +86,8 @@
                             </div>
 
                             <!-- Icon -->
-                            <div style="margin:0 auto 18px;width:56px;height:56px;">
-
-                                <svg width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="36" cy="36" r="35" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-
-                                    <circle cx="36" cy="32" r="16"
-                                        fill="rgba(111,207,151,0.10)"
-                                        stroke="#6FCF97"
-                                        stroke-width="1.5"/>
-
-                                    <path d="M29 32.5l5 5 9-9"
-                                        stroke="#6FCF97"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"/>
-
-                                    <path d="M27 52l9 5 9-5v9l-9 5-9-5v-9z"
-                                        fill="rgba(255,255,255,0.05)"
-                                        stroke="rgba(255,255,255,0.15)"
-                                        stroke-width="1.2"
-                                        stroke-linejoin="round"/>
-                                </svg>
-
+                            <div style="margin:0 auto 18px;width:56px;height:56px;background:rgba(111,207,151,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                <span style="font-size:32px;color:#6FCF97;font-weight:bold;">✓</span>
                             </div>
 
                             <!-- Title -->
@@ -210,19 +189,7 @@
                                                         text-align:center;
                                                         line-height:34px;
                                                     ">
-
-                                                        <svg width="15" height="15" viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="#6D675F"
-                                                            stroke-width="1.8"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            style="vertical-align:middle;">
-
-                                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-
-                                                        </svg>
-
+                                                        <span style="font-size:16px;color:#6D675F;">📋</span>
                                                     </div>
 
                                                 </td>
@@ -281,20 +248,7 @@
                                                         text-align:center;
                                                         line-height:34px;
                                                     ">
-
-                                                        <svg width="15" height="15" viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="#6D675F"
-                                                            stroke-width="1.8"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            style="vertical-align:middle;">
-
-                                                            <rect x="3" y="11" width="18" height="11" rx="2"/>
-                                                            <path d="M7 11V7a5 5 0 0110 0v4"/>
-
-                                                        </svg>
-
+                                                        <span style="font-size:16px;color:#6D675F;">🔒</span>
                                                     </div>
 
                                                 </td>
@@ -357,19 +311,7 @@
                                                         text-align:center;
                                                         line-height:34px;
                                                     ">
-
-                                                        <svg width="15" height="15" viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="#397339"
-                                                            stroke-width="1.8"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            style="vertical-align:middle;">
-
-                                                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
-
-                                                        </svg>
-
+                                                        <span style="font-size:16px;color:#397339;">📎</span>
                                                     </div>
 
                                                 </td>
