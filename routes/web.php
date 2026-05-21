@@ -58,7 +58,3 @@ Route::post('/admin/logout', [\App\Http\Controllers\Admin\AuthController::class,
 Route::get('/admin/otp/verify', [\App\Http\Controllers\Admin\AuthController::class, 'showOTPVerify'])->name('admin.otp.verify');
 Route::post('/admin/otp/verify', [\App\Http\Controllers\Admin\AuthController::class, 'verifyOTP'])->name('admin.otp.verify.post');
 Route::get('/admin/otp/resend', [\App\Http\Controllers\Admin\AuthController::class, 'resendOTP'])->name('admin.otp.resend');
-
-Route::get('/', function () {
-    return redirect()->route('certificate.index');
-});
