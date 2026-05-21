@@ -5,8 +5,6 @@
 @section('content')
 <style>
     .main {
-        max-width: 900px;
-        margin: 0 auto;
         padding: 48px 40px 80px;
     }
 

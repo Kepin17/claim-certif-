@@ -10,7 +10,7 @@ Route::get('/claim-certificate/{slug}', [CertificateController::class, 'showClai
 Route::post('/claim-certificate', [CertificateController::class, 'store'])->name('certificate.store')->middleware('throttle:5,1');
 Route::get('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track');
 Route::post('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track.submit')->middleware('throttle:10,1');
-Route::get('/certificate-status/{id}', [CertificateController::class, 'status'])->name('certificate.status')->middleware('throttle:30,1');
+Route::get('/certificate-status/{uniqueKey}', [CertificateController::class, 'status'])->name('certificate.status')->middleware('throttle:30,1');
 Route::get('/download-certificate/{certificateNumber}', [CertificateController::class, 'download'])->name('certificate.download')->middleware('throttle:20,1');
 Route::get('/verify/{certificateNumber}', [CertificateController::class, 'verify'])->name('certificate.verify')->middleware('throttle:30,1');
 
@@ -18,7 +18,6 @@ Route::get('/verify/{certificateNumber}', [CertificateController::class, 'verify
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->group(function () {
     Route::get('/dashboard', [CertificateAdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/pending', [CertificateAdminController::class, 'pending'])->name('pending');
-    Route::get('/approved', [CertificateAdminController::class, 'approved'])->name('approved');
     Route::get('/rejected', [CertificateAdminController::class, 'rejected'])->name('rejected');
     Route::get('/generated', [CertificateAdminController::class, 'generated'])->name('generated');
     Route::get('/generated/event/{eventId}', [CertificateAdminController::class, 'generatedByEvent'])->name('generated.by-event');

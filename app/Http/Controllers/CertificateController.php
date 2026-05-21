@@ -65,13 +65,13 @@ class CertificateController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('certificate.status', $certificate->id)
+        return redirect()->route('certificate.status', $certificate->unique_key)
             ->with('success', 'Certificate claim submitted successfully.');
     }
 
-    public function status($id)
+    public function status($uniqueKey)
     {
-        $certificate = Certificate::findOrFail($id);
+        $certificate = Certificate::byUniqueKey($uniqueKey)->firstOrFail();
         return view('certificates.status', compact('certificate'));
     }
 
@@ -91,7 +91,7 @@ class CertificateController extends Controller
                 ->first();
 
             if ($certificate) {
-                return redirect()->route('certificate.status', $certificate->id);
+                return redirect()->route('certificate.status', $certificate->unique_key);
             } else {
                 return back()->with('error', 'No certificate claim found for this email and event.');
             }

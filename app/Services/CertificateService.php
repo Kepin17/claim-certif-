@@ -5,22 +5,52 @@ namespace App\Services;
 use App\Models\Certificate;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CertificateService
 {
     public function generateCertificate(Certificate $certificate)
     {
+        Log::info('Starting certificate generation', [
+            'certificate_id' => $certificate->id,
+            'certificate_number' => $certificate->certificate_number,
+        ]);
+
+        // Check if storage directory is writable
+        $storagePath = storage_path('app/public/certificates');
+        if (!is_dir($storagePath)) {
+            try {
+                mkdir($storagePath, 0755, true);
+                Log::info('Created certificates directory', ['path' => $storagePath]);
+            } catch (\Exception $e) {
+                Log::error('Failed to create certificates directory', [
+                    'path' => $storagePath,
+                    'error' => $e->getMessage(),
+                ]);
+                throw new \Exception('Cannot create storage directory: ' . $e->getMessage());
+            }
+        }
+
+        if (!is_writable($storagePath)) {
+            Log::error('Certificates directory not writable', ['path' => $storagePath]);
+            throw new \Exception('Storage directory not writable: ' . $storagePath);
+        }
+
         // Check if the event has a custom template image
         $event = $certificate->eventRelation ?? \App\Models\Event::find($certificate->event_id);
         if ($event && $event->certificate_template) {
             $templatePath = storage_path('app/public/' . $event->certificate_template);
+            Log::info('Checking template', ['template_path' => $templatePath, 'exists' => file_exists($templatePath)]);
+            
             if (file_exists($templatePath)) {
                 return $this->generateFromTemplate($certificate, $event, $templatePath);
             }
         }
 
         // Fall back to built-in HTML/PDF template
+        Log::info('Using built-in template');
+        
         $html = '<!DOCTYPE html>
 <html>
 <head>
@@ -80,24 +110,45 @@ class CertificateService
         $options = new Options();
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
+        
+        Log::info('Initializing Dompdf for built-in template');
+        
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html, 'UTF-8');
         $dompdf->setPaper('A4', 'landscape');
+        
+        Log::info('Rendering PDF with built-in template');
+        
         $dompdf->render();
 
         $filename = 'certificate-' . $certificate->certificate_number . '.pdf';
         $path = 'certificates/' . $filename;
 
+        Log::info('Saving built-in template PDF', ['path' => $path]);
+
         Storage::disk('public')->put($path, $dompdf->output());
+        
+        Log::info('Built-in template PDF saved successfully', ['path' => $path]);
 
         return $path;
     }
 
     private function generateFromTemplate(Certificate $certificate, \App\Models\Event $event, string $templatePath): string
     {
+        Log::info('Generating certificate from template', [
+            'certificate_id' => $certificate->id,
+            'template_path' => $templatePath,
+        ]);
+
         // Embed the template image as base64 in HTML, overlay text using absolute positioning
-        $imageData = base64_encode(file_get_contents($templatePath));
-        $mimeType = mime_content_type($templatePath);
+        try {
+            $imageData = base64_encode(file_get_contents($templatePath));
+            $mimeType = mime_content_type($templatePath);
+            Log::info('Template image loaded', ['size' => strlen($imageData), 'mime_type' => $mimeType]);
+        } catch (\Exception $e) {
+            Log::error('Failed to load template image', ['error' => $e->getMessage()]);
+            throw new \Exception('Failed to load template image: ' . $e->getMessage());
+        }
 
         // Convert top% to mm so DOMPDF doesn't miscalculate % inside nested absolute containers
         // A4 landscape height = 210mm
@@ -166,15 +217,25 @@ class CertificateService
         $options = new Options();
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
+        
+        Log::info('Initializing Dompdf for template-based generation');
+        
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html, 'UTF-8');
         $dompdf->setPaper('A4', 'landscape');
+        
+        Log::info('Rendering PDF with template');
+        
         $dompdf->render();
 
         $filename = 'certificate-' . $certificate->certificate_number . '.pdf';
         $path = 'certificates/' . $filename;
 
+        Log::info('Saving template-based PDF', ['path' => $path]);
+
         Storage::disk('public')->put($path, $dompdf->output());
+        
+        Log::info('Template-based PDF saved successfully', ['path' => $path]);
 
         return $path;
     }

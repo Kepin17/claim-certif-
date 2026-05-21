@@ -24,7 +24,33 @@ class Certificate extends Model
         'rejection_reason',
         'approved_by',
         'approved_at',
+        'unique_key',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($certificate) {
+            if (empty($certificate->unique_key)) {
+                $certificate->unique_key = self::generateUniqueKey();
+            }
+        });
+    }
+
+    public static function generateUniqueKey()
+    {
+        do {
+            $key = bin2hex(random_bytes(16));
+        } while (self::where('unique_key', $key)->exists());
+
+        return $key;
+    }
+
+    public function scopeByUniqueKey($query, $key)
+    {
+        return $query->where('unique_key', $key);
+    }
 
     protected $casts = [
         'approved_at' => 'datetime',

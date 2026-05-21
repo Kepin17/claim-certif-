@@ -188,7 +188,6 @@
                 <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
                 <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">Events</a>
                 <a href="{{ route('admin.pending') }}" class="nav-link {{ request()->routeIs('admin.pending') ? 'active' : '' }}">Pending</a>
-                <a href="{{ route('admin.approved') }}" class="nav-link {{ request()->routeIs('admin.approved') ? 'active' : '' }}">Approved</a>
                 <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->routeIs('admin.generated*') ? 'active' : '' }}">Generated</a>
                 <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
                     @csrf

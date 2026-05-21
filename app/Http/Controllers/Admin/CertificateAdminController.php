@@ -16,23 +16,16 @@ class CertificateAdminController extends Controller
     public function dashboard()
     {
         $pendingCount = Certificate::pending()->count();
-        $approvedCount = Certificate::approved()->count();
         $generatedCount = Certificate::whereIn('status', ['generated', 'sent'])->count();
         $eventsCount = Event::count();
         
-        return view('admin.dashboard', compact('pendingCount', 'approvedCount', 'generatedCount', 'eventsCount'));
+        return view('admin.dashboard', compact('pendingCount', 'generatedCount', 'eventsCount'));
     }
 
     public function pending()
     {
         $certificates = Certificate::pending()->latest()->paginate(20);
         return view('admin.pending', compact('certificates'));
-    }
-
-    public function approved()
-    {
-        $certificates = Certificate::approved()->latest()->paginate(20);
-        return view('admin.approved', compact('certificates'));
     }
 
     public function rejected()
