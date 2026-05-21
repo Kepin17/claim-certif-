@@ -102,6 +102,9 @@ class CertificateController extends Controller
 
     public function download($certificateNumber)
     {
+        // URL-decode the certificate number to handle slashes
+        $certificateNumber = urldecode($certificateNumber);
+
         $certificate = Certificate::where('certificate_number', $certificateNumber)
             ->whereIn('status', ['generated', 'sent'])
             ->firstOrFail();
@@ -117,6 +120,9 @@ class CertificateController extends Controller
 
     public function verify($certificateNumber)
     {
+        // URL-decode the certificate number to handle slashes
+        $certificateNumber = urldecode($certificateNumber);
+
         $certificate = Certificate::where('certificate_number', $certificateNumber)
             ->whereIn('status', ['generated', 'sent'])
             ->firstOrFail();
