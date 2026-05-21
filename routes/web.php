@@ -12,7 +12,13 @@ Route::get('/track-certificate', [CertificateController::class, 'track'])->name(
 Route::post('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track.submit')->middleware('throttle:10,1');
 Route::get('/certificate-status/{uniqueKey}', [CertificateController::class, 'status'])->name('certificate.status')->middleware('throttle:30,1');
 Route::get('/download-certificate', [CertificateController::class, 'download'])->name('certificate.download')->middleware('throttle:20,1');
+Route::get('/download-certificate/{certificateNumber}', function($certificateNumber) {
+    return redirect()->route('certificate.download', ['number' => $certificateNumber]);
+})->where('certificateNumber', '.*')->name('certificate.download.legacy');
 Route::get('/verify', [CertificateController::class, 'verify'])->name('certificate.verify')->middleware('throttle:30,1');
+Route::get('/verify/{certificateNumber}', function($certificateNumber) {
+    return redirect()->route('certificate.verify', ['number' => $certificateNumber]);
+})->where('certificateNumber', '.*')->name('certificate.verify.legacy');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->group(function () {

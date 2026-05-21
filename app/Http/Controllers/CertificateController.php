@@ -108,6 +108,9 @@ class CertificateController extends Controller
             abort(404, 'Certificate number is required');
         }
 
+        // Handle double-encoded URLs (Gmail redirects)
+        $certificateNumber = urldecode($certificateNumber);
+
         $certificate = Certificate::where('certificate_number', $certificateNumber)
             ->whereIn('status', ['generated', 'sent'])
             ->firstOrFail();
@@ -128,6 +131,9 @@ class CertificateController extends Controller
         if (!$certificateNumber) {
             abort(404, 'Certificate number is required');
         }
+
+        // Handle double-encoded URLs (Gmail redirects)
+        $certificateNumber = urldecode($certificateNumber);
 
         $certificate = Certificate::where('certificate_number', $certificateNumber)
             ->whereIn('status', ['generated', 'sent'])
