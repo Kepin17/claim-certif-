@@ -100,10 +100,13 @@ class CertificateController extends Controller
         return view('certificates.track', compact('certificate', 'events'));
     }
 
-    public function download($certificateNumber)
+    public function download(Request $request)
     {
-        // URL-decode the certificate number to handle slashes
-        $certificateNumber = urldecode($certificateNumber);
+        $certificateNumber = $request->query('number');
+
+        if (!$certificateNumber) {
+            abort(404, 'Certificate number is required');
+        }
 
         $certificate = Certificate::where('certificate_number', $certificateNumber)
             ->whereIn('status', ['generated', 'sent'])
@@ -118,10 +121,13 @@ class CertificateController extends Controller
         return response()->download($filePath, 'certificate-' . $certificate->certificate_number . '.pdf');
     }
 
-    public function verify($certificateNumber)
+    public function verify(Request $request)
     {
-        // URL-decode the certificate number to handle slashes
-        $certificateNumber = urldecode($certificateNumber);
+        $certificateNumber = $request->query('number');
+
+        if (!$certificateNumber) {
+            abort(404, 'Certificate number is required');
+        }
 
         $certificate = Certificate::where('certificate_number', $certificateNumber)
             ->whereIn('status', ['generated', 'sent'])
