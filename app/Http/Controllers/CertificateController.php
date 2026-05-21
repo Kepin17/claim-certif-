@@ -118,7 +118,7 @@ class CertificateController extends Controller
             abort(404, 'Certificate file not found');
         }
 
-        return response()->download($filePath, 'certificate-' . $certificate->certificate_number . '.pdf');
+        return response()->download($filePath, 'certificate-' . str_replace(['/', '\\'], '-', $certificate->certificate_number) . '.pdf');
     }
 
     public function verify(Request $request)
