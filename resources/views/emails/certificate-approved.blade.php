@@ -11,13 +11,12 @@
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EDEAE4;padding:40px 16px;">
 <tr><td align="center">
 
-  <!-- Wrapper -->
   <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
 
     <!-- Org label -->
     <tr>
       <td align="center" style="padding-bottom:20px;">
-        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#7A766E;">&#9679;&nbsp;&nbsp;Your Organization</span>
+        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#7A766E;">&#9679;&nbsp;&nbsp;kevienstudio.my.id</span>
       </td>
     </tr>
 
@@ -36,7 +35,7 @@
                 <span style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#6FCF97;vertical-align:middle;">Certificate Approved</span>
               </div>
 
-              <!-- Icon circle -->
+              <!-- Icon -->
               <div style="margin:0 auto 24px;width:72px;height:72px;">
                 <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="36" cy="36" r="35" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
@@ -61,7 +60,7 @@
               <!-- Greeting -->
               <p style="font-size:15px;color:#3A3730;margin:0 0 10px;">Dear <strong style="color:#162016;font-weight:500;">{{ $name }}</strong>,</p>
               <p style="font-size:14px;color:#7A766E;line-height:1.75;margin:0 0 28px;">
-                We're pleased to inform you that your certificate claim has been reviewed and officially approved. Your certificate is ready — find the details below and use the button to download your copy.
+                We're pleased to inform you that your certificate claim has been reviewed and officially approved. Please find your certificate attached to this email.
               </p>
 
               <!-- Info block -->
@@ -119,19 +118,22 @@
 
               </table>
 
-              <!-- Attachment note -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F0EEF9;border-radius:10px;margin-bottom:28px;">
+              <!-- Attachment callout -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F2F7F2;border:1px solid #C8DFC8;border-radius:10px;margin-bottom:32px;">
                 <tr>
-                  <td style="padding:14px 18px;">
-                    <table cellpadding="0" cellspacing="0" border="0">
+                  <td style="padding:16px 20px;">
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
                       <tr>
-                        <td valign="top" width="22">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6C63B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:1px;">
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
-                          </svg>
+                        <td valign="top" width="36">
+                          <div style="width:32px;height:32px;background:#D6EAD6;border-radius:8px;text-align:center;line-height:32px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A7A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;">
+                              <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                            </svg>
+                          </div>
                         </td>
-                        <td style="padding-left:10px;">
-                          <p style="font-size:13px;color:#4A4580;line-height:1.6;margin:0;">Your certificate is <strong style="font-weight:500;">also attached</strong> to this email. If the attachment appears incorrect, the download button below always provides the latest version.</p>
+                        <td style="padding-left:12px;">
+                          <p style="font-size:13px;font-weight:500;color:#2A5C2A;margin:0 0 3px;">Certificate attached to this email</p>
+                          <p style="font-size:12px;color:#4A7A4A;line-height:1.6;margin:0;">Look for the PDF file attached below. You can save or print it directly from your email client.</p>
                         </td>
                       </tr>
                     </table>
@@ -139,24 +141,12 @@
                 </tr>
               </table>
 
-              <!-- CTA Button -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:10px;">
-                <tr>
-                  <td align="center">
-                    <a href="#" style="display:inline-block;background-color:#162016;color:#FFFFFF;text-decoration:none;font-size:14px;font-weight:500;letter-spacing:0.03em;padding:14px 36px;border-radius:10px;">
-                      ↓&nbsp;&nbsp;Download Certificate
-                    </a>
-                  </td>
-                </tr>
-              </table>
-              <p style="text-align:center;font-size:12px;color:#B0ACA5;margin:0 0 32px;">Secure link · Always the latest version</p>
-
               <!-- Divider -->
               <div style="height:1px;background:#EBE8E3;margin-bottom:24px;"></div>
 
               <!-- Footer note -->
               <p style="font-size:13px;color:#A8A49D;line-height:1.65;margin:0;">
-                If you have any questions or encounter issues downloading your certificate, please reach out to our support team — we're happy to help.
+                If you have any questions or cannot find the attachment, please reach out to our support team — we're happy to help.
               </p>
 
             </td>
@@ -169,7 +159,7 @@
             <td style="background:#F7F4EF;border-top:1px solid #EBE8E3;border-radius:0 0 16px 16px;padding:18px 40px;text-align:center;">
               <p style="font-size:11px;color:#B0ACA5;line-height:1.7;margin:0;">
                 You received this email because a certificate was claimed under your account.<br>
-                &copy; {{ date('Y') }} Your Organization &middot; All rights reserved.
+                &copy; {{ date('Y') }} kevienstudio.my.id &middot; All rights reserved.
               </p>
             </td>
           </tr>
