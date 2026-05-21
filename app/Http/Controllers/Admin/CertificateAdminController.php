@@ -68,10 +68,17 @@ class CertificateAdminController extends Controller
         $certificate = Certificate::findOrFail($id);
 
         // Generate certificate number
-        $eventCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $certificate->event), 0, 3)) ?: 'CRT';
-        $year = date('Y');
-        $sequence = Certificate::whereYear('created_at', $year)->count() + 1;
-        $certificateNumber = sprintf('%s-%s-%04d', $eventCode, $year, $sequence);
+        $event = $certificate->eventRelation;
+        if (!empty($event->certificate_number_prefix)) {
+            // Use fixed prefix from event
+            $certificateNumber = $event->certificate_number_prefix;
+        } else {
+            // Use auto-generated format
+            $eventCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $certificate->event), 0, 3)) ?: 'CRT';
+            $year = date('Y');
+            $sequence = Certificate::whereYear('created_at', $year)->count() + 1;
+            $certificateNumber = sprintf('%s-%s-%04d', $eventCode, $year, $sequence);
+        }
 
         $certificate->update([
             'status' => 'approved',

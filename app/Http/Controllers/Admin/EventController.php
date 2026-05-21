@@ -30,6 +30,7 @@ class EventController extends Controller
             'max_participants' => 'nullable|integer|min:1',
             'certificate_template' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
+            'certificate_number_prefix' => 'nullable|string|max:255',
         ]);
 
         $templatePath = null;
@@ -60,6 +61,7 @@ class EventController extends Controller
             'overlay_role_size' => $request->input('overlay_role_size', 20),
             'overlay_role_text' => $request->input('overlay_role_text', 'Peserta'),
             'overlay_role_color' => $request->input('overlay_role_color', '#1a2e6e'),
+            'certificate_number_prefix' => $request->certificate_number_prefix,
         ]);
 
         return redirect()->route('admin.events.index')
@@ -87,6 +89,7 @@ class EventController extends Controller
             'max_participants' => 'nullable|integer|min:1',
             'certificate_template' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
+            'certificate_number_prefix' => 'nullable|string|max:255',
         ]);
 
         $templatePath = $event->certificate_template;
@@ -125,6 +128,7 @@ class EventController extends Controller
             'overlay_role_size' => $request->input('overlay_role_size', $event->overlay_role_size),
             'overlay_role_text' => $request->input('overlay_role_text', $event->overlay_role_text),
             'overlay_role_color' => $request->input('overlay_role_color', $event->overlay_role_color),
+            'certificate_number_prefix' => $request->certificate_number_prefix,
         ]);
 
         return redirect()->route('admin.events.index')

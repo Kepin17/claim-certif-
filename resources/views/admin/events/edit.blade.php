@@ -377,6 +377,12 @@
             </div>
 
             <div class="form-group">
+                <label for="certificate_number_prefix" class="form-label">Certificate Number Prefix (Optional)</label>
+                <input type="text" name="certificate_number_prefix" id="certificate_number_prefix" value="{{ old('certificate_number_prefix', $event->certificate_number_prefix) }}" class="form-input" placeholder="Leave empty for auto-generated format (e.g., EVT-2026-0001)">
+                <p style="font-size: 12px; color: var(--ink-muted); margin-top: 4px;">If set, all certificates for this event will use this fixed prefix. Leave empty to use auto-generated format.</p>
+            </div>
+
+            <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" name="is_active" id="is_active" {{ $event->is_active ? 'checked' : '' }}>
                     <label for="is_active">Active Event (visible to users)</label>

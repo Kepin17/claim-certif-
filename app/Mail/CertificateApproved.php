@@ -23,7 +23,11 @@ class CertificateApproved extends Mailable
     public function build()
     {
         $certificatePath = storage_path('app/public/' . $this->certificate->pdf_path);
-        
+
+        // Sanitize name for filename
+        $sanitizedName = preg_replace('/[^a-zA-Z0-9-]/', '-', $this->certificate->name);
+        $attachmentFilename = $this->certificate->certificate_number . '-' . $sanitizedName . '.pdf';
+
         if (!file_exists($certificatePath)) {
             // If file doesn't exist, send email without attachment
             return $this->subject('Your Certificate Has Been Generated!')
@@ -31,19 +35,19 @@ class CertificateApproved extends Mailable
                     'name' => $this->certificate->name,
                     'event' => $this->certificate->event,
                     'certificateNumber' => $this->certificate->certificate_number,
-                    'downloadUrl' => route('certificate.download', $this->certificate->certificate_number),
+                    'downloadUrl' => config('app.url') . route('certificate.download', $this->certificate->certificate_number, false),
                 ]);
         }
-        
+
         return $this->subject('Your Certificate Has Been Generated!')
             ->view('emails.certificate-approved', [
                 'name' => $this->certificate->name,
                 'event' => $this->certificate->event,
                 'certificateNumber' => $this->certificate->certificate_number,
-                'downloadUrl' => route('certificate.download', $this->certificate->certificate_number),
+                'downloadUrl' => config('app.url') . route('certificate.download', $this->certificate->certificate_number, false),
             ])
             ->attach($certificatePath, [
-                'as' => 'certificate-' . $this->certificate->certificate_number . '.pdf',
+                'as' => $attachmentFilename,
                 'mime' => 'application/pdf',
             ]);
     }

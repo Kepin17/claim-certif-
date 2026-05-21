@@ -29,6 +29,7 @@ class Event extends Model
         'overlay_role_size',
         'overlay_role_text',
         'overlay_role_color',
+        'certificate_number_prefix',
     ];
 
     protected $casts = [
