@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Event extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'date',
+        'location',
+        'is_active',
+        'max_participants',
+        'certificate_template',
+        'poster',
+        'overlay_name_top',
+        'overlay_name_left',
+        'overlay_name_size',
+        'overlay_name_color',
+        'overlay_role_top',
+        'overlay_role_left',
+        'overlay_role_size',
+        'overlay_role_text',
+        'overlay_role_color',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'is_active' => 'boolean',
+    ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($event) {
+            if (empty($event->slug) && !empty($event->name)) {
+                $event->slug = static::generateSlug($event->name);
+            }
+        });
+
+        static::updating(function ($event) {
+            if ($event->isDirty('name') && !empty($event->name)) {
+                $event->slug = static::generateSlug($event->name);
+            }
+        });
+    }
+
+    public static function generateSlug($name)
+    {
+        $slug = strtolower(str_replace(' ', '-', $name));
+        $slug = preg_replace('/[^a-z0-9-]/', '', $slug);
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = trim($slug, '-');
+
+        $original = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->exists()) {
+            $slug = $original . '-' . $count++;
+        }
+
+        return $slug;
+    }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('is_active', false);
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+}
