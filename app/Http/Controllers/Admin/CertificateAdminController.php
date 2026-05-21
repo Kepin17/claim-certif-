@@ -93,8 +93,12 @@ class CertificateAdminController extends Controller
         try {
             $service = new CertificateService();
 
+            Log::info('Generating certificate for', ['certificate_id' => $certificate->id, 'certificate_number' => $certificateNumber]);
+
             $pdfPath = $service->generateCertificate($certificate);
             $qrCode = $service->generateQRCode($certificate);
+
+            Log::info('Certificate generated successfully', ['pdf_path' => $pdfPath, 'qr_code' => $qrCode]);
 
             $certificate->update([
                 'status' => 'generated',
@@ -106,14 +110,20 @@ class CertificateAdminController extends Controller
 
             Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
 
+            Log::info('Email sent successfully', ['email' => $certificate->email]);
+
             $certificate->update(['status' => 'sent']);
 
             return redirect()->route('admin.generated')
                 ->with('success', 'Certificate approved, generated, and sent to ' . $certificate->email . '!');
 
         } catch (\Exception $e) {
-            Log::error('Certificate generation failed: ' . $e->getMessage());
-            return redirect()->route('admin.generated')
+            Log::error('Certificate generation failed', [
+                'certificate_id' => $certificate->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->route('admin.approved')
                 ->with('warning', 'Certificate approved but generation failed: ' . $e->getMessage());
         }
     }
