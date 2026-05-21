@@ -55,7 +55,7 @@ class AuthController extends Controller
             // Logout and redirect to OTP verification
             Auth::logout();
             session(['otp_user_id' => $user->id]);
-            return redirect()->route('admin.otp.verify')->with('info', 'OTP code sent to your email: ' . $otp);
+            return redirect()->route('admin.otp.verify')->with('info', 'OTP code has been sent to your email.');
         }
 
         return back()->withErrors([
@@ -160,7 +160,7 @@ class AuthController extends Controller
                 ->subject('Your OTP Code');
         });
 
-        return redirect()->route('admin.otp.verify')->with('info', 'OTP code has been resent: ' . $otp);
+        return redirect()->route('admin.otp.verify')->with('info', 'OTP code has been resent to your email.');
     }
 
     public function logout(Request $request)
