@@ -116,7 +116,7 @@ class CertificateAdminController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return redirect()->route('admin.approved')
+            return redirect()->route('admin.generated')
                 ->with('warning', 'Certificate approved but generation failed: ' . $e->getMessage());
         }
     }

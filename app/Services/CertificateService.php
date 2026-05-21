@@ -97,7 +97,6 @@ class CertificateService
     <div class="date-text">on ' . $certificate->created_at->format('d F Y') . '</div>
   </div>
   <div class="footer">
-    <div class="cert-number">Certificate No: ' . htmlspecialchars($certificate->certificate_number) . '</div>
     <div class="signature">
       <div class="sig-line"></div>
       <div class="sig-label">Event Organizer</div>
@@ -121,7 +120,9 @@ class CertificateService
         
         $dompdf->render();
 
-        $filename = 'certificate-' . $certificate->certificate_number . '.pdf';
+        // Sanitize name for filename
+        $sanitizedName = preg_replace('/[^a-zA-Z0-9-]/', '-', $certificate->name);
+        $filename = $certificate->certificate_number . '-' . $sanitizedName . '.pdf';
         $path = 'certificates/' . $filename;
 
         Log::info('Saving built-in template PDF', ['path' => $path]);
@@ -208,7 +209,6 @@ class CertificateService
   <div class="overlay">
     <div class="name">' . htmlspecialchars($certificate->name) . '</div>
     <div class="role">' . htmlspecialchars($event->overlay_role_text ?? 'Peserta') . '</div>
-    <div class="cert-number">No: ' . htmlspecialchars($certificate->certificate_number) . '</div>
   </div>
 </div>
 </body>
@@ -228,7 +228,9 @@ class CertificateService
         
         $dompdf->render();
 
-        $filename = 'certificate-' . $certificate->certificate_number . '.pdf';
+        // Sanitize name for filename
+        $sanitizedName = preg_replace('/[^a-zA-Z0-9-]/', '-', $certificate->name);
+        $filename = $certificate->certificate_number . '-' . $sanitizedName . '.pdf';
         $path = 'certificates/' . $filename;
 
         Log::info('Saving template-based PDF', ['path' => $path]);
