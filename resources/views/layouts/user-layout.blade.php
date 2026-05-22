@@ -34,31 +34,34 @@
             font-family: 'Geist', sans-serif;
             background-color: var(--surface);
             color: var(--ink);
-          
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Nav */
+        /* ── NAV ── */
         .nav-bar {
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 200;
             background: var(--card);
             border-bottom: 1px solid rgba(0,0,0,0.06);
-            padding: 0 40px;
         }
 
         .nav-inner {
             max-width: 1100px;
             margin: 0 auto;
+            padding: 0 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             height: 64px;
         }
 
+        /* Logo */
         .nav-logo {
             font-family: 'Fraunces', serif;
-            font-size: 25px;
+            font-size: 20px;
             font-weight: 500;
             color: var(--ink);
             letter-spacing: -0.01em;
@@ -66,45 +69,155 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
 
+        .nav-logo img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        /* Desktop links */
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 28px;
+            gap: 4px;
         }
 
         .nav-link {
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 500;
             color: var(--ink-muted);
             text-decoration: none;
-            transition: color 0.2s;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            transition: color 0.15s, background 0.15s;
+            position: relative;
+            white-space: nowrap;
         }
 
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover {
             color: var(--ink);
+            background: rgba(0,0,0,0.04);
         }
 
         .nav-link.active {
-            position: relative;
+            color: var(--ink);
+            background: var(--accent-lt);
         }
 
         .nav-link.active::after {
             content: '';
             position: absolute;
-            bottom: -22px;
-            left: 0;
-            right: 0;
+            bottom: -1px;
+            left: 12px;
+            right: 12px;
             height: 2px;
             background: var(--accent);
+            border-radius: 2px 2px 0 0;
         }
 
-        /* Footer */
+        /* Hamburger button */
+        .nav-hamburger {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            cursor: pointer;
+            color: var(--ink-mid);
+            transition: background 0.15s, color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .nav-hamburger:hover {
+            background: rgba(0,0,0,0.04);
+            color: var(--ink);
+        }
+
+        .nav-hamburger svg {
+            transition: transform 0.2s;
+        }
+
+        .nav-hamburger.open svg.icon-menu  { display: none; }
+        .nav-hamburger.open svg.icon-close { display: block; }
+        .nav-hamburger svg.icon-close { display: none; }
+
+        /* Mobile drawer */
+        .nav-drawer {
+            display: none;
+            flex-direction: column;
+            background: var(--card);
+            border-top: 1px solid rgba(0,0,0,0.06);
+            padding: 12px 20px 20px;
+            gap: 2px;
+            /* slide-down animation */
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-drawer.open {
+            display: flex;
+        }
+
+        .drawer-link {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-decoration: none;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            transition: color 0.15s, background 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .drawer-link:hover {
+            color: var(--ink);
+            background: rgba(0,0,0,0.04);
+        }
+
+        .drawer-link.active {
+            color: var(--accent);
+            background: var(--accent-lt);
+        }
+
+        .drawer-link svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+
+        .drawer-link.active svg {
+            opacity: 1;
+        }
+
+        .drawer-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.06);
+            margin: 8px 0;
+        }
+
+        /* Content grow */
+        .content-wrap {
+            flex: 1;
+        }
+
+        /* ── FOOTER ── */
         .footer {
             background: var(--ink);
             padding: 32px 40px;
-            margin-top: auto;
         }
 
         .footer-inner {
@@ -114,37 +227,81 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
+        }
+
+        .footer-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: -0.01em;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .footer-copyright {
-            font-size: 13px;
-            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
         }
 
         .footer-support {
-            font-size: 13px;
-            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
         }
 
         .footer-support a {
             color: #A8D88A;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.2s;
+            transition: opacity 0.15s;
         }
 
         .footer-support a:hover {
-            color: #A8D88A;
+            opacity: 0.75;
         }
 
-        /* Responsive */
-        @media (max-width: 640px) {
-            .nav-bar { padding: 0 20px; }
-            .nav-inner { height: 56px; }
-            .nav-links { gap: 16px; }
-            .nav-link { font-size: 13px; }
-            .footer { padding: 24px 20px; }
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .nav-inner {
+                padding: 0 20px;
+                height: 56px;
+            }
+
+            .nav-links {
+                display: none; /* replaced by drawer */
+            }
+
+            .nav-hamburger {
+                display: flex;
+            }
+
+            .footer {
+                padding: 24px 20px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .footer-right {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .nav-logo span {
+                display: none; /* icon only on very small screens */
+            }
         }
     </style>
 </head>
@@ -153,33 +310,107 @@
     <!-- Navigation -->
     <nav class="nav-bar">
         <div class="nav-inner">
+
+            <!-- Logo -->
             <a href="{{ route('certificate.index') }}" class="nav-logo">
-                <img src="https://r2.fivemanage.com/eMY1LhlRUcWrX4POpj5V0/kepin/logo_certif.png" alt="logo" width="70" height="70">       
-            Certificate Claim</a>
+                <img src="https://r2.fivemanage.com/eMY1LhlRUcWrX4POpj5V0/kepin/logo_certif.png" alt="Logo">
+                <span>Certificate Claim</span>
+            </a>
+
+            <!-- Desktop links -->
             <div class="nav-links">
-                <a href="{{ route('certificate.index') }}" class="nav-link {{ request()->routeIs('certificate.index') ? 'active' : '' }}">Events</a>
-                <a href="{{ route('certificate.track') }}" class="nav-link {{ request()->routeIs('certificate.track') ? 'active' : '' }}">Track Status</a>
-                <!-- <a href="{{ route('login') }}" class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}">Admin</a> -->
+                <a href="{{ route('certificate.index') }}"
+                   class="nav-link {{ request()->routeIs('certificate.index') ? 'active' : '' }}">
+                    Events
+                </a>
+                <a href="{{ route('certificate.track') }}"
+                   class="nav-link {{ request()->routeIs('certificate.track') ? 'active' : '' }}">
+                    Track Status
+                </a>
             </div>
+
+            <!-- Hamburger (mobile) -->
+            <button class="nav-hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+                <svg class="icon-menu" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6"  x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+                <svg class="icon-close" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6"  y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+
+        </div>
+
+        <!-- Mobile drawer -->
+        <div class="nav-drawer" id="navDrawer" role="menu">
+            <a href="{{ route('certificate.index') }}"
+               class="drawer-link {{ request()->routeIs('certificate.index') ? 'active' : '' }}"
+               role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Events
+            </a>
+            <a href="{{ route('certificate.track') }}"
+               class="drawer-link {{ request()->routeIs('certificate.track') ? 'active' : '' }}"
+               role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/>
+                </svg>
+                Track Status
+            </a>
         </div>
     </nav>
 
     <!-- Content -->
-    @yield('content')
+    <div class="content-wrap">
+        @yield('content')
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-copyright">
-                © {{ date('Y') }} Certificate Claim System
-            </div>
-            <div class="footer-support">
-                Support by <a href="https://kevienstudio.my.id" target="_blank">kevienstudio.my.id</a>
+            <div class="footer-logo">Certificate Claim</div>
+            <div class="footer-right">
+                <span class="footer-copyright">© {{ date('Y') }} Certificate Claim System</span>
+                <span class="footer-support">Support by <a href="https://kevienstudio.my.id" target="_blank">kevienstudio.my.id</a></span>
             </div>
         </div>
     </footer>
 
     @stack('scripts')
+
+    <script>
+        const toggle  = document.getElementById('navToggle');
+        const drawer  = document.getElementById('navDrawer');
+
+        toggle.addEventListener('click', () => {
+            const isOpen = drawer.classList.toggle('open');
+            toggle.classList.toggle('open', isOpen);
+            toggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Close drawer when a link is tapped
+        drawer.querySelectorAll('.drawer-link').forEach(link => {
+            link.addEventListener('click', () => {
+                drawer.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', false);
+            });
+        });
+
+        // Close drawer on outside click
+        document.addEventListener('click', (e) => {
+            if (!toggle.contains(e.target) && !drawer.contains(e.target)) {
+                drawer.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', false);
+            }
+        });
+    </script>
 
 </body>
 </html>
