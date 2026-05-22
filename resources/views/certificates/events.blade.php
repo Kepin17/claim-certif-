@@ -596,18 +596,6 @@
             <p class="hero-desc">Browse active events and submit your claim. Your certificate will be reviewed and delivered to your inbox.</p>
         </div>
 
-        @if($events->count() > 0)
-        <div class="hero-stats">
-            <div class="stat-block">
-                <div class="stat-num">{{ $events->count() }}</div>
-                <div class="stat-label">Active Events</div>
-            </div>
-            <div class="stat-block">
-                <div class="stat-num">{{ $events->sum(fn($e) => $e->certificates->count()) }}</div>
-                <div class="stat-label">Claims Filed</div>
-            </div>
-        </div>
-        @endif
     </div>
 </div>
 
@@ -688,7 +676,6 @@
                             <span class="status-dot"></span>
                             Open
                         </span>
-                        <span class="card-index">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
                     </div>
 
                     <h3 class="card-title">{{ $event->name }}</h3>
