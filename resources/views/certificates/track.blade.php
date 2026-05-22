@@ -274,11 +274,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="event_id" class="form-label">Event yang Diikuti</label>
+                    <label for="event_id" class="form-label">Event Attended</label>
                     <select name="event_id" id="event_id"
                         class="form-input"
                         required>
-                        <option value="">Pilih Event</option>
+                        <option value="">Select event</option>
                         @foreach($events as $event)
                             <option value="{{ $event->id }}" {{ old('event_id') == $event->id ? 'selected' : '' }}>
                                 {{ $event->name }}

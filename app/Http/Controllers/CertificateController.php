@@ -11,7 +11,11 @@ class CertificateController extends Controller
 {
     public function index()
     {
-        $events = \App\Models\Event::active()->get();
+        $events = \App\Models\Event::active()
+            ->withCount('certificates')
+            ->orderByDesc('date')
+            ->paginate(20);
+
         return view('certificates.events', compact('events'));
     }
 

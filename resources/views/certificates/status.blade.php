@@ -308,13 +308,13 @@
                 </div>
                 @if($certificate->message)
                     <div class="detail-row detail-col">
-                        <span class="detail-label">Pesan dan Kesan</span>
+                        <span class="detail-label">Message & Impressions</span>
                         <span class="detail-value">{{ $certificate->message }}</span>
                     </div>
                 @endif
                 @if($certificate->next_event)
                     <div class="detail-row">
-                        <span class="detail-label">Event Selanjutnya</span>
+                        <span class="detail-label">Preferred Next Event</span>
                         <span class="detail-value">{{ $certificate->next_event }}</span>
                     </div>
                 @endif
