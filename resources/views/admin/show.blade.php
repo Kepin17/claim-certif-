@@ -215,6 +215,10 @@
         display: inline;
     }
 
+    .hidden {
+        display: none !important;
+    }
+
     @media (max-width: 640px) {
         .main { padding: 32px 20px 60px; }
         .section { padding: 20px; }
@@ -311,7 +315,7 @@
                 </button>
             </div>
 
-            <div id="rejectForm" class="reject-form hidden" style="display: none;">
+            <div id="rejectForm" class="reject-form hidden">
                 <h3 class="reject-form-title">Reject Claim</h3>
                 <form action="{{ route('admin.reject', $certificate->id) }}" method="POST">
                     @csrf
@@ -329,10 +333,4 @@
     </div>
 
 </main>
-
-@push('scripts')
-<script>
-document.getElementById('rejectForm').classList.add('hidden');
-</script>
-@endpush
 @endsection
