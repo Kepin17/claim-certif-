@@ -172,6 +172,73 @@
             margin-top: 8px;
         }
 
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 16px 0;
+        }
+
+        .pagination ::v-deep * {
+            box-sizing: border-box;
+        }
+
+        .pagination ::v-deep .pagination {
+            display: flex;
+            gap: 6px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .pagination ::v-deep .pagination li {
+            display: flex;
+        }
+
+        .pagination ::v-deep .pagination li a,
+        .pagination ::v-deep .pagination li span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(0,0,0,0.08);
+            background: var(--card);
+            transition: all 0.2s;
+        }
+
+        .pagination ::v-deep .pagination li a:hover {
+            background: var(--surface);
+            color: var(--ink);
+            border-color: rgba(0,0,0,0.12);
+        }
+
+        .pagination ::v-deep .pagination li.active span {
+            background: var(--accent);
+            color: #FFFFFF;
+            border-color: var(--accent);
+        }
+
+        .pagination ::v-deep .pagination li.disabled span {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pagination ::v-deep .pagination li.disabled span:hover {
+            background: var(--card);
+            color: var(--ink-muted);
+            border-color: rgba(0,0,0,0.08);
+        }
+
 
         /* Main */
         .main {
