@@ -24,6 +24,7 @@ Route::get('/verify/{certificateNumber}', function($certificateNumber) {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->group(function () {
     Route::get('/dashboard', [CertificateAdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/pending', [CertificateAdminController::class, 'pending'])->name('pending');
+    Route::get('/pending/event/{eventId}', [CertificateAdminController::class, 'pendingByEvent'])->name('pending.by-event');
     Route::get('/rejected', [CertificateAdminController::class, 'rejected'])->name('rejected');
     Route::get('/generated', [CertificateAdminController::class, 'generated'])->name('generated');
     Route::get('/generated/event/{eventId}', [CertificateAdminController::class, 'generatedByEvent'])->name('generated.by-event');

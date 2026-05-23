@@ -24,8 +24,23 @@ class CertificateAdminController extends Controller
 
     public function pending()
     {
-        $certificates = Certificate::pending()->latest()->paginate(20);
-        return view('admin.pending', compact('certificates'));
+        // Get events that have pending certificates
+        $events = Event::whereHas('certificates', function($query) {
+            $query->where('status', 'pending');
+        })->withCount(['certificates' => function($query) {
+            $query->where('status', 'pending');
+        }])->latest()->paginate(10);
+        return view('admin.pending', compact('events'));
+    }
+
+    public function pendingByEvent($eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $certificates = Certificate::where('event_id', $eventId)
+            ->where('status', 'pending')
+            ->latest()
+            ->paginate(20);
+        return view('admin.pending-by-event', compact('event', 'certificates'));
     }
 
     public function rejected()
