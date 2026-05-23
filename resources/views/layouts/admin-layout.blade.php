@@ -182,11 +182,7 @@
             padding: 16px 0;
         }
 
-        .pagination ::v-deep * {
-            box-sizing: border-box;
-        }
-
-        .pagination ::v-deep .pagination {
+        .pagination .pagination {
             display: flex;
             gap: 6px;
             list-style: none;
@@ -194,12 +190,12 @@
             padding: 0;
         }
 
-        .pagination ::v-deep .pagination li {
+        .pagination .pagination li {
             display: flex;
         }
 
-        .pagination ::v-deep .pagination li a,
-        .pagination ::v-deep .pagination li span {
+        .pagination .pagination li a,
+        .pagination .pagination li span {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -216,24 +212,24 @@
             transition: all 0.2s;
         }
 
-        .pagination ::v-deep .pagination li a:hover {
+        .pagination .pagination li a:hover {
             background: var(--surface);
             color: var(--ink);
             border-color: rgba(0,0,0,0.12);
         }
 
-        .pagination ::v-deep .pagination li.active span {
+        .pagination .pagination li.active span {
             background: var(--accent);
             color: #FFFFFF;
             border-color: var(--accent);
         }
 
-        .pagination ::v-deep .pagination li.disabled span {
+        .pagination .pagination li.disabled span {
             opacity: 0.4;
             cursor: not-allowed;
         }
 
-        .pagination ::v-deep .pagination li.disabled span:hover {
+        .pagination .pagination li.disabled span:hover {
             background: var(--card);
             color: var(--ink-muted);
             border-color: rgba(0,0,0,0.08);
