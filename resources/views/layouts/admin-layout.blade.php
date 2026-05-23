@@ -115,6 +115,63 @@
         }
         .nav-logout:hover { background: var(--danger-lt); }
 
+        /* Mobile Menu Button */
+        .nav-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--ink);
+        }
+
+        .nav-menu-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Mobile Menu */
+        .nav-mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 16px 20px;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .nav-mobile-menu.open {
+            display: flex;
+        }
+
+        .nav-mobile-menu .nav-link {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .nav-mobile-menu .nav-link:last-child {
+            border-bottom: none;
+        }
+
+        .nav-mobile-menu .nav-link.active::after {
+            display: none;
+        }
+
+        .nav-mobile-menu .nav-link.active {
+            color: var(--accent);
+        }
+
+        .nav-mobile-menu .nav-logout {
+            width: 100%;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
 
         /* Main */
         .main {
@@ -169,11 +226,12 @@
         }
 
         /* Responsive */
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .nav-bar { padding: 0 20px; }
             .nav-inner { height: 56px; }
-            .nav-links { gap: 16px; }
-            .nav-link { font-size: 13px; }
+            .nav-links { display: none; }
+            .nav-menu-btn { display: block; }
+            .nav-bar { position: relative; }
             .footer { padding: 24px 20px; }
         }
     </style>
@@ -184,6 +242,13 @@
     <nav class="nav-bar">
         <div class="nav-inner">
             <a href="{{ route('admin.dashboard') }}" class="nav-logo">Admin Dashboard</a>
+            <button class="nav-menu-btn" onclick="document.querySelector('.nav-mobile-menu').classList.toggle('open')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
             <div class="nav-links">
                 <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
                 <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">Events</a>
@@ -199,6 +264,22 @@
                     </button>
                 </form>
             </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="nav-mobile-menu">
+            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Dashboard</a>
+            <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Events</a>
+            <a href="{{ route('admin.pending') }}" class="nav-link {{ request()->routeIs('admin.pending') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Pending</a>
+            <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->routeIs('admin.generated*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Generated</a>
+            <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="nav-logout">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </button>
+            </form>
         </div>
     </nav>
 
