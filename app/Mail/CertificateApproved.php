@@ -35,7 +35,7 @@ class CertificateApproved extends Mailable
                     'name' => $this->certificate->name,
                     'event' => $this->certificate->event,
                     'certificateNumber' => $this->certificate->certificate_number,
-                    'downloadUrl' => config('app.url') . '/download-certificate?number=' . urlencode($this->certificate->certificate_number),
+                    'downloadUrl' => config('app.url') . '/download-certificate?key=' . $this->certificate->unique_key,
                 ]);
         }
 
@@ -44,7 +44,7 @@ class CertificateApproved extends Mailable
                 'name' => $this->certificate->name,
                 'event' => $this->certificate->event,
                 'certificateNumber' => $this->certificate->certificate_number,
-                'downloadUrl' => config('app.url') . '/download-certificate?number=' . urlencode($this->certificate->certificate_number),
+                'downloadUrl' => config('app.url') . '/download-certificate?key=' . $this->certificate->unique_key,
             ])
             ->attach($certificatePath, [
                 'as' => $attachmentFilename,

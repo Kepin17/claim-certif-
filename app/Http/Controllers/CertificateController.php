@@ -106,16 +106,16 @@ class CertificateController extends Controller
 
     public function download(Request $request)
     {
-        $certificateNumber = $request->query('number');
+        $uniqueKey = $request->query('key');
 
-        if (!$certificateNumber) {
-            abort(404, 'Certificate number is required');
+        if (!$uniqueKey) {
+            abort(404, 'Certificate key is required');
         }
 
         // Handle double-encoded URLs (Gmail redirects)
-        $certificateNumber = urldecode($certificateNumber);
+        $uniqueKey = urldecode($uniqueKey);
 
-        $certificate = Certificate::where('certificate_number', $certificateNumber)
+        $certificate = Certificate::where('unique_key', $uniqueKey)
             ->whereIn('status', ['generated', 'sent'])
             ->firstOrFail();
 
