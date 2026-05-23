@@ -321,6 +321,9 @@
                     @csrf
                     <div class="form-group">
                         <label for="rejection_reason" class="form-label">Rejection Reason</label>
+                        <button type="button" onclick="document.getElementById('rejection_reason').value = 'Data not found in attendance records or not present at the event'" class="proof-link" style="margin-bottom: 8px; font-size: 12px;">
+                            + Quick add: Not found in attendance / not present
+                        </button>
                         <textarea name="rejection_reason" id="rejection_reason" rows="4" class="form-input" required></textarea>
                     </div>
                     <button type="submit" class="action-btn reject">
