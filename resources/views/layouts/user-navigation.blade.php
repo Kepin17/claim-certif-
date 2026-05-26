@@ -66,5 +66,7 @@
         <a href="{{ route('certificate.index') }}" class="nav-link {{ request()->is('claim-certificate') ? 'active' : '' }}">Events</a>
         <a href="{{ route('certificate.track') }}" class="nav-link {{ request()->is('track-certificate') ? 'active' : '' }}">Track Status</a>
     </div>
+    @if(auth()->check())
     <a href="{{ route('admin.dashboard') }}" class="nav-admin">Admin</a>
+    @endif
 </nav>
