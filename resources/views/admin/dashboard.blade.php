@@ -75,6 +75,9 @@
     .stat-icon.generated { background: rgba(59,130,246,0.15); }
     .stat-icon.generated svg { color: #2563EB; }
 
+    .stat-icon.rejected { background: var(--danger-lt); }
+    .stat-icon.rejected svg { color: var(--danger); }
+
     .stat-icon.events { background: rgba(139,92,246,0.15); }
     .stat-icon.events svg { color: #7C3AED; }
 
@@ -187,6 +190,18 @@
             <div class="stat-num">{{ $generatedCount }}</div>
         </a>
 
+        <a href="{{ route('admin.rejected') }}" class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon rejected">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                </div>
+                <span class="stat-label">Rejected</span>
+            </div>
+            <div class="stat-num">{{ $rejectedCount }}</div>
+        </a>
+
         <a href="{{ route('admin.events.index') }}" class="stat-card">
             <div class="stat-card-header">
                 <div class="stat-icon events">
@@ -215,6 +230,12 @@
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                 </svg>
                 View Generated
+            </a>
+            <a href="{{ route('admin.rejected') }}" class="action-btn" style="background:var(--danger);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                View Rejected
             </a>
         </div>
     </div>

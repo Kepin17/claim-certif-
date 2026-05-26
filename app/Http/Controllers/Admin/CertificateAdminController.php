@@ -17,9 +17,10 @@ class CertificateAdminController extends Controller
     {
         $pendingCount = Certificate::pending()->count();
         $generatedCount = Certificate::whereIn('status', ['generated', 'sent'])->count();
+        $rejectedCount = Certificate::rejected()->count();
         $eventsCount = Event::count();
         
-        return view('admin.dashboard', compact('pendingCount', 'generatedCount', 'eventsCount'));
+        return view('admin.dashboard', compact('pendingCount', 'generatedCount', 'rejectedCount', 'eventsCount'));
     }
 
     public function pending()
@@ -45,8 +46,22 @@ class CertificateAdminController extends Controller
 
     public function rejected()
     {
-        $certificates = Certificate::rejected()->latest()->paginate(20);
-        return view('admin.rejected', compact('certificates'));
+        $events = Event::whereHas('certificates', function($query) {
+            $query->where('status', 'rejected');
+        })->withCount(['certificates' => function($query) {
+            $query->where('status', 'rejected');
+        }])->latest()->paginate(10);
+        return view('admin.rejected', compact('events'));
+    }
+
+    public function rejectedByEvent($eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $certificates = Certificate::where('event_id', $eventId)
+            ->where('status', 'rejected')
+            ->latest()
+            ->paginate(20);
+        return view('admin.rejected-by-event', compact('event', 'certificates'));
     }
 
     public function generated()

@@ -316,6 +316,7 @@
                 <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
                 <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">Events</a>
                 <a href="{{ route('admin.pending') }}" class="nav-link {{ request()->routeIs('admin.pending') ? 'active' : '' }}">Pending</a>
+                <a href="{{ route('admin.rejected') }}" class="nav-link {{ request()->routeIs('admin.rejected*') ? 'active' : '' }}">Rejected</a>
                 <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->routeIs('admin.generated*') ? 'active' : '' }}">Generated</a>
                 <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
                     @csrf
@@ -333,6 +334,7 @@
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Dashboard</a>
             <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Events</a>
             <a href="{{ route('admin.pending') }}" class="nav-link {{ request()->routeIs('admin.pending') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Pending</a>
+            <a href="{{ route('admin.rejected') }}" class="nav-link {{ request()->routeIs('admin.rejected*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Rejected</a>
             <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->routeIs('admin.generated*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Generated</a>
             <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
                 @csrf
