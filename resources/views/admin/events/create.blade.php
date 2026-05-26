@@ -244,6 +244,12 @@
             </div>
 
             <div class="form-group">
+                <label for="claim_deadline" class="form-label">Claim Deadline (Optional)</label>
+                <input type="datetime-local" name="claim_deadline" id="claim_deadline" value="{{ old('claim_deadline') }}" class="form-input">
+                <p style="font-size: 12px; color: var(--ink-muted); margin-top: 4px;">After this date and time, the claim form for this event will be automatically closed. Leave empty for no deadline.</p>
+            </div>
+
+            <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" name="is_active" id="is_active" checked>
                     <label for="is_active">Active Event (visible to users)</label>

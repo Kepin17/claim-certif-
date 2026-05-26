@@ -18,12 +18,18 @@ A modern Laravel-based certificate management and verification system with OTP a
 - **Rejected Claims by Event**: View rejected claims grouped and categorized by event
 - **Generated Certificates by Event**: Browse generated certificates grouped by event
 - **Certificate Approval**: Review and approve/reject claims with quick-select rejection reasons
+- **Bulk Approve/Reject**: Select multiple pending claims and approve or reject them in one action
+- **Allow Re-claim**: Reset a rejected claim back to pending and notify the user via email
+- **Activity Log**: Full history of all admin actions (approved, rejected, reset, regenerated, etc.)
+- **Global Search**: Search all claims by name, email, certificate number, or event from the navbar
+- **Export CSV**: Download claim lists per event and status as CSV files
+- **Claim Deadline per Event**: Set a deadline date/time after which the claim form auto-closes
 - **Custom Certificate Templates**: Upload custom certificate templates and overlay settings
 - **Poster Management**: Upload event posters
 - **Certificate Generation**: Generate certificates with customizable templates
 - **OTP Authentication**: Secure two-factor authentication for admin access
-- **Email Notifications**: Automatic email notifications for certificate approvals and rejections
-- **Responsive Navbar**: Mobile-friendly admin navigation
+- **Email Notifications**: Automatic email notifications for approvals, rejections, and re-opens
+- **Responsive Navbar**: Mobile-friendly admin navigation with inline search
 
 ## Security Features
 
@@ -167,11 +173,14 @@ Upload certificate templates in the admin event management:
 2. Enter OTP code sent to email
 3. Access admin dashboard (shows Pending / Generated / Rejected / Events stats)
 4. Click **Pending** → select event → review individual claims
-5. Approve or reject claims (use quick-select for common rejection reasons)
-6. Certificates are auto-generated and emailed upon approval
-7. Click **Generated** → select event → view, regenerate, or resend email
-8. Click **Rejected** → select event → view rejected claims and reasons
-9. Manage events and templates under **Events**
+5. Use checkboxes to select multiple claims → **Approve Selected** or **Reject Selected** (bulk action)
+6. Or click **Review Claim** on a single claim to approve/reject individually
+7. Certificates are auto-generated and emailed upon approval
+8. Click **Rejected** → select event → optionally click **Allow Re-claim** to reset and notify user
+9. Click **Generated** → select event → view, regenerate, or resend email, or **Export CSV**
+10. Use the **Search** bar in the navbar to find any claim instantly
+11. Check **Activity Log** to audit all admin actions
+12. Manage events (including Claim Deadline) under **Events**
 
 ## Project Structure
 
@@ -216,6 +225,9 @@ Upload certificate templates in the admin event management:
 │       │   ├── 403.blade.php
 │       │   ├── 404.blade.php
 │       │   └── 500.blade.php
+│       ├── admin/
+│       │   ├── activity-log.blade.php       # Admin activity log page
+│       │   └── search.blade.php             # Global search results
 │       ├── vendor/pagination/
 │       │   └── tailwind.blade.php           # Custom themed pagination
 │       └── layouts/

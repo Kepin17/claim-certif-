@@ -16,19 +16,26 @@ A complete Laravel-based certificate claim system with approval workflow, PDF ge
 - **Rejected Claims by Event**: Rejected claims categorized and grouped by event
 - **Generated Certificates by Event**: Generated certificates grouped by event
 - **Claim Review**: Review pending claims with proof file preview and quick-select rejection reasons
-- **Approval System**: Approve or reject claims with custom or preset rejection reasons
+- **Bulk Approve/Reject**: Checkbox multi-select + sticky action bar on the pending-by-event page
+- **Allow Re-claim**: Reset rejected claim to pending + email notification to user
+- **Activity Log**: Searchable/filterable log of all admin actions with timestamps
+- **Global Search**: Navbar search across all claims by name, email, certificate number, or event
+- **Export CSV**: Download claim list for any event+status combination
+- **Claim Deadline**: Per-event deadline; form auto-closes after deadline
 - **Certificate Management**: Regenerate certificates, resend emails
-- **Responsive Navigation**: Mobile-friendly admin navbar
+- **Responsive Navigation**: Mobile-friendly admin navbar with inline search
 
 ### Technical Features
 - **Queue-Based Processing**: Async PDF generation using Laravel Queue
-- **Email Notifications**: Automatic email delivery for approvals and rejections
+- **Email Notifications**: Automatic email delivery for approvals, rejections, and re-opens
 - **PDF Generation**: Professional certificate templates with DOMPDF
 - **QR Code Verification**: Secure certificate validation
-- **Anti-Duplicate Check**: Prevent duplicate claims
-- **Audit Trail**: Track who approved/rejected and when
-- **Unique Key Downloads**: Certificates downloaded via `unique_key` for correct retrieval
+- **Anti-Duplicate Check**: Prevent duplicate claims per event
+- **Audit Trail**: `AdminActivityLog` model tracks all admin actions with timestamps
+- **Unique Key Downloads**: Certificates downloaded via `unique_key` (UUID) for correct retrieval
 - **Optional Certificate Number Prefix**: Events can have a fixed prefix for certificate numbers
+- **Claim Deadline Enforcement**: `Event::isClaimOpen()` checked at both form display and submission
+- **CSV Export**: Native PHP streaming CSV — no extra package needed
 - **Custom Error Pages**: Branded 403, 404, 500 error pages matching the admin theme
 - **Custom Pagination**: Themed pagination view without Tailwind CSS dependency
 
@@ -122,20 +129,25 @@ php artisan serve
 2. **Review Pending Claims**
    - Navigate to `/admin/pending`
    - Select an event from the grid
-   - Click "Review Claim" on any individual claim
-   - View details and proof file
-   - Approve or Reject (use quick-select for common rejection reasons)
+   - **Bulk action**: Tick checkboxes → sticky bar appears → Approve/Reject all at once
+   - **Single action**: Click "Review Claim" → approve or reject individually
+   - Use quick-select button for common rejection reasons
 
 3. **View Rejected Claims**
    - Navigate to `/admin/rejected`
    - Select an event from the grid
-   - View rejected claims with rejection reason per claim
+   - View rejection reason per claim
+   - Click **Allow Re-claim** to reset a wrongly rejected claim (user notified by email)
 
 4. **Manage Generated Certificates**
    - Navigate to `/admin/generated`
    - Select an event from the grid
-   - Regenerate certificates if needed
-   - Resend emails to users
+   - Regenerate certificates or resend emails
+   - Click **Export CSV** to download the claim list
+
+5. **Search & Audit**
+   - Use the search bar in the navbar for instant cross-event search
+   - Navigate to `/admin/activity-log` to audit all admin actions
 
 ## API Endpoints
 
@@ -159,9 +171,15 @@ php artisan serve
 - `GET /admin/certificate/{id}` - View/review claim details
 - `POST /admin/certificate/{id}/approve` - Approve claim
 - `POST /admin/certificate/{id}/reject` - Reject claim with reason
+- `POST /admin/certificate/{id}/reset-to-pending` - Reset rejected claim to pending
 - `GET /admin/certificate/{id}/preview` - Preview certificate
 - `POST /admin/certificate/{id}/regenerate` - Regenerate PDF
 - `POST /admin/certificate/{id}/resend-email` - Resend email
+- `POST /admin/bulk-approve` - Bulk approve selected claims
+- `POST /admin/bulk-reject` - Bulk reject selected claims with reason
+- `GET /admin/export/{eventId}?status=` - Export CSV for event (pending/generated/rejected)
+- `GET /admin/activity-log` - Activity log (filterable by action/search)
+- `GET /admin/search?q=` - Global search across all claims
 - `GET /admin/events` - List all events
 - `GET /admin/events/create` - Create new event
 - `POST /admin/events` - Store new event
@@ -206,10 +224,22 @@ Admin can approve (→ GENERATED) or reject (→ REJECTED) any PENDING claim.
 - `name` - Event name
 - `slug` - URL-friendly name
 - `date` - Event date
+- `claim_deadline` - Optional datetime; claim form closes after this
 - `description` - Event description
 - `certificate_template` - PDF template path
 - `certificate_number_prefix` - Optional fixed prefix for certificate numbers
 - `is_active` - Whether the event is open for claims
+- `created_at`, `updated_at` - Timestamps
+
+### AdminActivityLog Table
+- `id` - Primary key
+- `admin_id` - FK to users (nullable, null if user deleted)
+- `admin_name` - Snapshot of admin name at time of action
+- `action` - `approved`, `rejected`, `reset_to_pending`, `bulk_approved`, `bulk_rejected`, `regenerated`, `resent_email`
+- `certificate_id` - FK to certificates (nullable)
+- `certificate_name` - Snapshot of participant name
+- `event_name` - Snapshot of event name
+- `notes` - Extra info (e.g. rejection reason)
 - `created_at`, `updated_at` - Timestamps
 
 ## Configuration

@@ -30,12 +30,21 @@ class Event extends Model
         'overlay_role_text',
         'overlay_role_color',
         'certificate_number_prefix',
+        'claim_deadline',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'claim_deadline' => 'datetime',
         'is_active' => 'boolean',
     ];
+
+    public function isClaimOpen(): bool
+    {
+        if (!$this->is_active) return false;
+        if ($this->claim_deadline && now()->isAfter($this->claim_deadline)) return false;
+        return true;
+    }
 
     protected static function boot()
     {

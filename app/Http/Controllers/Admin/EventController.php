@@ -31,6 +31,7 @@ class EventController extends Controller
             'certificate_template' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'certificate_number_prefix' => 'nullable|string|max:255',
+            'claim_deadline' => 'nullable|date',
         ]);
 
         $templatePath = null;
@@ -62,6 +63,7 @@ class EventController extends Controller
             'overlay_role_text' => $request->input('overlay_role_text', 'Peserta'),
             'overlay_role_color' => $request->input('overlay_role_color', '#1a2e6e'),
             'certificate_number_prefix' => $request->certificate_number_prefix,
+            'claim_deadline' => $request->claim_deadline ?: null,
         ]);
 
         return redirect()->route('admin.events.index')
@@ -90,6 +92,7 @@ class EventController extends Controller
             'certificate_template' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'certificate_number_prefix' => 'nullable|string|max:255',
+            'claim_deadline' => 'nullable|date',
         ]);
 
         $templatePath = $event->certificate_template;
@@ -129,6 +132,7 @@ class EventController extends Controller
             'overlay_role_text' => $request->input('overlay_role_text', $event->overlay_role_text),
             'overlay_role_color' => $request->input('overlay_role_color', $event->overlay_role_color),
             'certificate_number_prefix' => $request->certificate_number_prefix,
+            'claim_deadline' => $request->claim_deadline ?: null,
         ]);
 
         return redirect()->route('admin.events.index')

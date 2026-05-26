@@ -3,17 +3,26 @@
 ## [Unreleased]
 
 ### Added
-- **Rejected by Event page** — Rejected claims now grouped and categorized by event, matching the Pending and Generated layout
+- **Bulk Approve/Reject** — Checkboxes on pending-by-event page with sticky action bar; bulk approve generates & emails all selected certificates at once; bulk reject sends rejection emails with a shared reason
+- **Allow Re-claim** — Admin button on rejected claim detail; resets status to pending, clears rejection data, sends re-open email to user
+- **Activity Log** (`/admin/activity-log`) — Full searchable/filterable history of all admin actions (approved, rejected, reset, bulk\_approved, bulk\_rejected, regenerated, resent\_email) with admin name, participant, event, notes, and timestamp
+- **Global Search** — Inline search input in both desktop and mobile navbars; searches across all claims by name, email, certificate number, or event
+- **Export CSV** — Download button on pending/generated/rejected by-event pages; streams a CSV with name, email, certificate number, status, timestamps, and rejection reason
+- **Claim Deadline per Event** — `claim_deadline` (datetime, nullable) field on events; `Event::isClaimOpen()` enforced at both form display and form submission; field in create/edit event forms
+- **`AdminActivityLog` model** — `record()` static helper, `action_label` / `action_color` accessors, relationships to `Certificate` and `User`
+- **`admin_activity_logs` migration** — New table with FK to users and certificates
+- **`add_claim_deadline_to_events` migration** — Adds nullable `claim_deadline` datetime column
+- **`CertificateResetToPending` Mailable + email template** — Branded email notifying user their claim was re-opened with step-by-step instructions and track status CTA
+- **Rejected by Event page** — Rejected claims grouped and categorized by event, matching the Pending and Generated layout
 - **Rejected nav link** — "Rejected" added to admin navbar (desktop & mobile) with active state highlighting
 - **Rejected stat card on dashboard** — Dashboard now shows Pending / Generated / Rejected / Events stats
 - **"View Rejected" quick action** — Added to dashboard Quick Actions section
 - **Pending by Event page** — Pending claims grouped by event with card grid and search
-- **404 / 403 / 500 error pages** — Custom branded error pages matching admin theme with proper icons and navigation buttons
-- **Custom pagination view** — Replaced default Tailwind paginator with inline-styled view matching the admin design system (no Tailwind dependency)
-- **Quick-select rejection reason** — "Not found in attendance / not present" preset button on the reject form
-- **Optional certificate number prefix on events** — Admin can set a fixed prefix per event; falls back to auto-generated format (`EVT-YEAR-SEQ`) if not set
-- **Responsive admin navbar** — Hamburger menu for mobile with slide-down mobile menu
-- **Pagination CSS** — Added comprehensive pagination styles to admin layout
+- **404 / 403 / 500 error pages** — Custom branded error pages matching admin theme
+- **Custom pagination view** — Replaced default Tailwind paginator with inline-styled view (no Tailwind dependency)
+- **Quick-select rejection reason** — "Not found in attendance / not present" preset button on reject form
+- **Optional certificate number prefix on events** — Fixed prefix per event; falls back to auto-generated format (`EVT-YEAR-SEQ`)
+- **Responsive admin navbar** — Hamburger menu for mobile with slide-down menu and inline search
 
 ### Changed
 - **Certificate downloads use `unique_key`** — All download URLs now use a UUID `unique_key` instead of `certificate_number` to ensure the correct certificate is always fetched, even when numbers are duplicated

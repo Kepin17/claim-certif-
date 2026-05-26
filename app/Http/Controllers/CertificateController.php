@@ -26,6 +26,10 @@ class CertificateController extends Controller
             return redirect()->route('certificate.index')
                 ->with('error', 'This event is not currently accepting claims.');
         }
+        if (!$event->isClaimOpen()) {
+            return redirect()->route('certificate.index')
+                ->with('error', 'The claim deadline for this event has passed.');
+        }
         return view('certificates.claim', compact('event'));
     }
 
@@ -41,6 +45,10 @@ class CertificateController extends Controller
         ]);
 
         $event = \App\Models\Event::findOrFail($validated['event_id']);
+
+        if (!$event->isClaimOpen()) {
+            return back()->with('error', 'The claim deadline for this event has passed.');
+        }
 
         // Check for duplicate claims (by email and event)
         $existing = Certificate::where('email', $validated['email'])

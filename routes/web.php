@@ -36,6 +36,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::post('/certificate/{id}/regenerate', [CertificateAdminController::class, 'regenerate'])->name('regenerate');
     Route::post('/certificate/{id}/resend-email', [CertificateAdminController::class, 'resendEmail'])->name('resend-email');
     Route::post('/certificate/{id}/reset-to-pending', [CertificateAdminController::class, 'resetToPending'])->name('reset-to-pending');
+    Route::post('/bulk-approve', [CertificateAdminController::class, 'bulkApprove'])->name('bulk-approve');
+    Route::post('/bulk-reject', [CertificateAdminController::class, 'bulkReject'])->name('bulk-reject');
+    Route::get('/export/{eventId}', [CertificateAdminController::class, 'exportCsv'])->name('export');
+    Route::get('/activity-log', [CertificateAdminController::class, 'activityLog'])->name('activity-log');
+    Route::get('/search', [CertificateAdminController::class, 'search'])->name('search');
 
     // Event Management Routes
     Route::prefix('events')->name('events.')->group(function () {

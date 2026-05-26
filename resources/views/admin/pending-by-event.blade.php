@@ -110,6 +110,98 @@
         box-shadow: 0 0 0 3px rgba(217,119,6,0.1);
     }
 
+    /* Toolbar */
+    .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-left { display: flex; align-items: center; gap: 10px; }
+    .toolbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .select-all-wrap {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13px; color: var(--ink-muted); cursor: pointer;
+    }
+
+    /* Bulk Action Bar */
+    .bulk-bar {
+        display: none;
+        position: sticky;
+        bottom: 24px;
+        background: var(--ink);
+        color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 14px 20px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        z-index: 100;
+        margin-top: 24px;
+        flex-wrap: wrap;
+    }
+
+    .bulk-bar.visible { display: flex; }
+
+    .bulk-count { font-size: 14px; font-weight: 500; }
+
+    .bulk-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .bulk-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 16px; border-radius: var(--radius-sm);
+        font-size: 13px; font-weight: 500; cursor: pointer;
+        border: none; font-family: 'Geist', sans-serif;
+        transition: background 0.2s;
+    }
+
+    .bulk-btn.approve { background: var(--accent); color: #fff; }
+    .bulk-btn.approve:hover { background: var(--accent-mid); }
+    .bulk-btn.reject-open { background: var(--danger); color: #fff; }
+    .bulk-btn.reject-open:hover { background: #6D2213; }
+    .bulk-btn.cancel { background: rgba(255,255,255,0.1); color: #fff; }
+    .bulk-btn.cancel:hover { background: rgba(255,255,255,0.2); }
+
+    /* Checkbox */
+    .card-checkbox {
+        width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;
+    }
+
+    /* Export btn */
+    .export-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 16px; border-radius: var(--radius-sm);
+        font-size: 13px; font-weight: 500; cursor: pointer;
+        background: var(--card); color: var(--ink-mid);
+        border: 1px solid rgba(0,0,0,0.1);
+        text-decoration: none; font-family: 'Geist', sans-serif;
+        transition: background 0.2s;
+    }
+    .export-btn:hover { background: var(--surface); }
+
+    /* Bulk reject modal */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.45); z-index: 200;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.visible { display: flex; }
+    .modal {
+        background: var(--card); border-radius: var(--radius-lg);
+        padding: 28px; width: 100%; max-width: 480px; margin: 20px;
+    }
+    .modal-title {
+        font-family: 'Fraunces', serif; font-size: 20px;
+        font-weight: 300; color: var(--ink); margin-bottom: 16px;
+    }
+    .modal-actions { display: flex; gap: 10px; margin-top: 16px;
+    }
+
     /* Card Grid */
     .cards-grid {
         display: grid;
@@ -264,13 +356,33 @@
             <div class="empty-state">No pending claims for this event.</div>
         </div>
     @else
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <label class="select-all-wrap">
+                    <input type="checkbox" id="selectAll" class="card-checkbox">
+                    Select all on this page
+                </label>
+                <span id="selectedCount" style="font-size:13px;color:var(--ink-muted);"></span>
+            </div>
+            <div class="toolbar-right">
+                <a href="{{ route('admin.export', $event->id) }}?status=pending" class="export-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export CSV
+                </a>
+            </div>
+        </div>
+
         <div class="cards-grid">
             @foreach($certificates as $certificate)
-                <div class="card">
+                <div class="card" data-id="{{ $certificate->id }}">
                     <div class="card-header">
-                        <div>
-                            <h3 class="card-title">{{ $certificate->name }}</h3>
-                            <p class="card-email">{{ $certificate->email }}</p>
+                        <div style="display:flex;align-items:flex-start;gap:12px;">
+                            <input type="checkbox" class="card-checkbox cert-checkbox" value="{{ $certificate->id }}" style="margin-top:3px;">
+                            <div>
+                                <h3 class="card-title">{{ $certificate->name }}</h3>
+                                <p class="card-email">{{ $certificate->email }}</p>
+                            </div>
                         </div>
                         <span class="status-badge">
                             PENDING
@@ -308,25 +420,110 @@
         <div class="pagination">
             {{ $certificates->links() }}
         </div>
+
+        <!-- Bulk action sticky bar -->
+        <form id="bulkApproveForm" action="{{ route('admin.bulk-approve') }}" method="POST" style="display:none;">
+            @csrf
+            <div id="bulkApproveIds"></div>
+        </form>
+        <div id="bulkRejectModal" class="modal-overlay">
+            <div class="modal">
+                <h3 class="modal-title">Bulk Reject Claims</h3>
+                <form action="{{ route('admin.bulk-reject') }}" method="POST" id="bulkRejectForm">
+                    @csrf
+                    <div id="bulkRejectIds"></div>
+                    <label style="font-size:13px;font-weight:500;color:var(--ink-mid);display:block;margin-bottom:8px;">Rejection Reason</label>
+                    <button type="button" onclick="document.getElementById('bulkReason').value='Data not found in attendance records or not present at the event'" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;margin-bottom:8px;padding:0;">+ Quick add: Not found in attendance / not present</button>
+                    <textarea name="rejection_reason" id="bulkReason" rows="4" required style="width:100%;padding:10px 14px;font-family:'Geist',sans-serif;font-size:14px;border:1px solid rgba(0,0,0,0.12);border-radius:6px;resize:none;"></textarea>
+                    <div class="modal-actions">
+                        <button type="submit" class="bulk-btn reject-open">Confirm Reject</button>
+                        <button type="button" onclick="document.getElementById('bulkRejectModal').classList.remove('visible')" class="bulk-btn cancel" style="background:rgba(0,0,0,0.08);color:var(--ink);">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="bulkBar" class="bulk-bar">
+            <span class="bulk-count" id="bulkCountLabel">0 selected</span>
+            <div class="bulk-actions">
+                <button class="bulk-btn approve" onclick="submitBulkApprove()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    Approve Selected
+                </button>
+                <button class="bulk-btn reject-open" onclick="openBulkReject()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    Reject Selected
+                </button>
+                <button class="bulk-btn cancel" onclick="clearSelection()">Clear</button>
+            </div>
+        </div>
     @endif
 
 </div>
+
 
 @push('scripts')
 <script>
 document.getElementById('certSearch').addEventListener('input', function(e) {
     const searchTerm = e.target.value.toLowerCase();
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
+    document.querySelectorAll('.card').forEach(card => {
         const title = card.querySelector('.card-title').textContent.toLowerCase();
         const email = card.querySelector('.card-email').textContent.toLowerCase();
-        if (title.includes(searchTerm) || email.includes(searchTerm)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
+        card.style.display = (title.includes(searchTerm) || email.includes(searchTerm)) ? 'block' : 'none';
     });
 });
+
+function getSelected() {
+    return [...document.querySelectorAll('.cert-checkbox:checked')].map(c => c.value);
+}
+
+function updateBulkBar() {
+    const ids = getSelected();
+    const bar = document.getElementById('bulkBar');
+    bar.classList.toggle('visible', ids.length > 0);
+    document.getElementById('bulkCountLabel').textContent = ids.length + ' selected';
+    document.getElementById('selectedCount').textContent = ids.length > 0 ? ids.length + ' selected' : '';
+}
+
+document.querySelectorAll('.cert-checkbox').forEach(cb => cb.addEventListener('change', updateBulkBar));
+
+document.getElementById('selectAll').addEventListener('change', function() {
+    document.querySelectorAll('.cert-checkbox').forEach(cb => cb.checked = this.checked);
+    updateBulkBar();
+});
+
+function clearSelection() {
+    document.querySelectorAll('.cert-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('selectAll').checked = false;
+    updateBulkBar();
+}
+
+function submitBulkApprove() {
+    const ids = getSelected();
+    if (!ids.length) return;
+    if (!confirm('Approve ' + ids.length + ' claim(s)? This will generate and send certificates.')) return;
+    const container = document.getElementById('bulkApproveIds');
+    container.innerHTML = '';
+    ids.forEach(id => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = 'ids[]'; inp.value = id;
+        container.appendChild(inp);
+    });
+    document.getElementById('bulkApproveForm').submit();
+}
+
+function openBulkReject() {
+    const ids = getSelected();
+    if (!ids.length) return;
+    const container = document.getElementById('bulkRejectIds');
+    container.innerHTML = '';
+    ids.forEach(id => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = 'ids[]'; inp.value = id;
+        container.appendChild(inp);
+    });
+    document.getElementById('bulkRejectModal').classList.add('visible');
+}
 </script>
 @endpush
 @endsection
