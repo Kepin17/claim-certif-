@@ -28,11 +28,15 @@ class CertificateAdminController extends Controller
 
         $recentPending = Certificate::pending()
             ->with('event')
+            ->whereDate('created_at', today())
             ->latest()
             ->limit(5)
             ->get();
 
-        $recentLogs = AdminActivityLog::latest()->limit(10)->get();
+        $recentLogs = AdminActivityLog::whereDate('created_at', today())
+            ->latest()
+            ->limit(10)
+            ->get();
 
         return view('admin.dashboard', array_merge($stats, compact('recentPending', 'recentLogs')));
     }
