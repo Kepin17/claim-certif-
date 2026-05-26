@@ -306,6 +306,12 @@
                     <span class="detail-label">Event</span>
                     <span class="detail-value">{{ $certificate->event }}</span>
                 </div>
+                @if($certificate->certificate_type_name)
+                <div class="detail-row">
+                    <span class="detail-label">Role / Type</span>
+                    <span class="detail-value">{{ $certificate->certificate_type_name }}</span>
+                </div>
+                @endif
                 @if($certificate->message)
                     <div class="detail-row detail-col">
                         <span class="detail-label">Message & Impressions</span>
@@ -331,6 +337,12 @@
                     <div class="alert-title">Rejection Reason</div>
                     <div class="alert-text">{{ $certificate->rejection_reason }}</div>
                 </div>
+                @if($certificate->eventRelation?->isClaimOpen())
+                <a href="{{ route('certificate.claim-form', $certificate->eventRelation->slug) }}" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:11px 22px;background:var(--accent);color:#fff;font-family:'Geist',sans-serif;font-size:14px;font-weight:500;border-radius:var(--radius-sm);text-decoration:none;transition:background .2s;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.35"/></svg>
+                    Re-submit with a Different Role
+                </a>
+                @endif
             @endif
 
             @if($certificate->status === 'generated' || $certificate->status === 'sent')

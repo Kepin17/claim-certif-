@@ -21,7 +21,10 @@ class CertificateController extends Controller
 
     public function showClaimForm($slug)
     {
-        $event = \App\Models\Event::where('slug', $slug)->firstOrFail();
+        $event = \App\Models\Event::where('slug', $slug)
+            ->with('activeCertificateTypes')
+            ->firstOrFail();
+
         if (!$event->is_active) {
             return redirect()->route('certificate.index')
                 ->with('error', 'This event is not currently accepting claims.');
@@ -30,33 +33,49 @@ class CertificateController extends Controller
             return redirect()->route('certificate.index')
                 ->with('error', 'The claim deadline for this event has passed.');
         }
-        return view('certificates.claim', compact('event'));
+
+        $certificateTypes = $event->activeCertificateTypes;
+        return view('certificates.claim', compact('event', 'certificateTypes'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'event_id' => 'required|exists:events,id',
-            'message' => 'nullable|string|max:1000',
-            'next_event' => 'nullable|string|max:255',
-            'proof_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'name'                  => 'required|string|max:255',
+            'email'                 => 'required|email|max:255',
+            'event_id'              => 'required|exists:events,id',
+            'certificate_type_id'   => 'nullable|exists:certificate_types,id',
+            'message'               => 'nullable|string|max:1000',
+            'next_event'            => 'nullable|string|max:255',
+            'proof_file'            => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
-        $event = \App\Models\Event::findOrFail($validated['event_id']);
+        $event = \App\Models\Event::with('activeCertificateTypes')->findOrFail($validated['event_id']);
 
         if (!$event->isClaimOpen()) {
             return back()->with('error', 'The claim deadline for this event has passed.');
         }
 
-        // Check for duplicate claims (by email and event)
+        // Validate type belongs to the event if provided
+        $certType = null;
+        if (!empty($validated['certificate_type_id'])) {
+            $certType = $event->activeCertificateTypes->find($validated['certificate_type_id']);
+            if (!$certType) {
+                return back()->with('error', 'Invalid certificate type selected.')->withInput();
+            }
+        } elseif ($event->activeCertificateTypes->count() > 0) {
+            return back()->with('error', 'Please select a certificate type.')->withInput();
+        }
+
+        // Block duplicate: only if active (non-rejected) claim exists for same email+event+type
         $existing = Certificate::where('email', $validated['email'])
             ->where('event_id', $validated['event_id'])
+            ->when($certType, fn($q) => $q->where('certificate_type_id', $certType->id))
+            ->whereNotIn('status', ['rejected'])
             ->first();
 
         if ($existing) {
-            return back()->with('error', 'A claim with this email already exists for this event.');
+            return back()->with('error', 'An active claim with this email already exists for this event.');
         }
 
         // Handle file upload
@@ -65,16 +84,17 @@ class CertificateController extends Controller
             $proofPath = $request->file('proof_file')->store('proofs', 'public');
         }
 
-        // Create certificate claim
         $certificate = Certificate::create([
-            'event_id' => $validated['event_id'],
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'event' => $event->name,
-            'message' => $validated['message'],
-            'next_event' => $validated['next_event'],
-            'proof_file' => $proofPath,
-            'status' => 'pending',
+            'event_id'              => $validated['event_id'],
+            'certificate_type_id'   => $certType?->id,
+            'certificate_type_name' => $certType?->name,
+            'name'                  => $validated['name'],
+            'email'                 => $validated['email'],
+            'event'                 => $event->name,
+            'message'               => $validated['message'],
+            'next_event'            => $validated['next_event'],
+            'proof_file'            => $proofPath,
+            'status'                => 'pending',
         ]);
 
         return redirect()->route('certificate.status', $certificate->unique_key)
@@ -83,7 +103,9 @@ class CertificateController extends Controller
 
     public function status($uniqueKey)
     {
-        $certificate = Certificate::byUniqueKey($uniqueKey)->firstOrFail();
+        $certificate = Certificate::byUniqueKey($uniqueKey)
+            ->with('eventRelation')
+            ->firstOrFail();
         return view('certificates.status', compact('certificate'));
     }
 

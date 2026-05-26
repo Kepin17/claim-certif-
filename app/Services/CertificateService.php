@@ -39,6 +39,11 @@ class CertificateService
 
         // Check if the event has a custom template image
         $event = $certificate->eventRelation ?? \App\Models\Event::find($certificate->event_id);
+
+        // Load type so generateFromTemplate can override role text
+        if (!$certificate->relationLoaded('certificateType')) {
+            $certificate->load('certificateType');
+        }
         if ($event && $event->certificate_template) {
             $templatePath = storage_path('app/public/' . $event->certificate_template);
             Log::info('Checking template', ['template_path' => $templatePath, 'exists' => file_exists($templatePath)]);
@@ -134,6 +139,14 @@ class CertificateService
         return $path;
     }
 
+    private function getRoleText(Certificate $certificate, \App\Models\Event $event): string
+    {
+        if ($certificate->certificateType) {
+            return $certificate->certificateType->getRoleDisplayText();
+        }
+        return $event->overlay_role_text ?? 'Peserta';
+    }
+
     private function generateFromTemplate(Certificate $certificate, \App\Models\Event $event, string $templatePath): string
     {
         Log::info('Generating certificate from template', [
@@ -208,7 +221,7 @@ class CertificateService
   <img class="bg-img" src="data:' . $mimeType . ';base64,' . $imageData . '" />
   <div class="overlay">
     <div class="name">' . htmlspecialchars($certificate->name) . '</div>
-    <div class="role">' . htmlspecialchars($event->overlay_role_text ?? 'Peserta') . '</div>
+    <div class="role">' . htmlspecialchars($this->getRoleText($certificate, $event)) . '</div>
   </div>
 </div>
 </body>

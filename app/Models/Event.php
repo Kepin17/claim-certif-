@@ -85,6 +85,16 @@ class Event extends Model
         return $this->hasMany(Certificate::class);
     }
 
+    public function certificateTypes()
+    {
+        return $this->hasMany(CertificateType::class)->orderBy('sort_order');
+    }
+
+    public function activeCertificateTypes()
+    {
+        return $this->hasMany(CertificateType::class)->where('is_active', true)->orderBy('sort_order');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

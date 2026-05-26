@@ -11,6 +11,8 @@ class Certificate extends Model
 
     protected $fillable = [
         'event_id',
+        'certificate_type_id',
+        'certificate_type_name',
         'name',
         'email',
         'event',
@@ -64,6 +66,11 @@ class Certificate extends Model
     public function eventRelation()
     {
         return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function certificateType()
+    {
+        return $this->belongsTo(CertificateType::class);
     }
 
     public function scopePending($query)

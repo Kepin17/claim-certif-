@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CertificateType;
 use App\Models\Event;
 use Illuminate\Http\Request;
 
@@ -44,7 +45,7 @@ class EventController extends Controller
             $posterPath = $request->file('poster')->store('event-posters', 'public');
         }
 
-        Event::create([
+        $event = Event::create([
             'name' => $request->name,
             'description' => $request->description,
             'date' => $request->date,
@@ -66,17 +67,21 @@ class EventController extends Controller
             'claim_deadline' => $request->claim_deadline ?: null,
         ]);
 
+        $this->syncCertificateTypes($event, $request->input('certificate_types', []));
+
         return redirect()->route('admin.events.index')
             ->with('success', 'Event created successfully.');
     }
 
     public function show(Event $event)
     {
+        $event->load('certificateTypes');
         return view('admin.events.show', compact('event'));
     }
 
     public function edit(Event $event)
     {
+        $event->load('certificateTypes');
         return view('admin.events.edit', compact('event'));
     }
 
@@ -135,8 +140,46 @@ class EventController extends Controller
             'claim_deadline' => $request->claim_deadline ?: null,
         ]);
 
+        $this->syncCertificateTypes($event, $request->input('certificate_types', []));
+
         return redirect()->route('admin.events.index')
             ->with('success', 'Event updated successfully.');
+    }
+
+    private function syncCertificateTypes(Event $event, array $types): void
+    {
+        $existingIds = $event->certificateTypes()->pluck('id')->toArray();
+        $submittedIds = [];
+
+        foreach ($types as $i => $type) {
+            if (empty($type['name'])) continue;
+
+            $data = [
+                'event_id'                   => $event->id,
+                'name'                       => $type['name'],
+                'role_text'                  => $type['role_text'] ?? null,
+                'certificate_number_prefix'  => $type['certificate_number_prefix'] ?? null,
+                'sort_order'                 => $i,
+                'is_active'                  => true,
+            ];
+
+            if (!empty($type['id']) && in_array($type['id'], $existingIds)) {
+                CertificateType::where('id', $type['id'])->update($data);
+                $submittedIds[] = (int) $type['id'];
+            } else {
+                $ct = CertificateType::create($data);
+                $submittedIds[] = $ct->id;
+            }
+        }
+
+        // Delete removed types only if no certificates depend on them
+        $toDelete = array_diff($existingIds, $submittedIds);
+        foreach ($toDelete as $id) {
+            $ct = CertificateType::find($id);
+            if ($ct && $ct->certificates()->count() === 0) {
+                $ct->delete();
+            }
+        }
     }
 
     public function destroy(Event $event)

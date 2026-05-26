@@ -586,10 +586,36 @@
                     <input type="hidden" name="event_id" value="{{ $event->id }}">
                 @endif
 
-                <!-- Section 2: Feedback -->
+                @if(isset($certificateTypes) && $certificateTypes->count() > 0)
+                <!-- Section 2: Certificate Type -->
                 <div class="form-section">
                     <div class="section-label">
                         <span class="section-num">2</span>
+                        <div class="section-title-wrap">
+                            <h3>Participation Role <span style="color:var(--danger)">*</span></h3>
+                            <p>Select the role you participated as in this event</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        @foreach($certificateTypes as $type)
+                        <label style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1.5px solid {{ old('certificate_type_id') == $type->id ? 'var(--olive)' : 'rgba(0,0,0,0.08)' }};border-radius:var(--r-sm);cursor:pointer;transition:border-color .15s;" class="type-label">
+                            <input type="radio" name="certificate_type_id" value="{{ $type->id }}" {{ old('certificate_type_id') == $type->id ? 'checked' : '' }} required style="accent-color:var(--olive);width:16px;height:16px;flex-shrink:0;">
+                            <div>
+                                <div style="font-weight:600;font-size:14px;color:var(--ink);">{{ $type->name }}</div>
+                                @if($type->role_text && $type->role_text !== $type->name)
+                                    <div style="font-size:12px;color:var(--ink-muted);">Certificate will show: <em>{{ $type->role_text }}</em></div>
+                                @endif
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                <!-- Feedback Section -->
+                <div class="form-section">
+                    <div class="section-label">
+                        <span class="section-num">{{ isset($certificateTypes) && $certificateTypes->count() > 0 ? '3' : '2' }}</span>
                         <div class="section-title-wrap">
                             <h3>Feedback</h3>
                             <p>Optional — helps us improve future events</p>

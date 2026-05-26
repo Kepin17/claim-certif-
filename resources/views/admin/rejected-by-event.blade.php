@@ -315,6 +315,9 @@
                         <div>
                             <h3 class="card-title">{{ $certificate->name }}</h3>
                             <p class="card-email">{{ $certificate->email }}</p>
+                            @if($certificate->certificate_type_name)
+                                <span style="display:inline-block;margin-top:4px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:100px;background:rgba(59,130,246,0.1);color:#2563EB;">{{ $certificate->certificate_type_name }}</span>
+                            @endif
                         </div>
                         <span class="status-badge">REJECTED</span>
                     </div>

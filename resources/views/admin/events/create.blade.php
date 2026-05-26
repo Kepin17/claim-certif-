@@ -249,6 +249,21 @@
                 <p style="font-size: 12px; color: var(--ink-muted); margin-top: 4px;">After this date and time, the claim form for this event will be automatically closed. Leave empty for no deadline.</p>
             </div>
 
+            {{-- Certificate Types --}}
+            <div style="margin-top:28px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                    <div>
+                        <h3 style="font-family:'Fraunces',serif;font-size:17px;font-weight:300;color:var(--ink);">Certificate Types</h3>
+                        <p style="font-size:12px;color:var(--ink-muted);margin-top:3px;">Add participant roles (e.g. Peserta, Panitia, Pembicara). If none added, users claim a single certificate.</p>
+                    </div>
+                    <button type="button" id="addTypeBtn" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--ink);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Geist',sans-serif;font-size:13px;cursor:pointer;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Add Type
+                    </button>
+                </div>
+                <div id="typesContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
+
             <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" name="is_active" id="is_active" checked>
@@ -272,4 +287,37 @@
     </div>
 
 </div>
+@push('scripts')
+<script>
+let typeCount = 0;
+
+function typeRow(i) {
+    return `<div class="type-row" id="type-${i}" style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:center;background:var(--surface);border:1px solid rgba(0,0,0,0.07);border-radius:var(--radius-sm);padding:12px 14px;">
+        <div>
+            <label style="font-size:11px;font-weight:500;color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:4px;">Type Name *</label>
+            <input type="text" name="certificate_types[${i}][name]" placeholder="e.g. Peserta" required
+                   style="width:100%;padding:8px 10px;font-family:'Geist',sans-serif;font-size:13px;border:1px solid rgba(0,0,0,0.1);border-radius:6px;background:var(--card);color:var(--ink);box-sizing:border-box;">
+        </div>
+        <div>
+            <label style="font-size:11px;font-weight:500;color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:4px;">Role Text on Cert</label>
+            <input type="text" name="certificate_types[${i}][role_text]" placeholder="e.g. PESERTA"
+                   style="width:100%;padding:8px 10px;font-family:'Geist',sans-serif;font-size:13px;border:1px solid rgba(0,0,0,0.1);border-radius:6px;background:var(--card);color:var(--ink);box-sizing:border-box;">
+        </div>
+        <div>
+            <label style="font-size:11px;font-weight:500;color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:4px;">Number Prefix</label>
+            <input type="text" name="certificate_types[${i}][certificate_number_prefix]" placeholder="e.g. PESERTA/2026"
+                   style="width:100%;padding:8px 10px;font-family:'Geist',sans-serif;font-size:13px;border:1px solid rgba(0,0,0,0.1);border-radius:6px;background:var(--card);color:var(--ink);box-sizing:border-box;">
+        </div>
+        <button type="button" onclick="document.getElementById('type-${i}').remove()"
+                style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--danger-lt);color:var(--danger);border:none;border-radius:6px;cursor:pointer;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>`;
+}
+
+document.getElementById('addTypeBtn').addEventListener('click', () => {
+    document.getElementById('typesContainer').insertAdjacentHTML('beforeend', typeRow(typeCount++));
+});
+</script>
+@endpush
 @endsection
