@@ -10,6 +10,7 @@
         background: linear-gradient(135deg, #3478F6 0%, #1A54C4 100%);
         padding: 48px 24px 52px;
         position: relative;
+        height: 350px;
         overflow: hidden;
     }
     .oui-hero-modern::before {
@@ -98,6 +99,7 @@
         margin: -32px auto 32px;
         max-width: 700px;
         position: relative;
+        top: -30px;
         z-index: 10;
     }
     .oui-search-float .oui-search-field {
@@ -142,8 +144,8 @@
     .oui-event-image img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
-        background: #fff;
+        object-fit: cover;
+        object-position: top center;
     }
     .oui-event-image-ph {
         width: 100%;
