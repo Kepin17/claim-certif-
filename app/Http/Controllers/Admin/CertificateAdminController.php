@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminActivityLog;
 use App\Models\Certificate;
 use App\Models\Event;
-use App\Services\CertificateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -16,11 +16,15 @@ class CertificateAdminController extends Controller
 {
     public function dashboard()
     {
-        $pendingCount   = Certificate::pending()->count();
-        $generatedCount = Certificate::whereIn('status', ['generated', 'sent'])->count();
-        $rejectedCount  = Certificate::rejected()->count();
-        $eventsCount    = Event::count();
-        $totalClaims    = Certificate::count();
+        $stats = Cache::remember('admin.dashboard.stats', 300, function () {
+            return [
+                'pendingCount'   => Certificate::pending()->count(),
+                'generatedCount' => Certificate::whereIn('status', ['generated', 'sent'])->count(),
+                'rejectedCount'  => Certificate::rejected()->count(),
+                'eventsCount'    => Event::count(),
+                'totalClaims'    => Certificate::count(),
+            ];
+        });
 
         $recentPending = Certificate::pending()
             ->with('event')
@@ -30,10 +34,12 @@ class CertificateAdminController extends Controller
 
         $recentLogs = AdminActivityLog::latest()->limit(10)->get();
 
-        return view('admin.dashboard', compact(
-            'pendingCount', 'generatedCount', 'rejectedCount',
-            'eventsCount', 'totalClaims', 'recentPending', 'recentLogs'
-        ));
+        return view('admin.dashboard', array_merge($stats, compact('recentPending', 'recentLogs')));
+    }
+
+    public static function clearDashboardCache(): void
+    {
+        Cache::forget('admin.dashboard.stats');
     }
 
     public function pending()
@@ -106,71 +112,49 @@ class CertificateAdminController extends Controller
         return view('admin.show', compact('certificate'));
     }
 
+    private function generateCertificateNumber(Certificate $certificate): string
+    {
+        $event = $certificate->eventRelation ?? \App\Models\Event::find($certificate->event_id);
+
+        // Type-level prefix takes priority
+        $prefix = $certificate->certificateType?->certificate_number_prefix
+            ?? $event?->certificate_number_prefix;
+
+        if (!empty($prefix)) {
+            $year     = date('Y');
+            $sequence = Certificate::whereYear('created_at', $year)
+                ->whereNotNull('certificate_number')
+                ->count() + 1;
+            return sprintf('%s-%s-%04d', $prefix, $year, $sequence);
+        }
+
+        $eventCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $certificate->event), 0, 3)) ?: 'CRT';
+        $year      = date('Y');
+        $sequence  = Certificate::whereYear('created_at', $year)
+            ->whereNotNull('certificate_number')
+            ->count() + 1;
+        return sprintf('%s-%s-%04d', $eventCode, $year, $sequence);
+    }
+
     public function approve(Request $request, $id)
     {
-        $certificate = Certificate::findOrFail($id);
+        $certificate = Certificate::with(['eventRelation', 'certificateType'])->findOrFail($id);
 
-        // Generate certificate number
-        $event = $certificate->eventRelation;
-        if (!empty($event->certificate_number_prefix)) {
-            // Use fixed prefix from event
-            $certificateNumber = $event->certificate_number_prefix;
-        } else {
-            // Use auto-generated format
-            $eventCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $certificate->event), 0, 3)) ?: 'CRT';
-            $year = date('Y');
-            $sequence = Certificate::whereYear('created_at', $year)->count() + 1;
-            $certificateNumber = sprintf('%s-%s-%04d', $eventCode, $year, $sequence);
-        }
+        $certificateNumber = $this->generateCertificateNumber($certificate);
 
         $certificate->update([
-            'status' => 'approved',
+            'status'             => 'approved',
             'certificate_number' => $certificateNumber,
-            'approved_by' => Auth::user()->name,
-            'approved_at' => now(),
+            'approved_by'        => Auth::user()->name,
+            'approved_at'        => now(),
         ]);
 
-        $certificate->refresh();
+        \App\Jobs\GenerateCertificate::dispatch($certificate->fresh());
 
-        // Generate certificate and send email synchronously
-        try {
-            $service = new CertificateService();
+        AdminActivityLog::record('approved', $certificate);
 
-            Log::info('Generating certificate for', ['certificate_id' => $certificate->id, 'certificate_number' => $certificateNumber]);
-
-            $pdfPath = $service->generateCertificate($certificate);
-            $qrCode = $service->generateQRCode($certificate);
-
-            Log::info('Certificate generated successfully', ['pdf_path' => $pdfPath, 'qr_code' => $qrCode]);
-
-            $certificate->update([
-                'status' => 'generated',
-                'pdf_path' => $pdfPath,
-                'qr_code' => $qrCode,
-            ]);
-
-            $certificate->refresh();
-
-            Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
-
-            Log::info('Email sent successfully', ['email' => $certificate->email]);
-
-            $certificate->update(['status' => 'sent']);
-
-            AdminActivityLog::record('approved', $certificate);
-
-            return redirect()->route('admin.generated')
-                ->with('success', 'Certificate approved, generated, and sent to ' . $certificate->email . '!');
-
-        } catch (\Exception $e) {
-            Log::error('Certificate generation failed', [
-                'certificate_id' => $certificate->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return redirect()->route('admin.generated')
-                ->with('warning', 'Certificate approved but generation failed: ' . $e->getMessage());
-        }
+        return redirect()->route('admin.pending')
+            ->with('success', 'Certificate approved — generation queued for ' . $certificate->email . '.');
     }
 
     public function reject(Request $request, $id)
@@ -236,22 +220,15 @@ class CertificateAdminController extends Controller
     public function regenerate($id)
     {
         $certificate = Certificate::findOrFail($id);
-        
+
         if (!in_array($certificate->status, ['generated', 'sent'])) {
             return back()->with('error', 'Only generated certificates can be regenerated.');
         }
 
-        try {
-            $service = new CertificateService();
-            $pdfPath = $service->generateCertificate($certificate);
-            $qrCode = $service->generateQRCode($certificate);
-            $certificate->update(['pdf_path' => $pdfPath, 'qr_code' => $qrCode]);
-            $certificate->refresh();
-            Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
-            return back()->with('success', 'Certificate regenerated and resent to ' . $certificate->email);
-        } catch (\Exception $e) {
-            return back()->with('error', 'Regeneration failed: ' . $e->getMessage());
-        }
+        $certificate->update(['status' => 'approved']);
+        \App\Jobs\GenerateCertificate::dispatch($certificate->fresh());
+
+        return back()->with('success', 'Certificate queued for regeneration — email will be resent to ' . $certificate->email);
     }
 
     public function resendEmail($id)
@@ -275,37 +252,27 @@ class CertificateAdminController extends Controller
     {
         $request->validate(['ids' => 'required|array', 'ids.*' => 'integer|exists:certificates,id']);
 
-        $certificates = Certificate::whereIn('id', $request->ids)->where('status', 'pending')->get();
-        $success = 0;
-        $errors = [];
+        $certificates = Certificate::with(['eventRelation', 'certificateType'])
+            ->whereIn('id', $request->ids)
+            ->where('status', 'pending')
+            ->get();
 
+        $count = 0;
         foreach ($certificates as $certificate) {
-            try {
-                $service = new CertificateService();
-                $pdfPath = $service->generateCertificate($certificate);
-                $qrCode  = $service->generateQRCode($certificate);
-                $certificate->update([
-                    'status'      => 'generated',
-                    'pdf_path'    => $pdfPath,
-                    'qr_code'     => $qrCode,
-                    'approved_by' => Auth::user()->name,
-                    'approved_at' => now(),
-                ]);
-                $certificate->refresh();
-                Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
-                $certificate->update(['status' => 'sent']);
-                AdminActivityLog::record('bulk_approved', $certificate);
-                $success++;
-            } catch (\Exception $e) {
-                $errors[] = $certificate->name . ': ' . $e->getMessage();
-                Log::error('Bulk approve failed for ' . $certificate->id . ': ' . $e->getMessage());
-            }
+            $certificateNumber = $this->generateCertificateNumber($certificate);
+            $certificate->update([
+                'status'             => 'approved',
+                'certificate_number' => $certificateNumber,
+                'approved_by'        => Auth::user()->name,
+                'approved_at'        => now(),
+            ]);
+            \App\Jobs\GenerateCertificate::dispatch($certificate->fresh());
+            AdminActivityLog::record('bulk_approved', $certificate);
+            $count++;
         }
 
-        $msg = $success . ' certificate(s) approved and sent.';
-        if ($errors) $msg .= ' ' . count($errors) . ' failed.';
-
-        return redirect()->back()->with('success', $msg);
+        return redirect()->back()
+            ->with('success', $count . ' certificate(s) approved — generation queued.');
     }
 
     public function bulkReject(Request $request)

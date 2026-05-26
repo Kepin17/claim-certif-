@@ -65,8 +65,21 @@
                     </div>
                 </div>
 
-                <div class="mt-8 text-center">
-                    <p class="text-gray-500 text-sm">Verified on {{ now()->format('d F Y, H:i') }}</p>
+                @if($certificate->status === 'generated' || $certificate->status === 'sent')
+                <div class="mt-8 border-t border-gray-100 pt-6 flex flex-col items-center gap-3">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Scan to verify</p>
+                    <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode(route('certificate.verify', ['number' => $certificate->certificate_number])) }}"
+                        alt="QR Code"
+                        width="160" height="160"
+                        class="rounded-lg border border-gray-200 shadow-sm"
+                    >
+                    <p class="text-gray-400 text-xs">{{ route('certificate.verify', ['number' => $certificate->certificate_number]) }}</p>
+                </div>
+                @endif
+
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400 text-xs">Verified on {{ now()->format('d F Y, H:i') }}</p>
                 </div>
             </div>
         </div>
