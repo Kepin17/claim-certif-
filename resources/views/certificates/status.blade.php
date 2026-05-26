@@ -2,367 +2,396 @@
 
 @section('title', 'Certificate Status')
 
-@section('content')
+@push('scripts')
+@include('certificates.partials.oui-shared')
 <style>
-    /* Hero */
-    .hero {
-        background: var(--ink);
-        padding: 72px 40px 60px;
+    /* Modern Hero */
+    .oui-hero-status {
+        background: linear-gradient(135deg, #3478F6 0%, #1A54C4 100%);
+        padding: 48px 24px 52px;
         position: relative;
         overflow: hidden;
     }
-
-    .hero::before {
+    .oui-hero-status::before {
         content: '';
         position: absolute;
-        inset: 0;
-        background-image:
-            radial-gradient(circle at 20% 50%, rgba(74,128,34,0.18) 0%, transparent 55%),
-            radial-gradient(circle at 80% 20%, rgba(74,128,34,0.10) 0%, transparent 45%);
+        top: -50%; right: -20%;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        border-radius: 50%;
     }
-
-    .hero::after {
+    .oui-hero-status::after {
         content: '';
         position: absolute;
-        inset: 0;
-        background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-        background-size: 40px 40px;
+        bottom: -30%; left: -10%;
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+        border-radius: 50%;
     }
-
-    .hero-inner {
+    .oui-hero-inner-status {
+        max-width: 700px;
+        margin: 0 auto;
         position: relative;
         z-index: 1;
-        max-width: 800px;
-        margin: 0 auto;
         text-align: center;
     }
+    .oui-hero-label-status {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.85);
+        margin-bottom: 12px;
+    }
+    .oui-hero-title-status {
+        font-size: 34px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.7px;
+        line-height: 1.15;
+        margin-bottom: 8px;
+    }
+    .oui-hero-desc-status {
+        font-size: 15px;
+        color: rgba(255,255,255,0.85);
+        line-height: 1.5;
+    }
 
-    .hero-eyebrow {
+    /* Status card */
+    .oui-status-wrap {
+        max-width: 540px;
+        margin: -32px auto 0;
+        position: relative;
+        z-index: 10;
+    }
+    .oui-status-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 32px 28px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    /* Status header */
+    .oui-status-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #F2F3F5;
+    }
+    .oui-status-label {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #8E8E93;
+    }
+    .oui-status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        background: rgba(255,255,255,0.07);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 100px;
-        padding: 5px 14px 5px 10px;
-        margin-bottom: 28px;
+        gap: 5px;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
     }
-
-    .hero-eyebrow-dot {
-        width: 6px; height: 6px;
-        background: #6FCF97;
+    .oui-status-badge-dot {
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
-        animation: pulse 2s ease-in-out infinite;
+        flex-shrink: 0;
     }
+    .badge-pending   { background: #FFF3E0; color: #C45C00; }
+    .badge-pending   .oui-status-badge-dot { background: #FF9F0A; }
+    .badge-approved  { background: #EBF2FF; color: #1A54C4; }
+    .badge-approved  .oui-status-badge-dot { background: #3478F6; }
+    .badge-generated { background: #F5EEFF; color: #7C29B8; }
+    .badge-generated .oui-status-badge-dot { background: #AF52DE; }
+    .badge-sent      { background: #E6FAF0; color: #1A7A40; }
+    .badge-sent      .oui-status-badge-dot { background: #30D158; }
+    .badge-rejected  { background: #FFEEED; color: #B02020; }
+    .badge-rejected  .oui-status-badge-dot { background: #FF3B30; }
 
-    @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50%       { opacity: 0.5; transform: scale(0.8); }
-    }
-
-    .hero-eyebrow-text {
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,0.6);
-    }
-
-    .hero-title {
-        font-family: 'Fraunces', serif;
-        font-size: clamp(32px, 5vw, 48px);
-        font-weight: 300;
-        color: #FFFFFF;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-        margin-bottom: 14px;
-    }
-
-    .hero-title em {
-        font-style: italic;
-        color: #A8D88A;
-    }
-
-    /* Main */
-    .main {
-        max-width: 500px;
-        margin: 0 auto;
-        padding: 48px 40px 80px;
-    }
-
-    /* Card */
-    .card {
-        background: var(--card);
-        border: 1px solid rgba(0,0,0,0.07);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-    }
-
-    .card-accent {
-        height: 3px;
-        background: linear-gradient(90deg, var(--accent) 0%, var(--accent-mid) 100%);
-    }
-
-    .card-body {
-        padding: 32px;
-    }
-
-    .card-title {
-        font-family: 'Fraunces', serif;
-        font-size: 24px;
-        font-weight: 300;
-        color: var(--ink);
-        letter-spacing: -0.01em;
-        margin-bottom: 28px;
-        text-align: center;
-    }
-
-    /* Status Badge */
-    .status-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
-
-    .status-label {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--ink-muted);
-    }
-
-    .status-badge {
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 100px;
-    }
-
-    .status-pending { background: rgba(251,191,36,0.15); color: #D97706; border: 1px solid rgba(251,191,36,0.2); }
-    .status-under_review { background: rgba(59,130,246,0.15); color: #2563EB; border: 1px solid rgba(59,130,246,0.2); }
-    .status-approved { background: var(--accent-lt); color: var(--accent); border: 1px solid rgba(45,80,22,0.15); }
-    .status-rejected { background: var(--danger-lt); color: var(--danger); border: 1px solid rgba(140,44,26,0.15); }
-    .status-generated { background: rgba(139,92,246,0.15); color: #7C3AED; border: 1px solid rgba(139,92,246,0.2); }
-    .status-sent { background: var(--accent-lt); color: var(--accent); border: 1px solid rgba(45,80,22,0.15); }
-
-    /* Details */
-    .details {
-        background: rgba(0,0,0,0.02);
-        border: 1px solid rgba(0,0,0,0.06);
-        border-radius: var(--radius-md);
-        padding: 20px;
+    /* Details grid */
+    .oui-details-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
         margin-bottom: 24px;
     }
-
-    .detail-row {
+    .oui-detail-row {
         display: flex;
         justify-content: space-between;
+        align-items: flex-start;
         padding: 12px 0;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
+        border-bottom: 1px solid #F2F3F5;
     }
-
-    .detail-row:last-child {
+    .oui-detail-row:last-child {
         border-bottom: none;
     }
-
-    .detail-label {
-        font-size: 13px;
-        color: var(--ink-muted);
-    }
-
-    .detail-value {
-        font-size: 14px;
+    .oui-detail-label {
+        font-size: 12.5px;
         font-weight: 500;
-        color: var(--ink-mid);
+        color: #8E8E93;
+    }
+    .oui-detail-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1C1C1E;
         text-align: right;
+        max-width: 60%;
+    }
+    .oui-detail-value.full {
+        grid-column: 1 / -1;
+        text-align: left;
+        max-width: 100%;
     }
 
-    .detail-col {
-        flex-direction: column;
-        gap: 4px;
+    /* Rejection alert */
+    .oui-reject-alert {
+        background: #FFEEED;
+        border-radius: 16px;
+        padding: 16px 18px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
     }
-
-    /* Alert */
-    .alert-error {
-        background: var(--danger-lt);
-        border: 1px solid rgba(140,44,26,0.2);
-        border-left: 3px solid var(--danger);
-        border-radius: var(--radius-md);
-        padding: 14px 18px;
-        margin-bottom: 24px;
+    .oui-reject-alert svg {
+        width: 20px;
+        height: 20px;
+        color: #FF3B30;
+        flex-shrink: 0;
+        margin-top: 1px;
     }
-
-    .alert-title {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--danger);
+    .oui-reject-alert-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #B02020;
         margin-bottom: 4px;
     }
-
-    .alert-text {
+    .oui-reject-alert-text {
         font-size: 13px;
-        color: var(--danger);
+        color: #B02020;
+        line-height: 1.45;
     }
 
-    /* Download Button */
-    .download-btn {
+    /* Buttons */
+    .oui-btn-download {
+        width: 100%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        width: 100%;
-        background: var(--accent);
-        color: #FFFFFF;
-        font-family: 'Geist', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        padding: 14px 24px;
-        border-radius: var(--radius-sm);
+        padding: 16px 24px;
+        background: #3478F6;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
         text-decoration: none;
-        transition: background 0.2s, transform 0.1s;
-        letter-spacing: 0.01em;
-        margin-bottom: 24px;
-    }
-
-    .download-btn:hover {
-        background: var(--accent-mid);
-    }
-
-    .download-btn:active {
-        transform: scale(0.98);
-    }
-
-    .download-btn svg { flex-shrink: 0; }
-
-    .footer-info {
-        text-align: center;
-        font-size: 13px;
-        color: var(--ink-muted);
+        border-radius: 16px;
+        transition: background 0.15s, transform 0.1s;
+        box-shadow: 0 2px 10px rgba(52,120,246,0.28);
         margin-bottom: 16px;
     }
-
-    .footer-link {
-        text-align: center;
-        font-size: 13px;
+    .oui-btn-download:hover {
+        background: #2563EB;
+        color: #fff;
+    }
+    .oui-btn-download:active {
+        transform: scale(0.98);
+    }
+    .oui-btn-download svg {
+        width: 18px;
+        height: 18px;
     }
 
-    .footer-link a {
-        color: var(--accent);
+    .oui-btn-resubmit {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 20px;
+        background: #FF9F0A;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
         text-decoration: none;
-        font-weight: 500;
+        border-radius: 14px;
+        transition: background 0.15s, transform 0.1s;
+        margin-bottom: 16px;
+    }
+    .oui-btn-resubmit:hover {
+        background: #F59E0B;
+        color: #fff;
+    }
+    .oui-btn-resubmit:active {
+        transform: scale(0.98);
+    }
+    .oui-btn-resubmit svg {
+        width: 16px;
+        height: 16px;
     }
 
-    .footer-link a:hover {
+    /* Footer */
+    .oui-status-footer {
+        text-align: center;
+        padding-top: 16px;
+        border-top: 1px solid #F2F3F5;
+    }
+    .oui-footer-info {
+        font-size: 12.5px;
+        color: #8E8E93;
+        margin-bottom: 12px;
+    }
+    .oui-footer-link a {
+        font-size: 13px;
+        font-weight: 600;
+        color: #3478F6;
+        text-decoration: none;
+    }
+    .oui-footer-link a:hover {
         text-decoration: underline;
     }
 
-    @media (max-width: 640px) {
-        .hero { padding: 48px 20px 40px; }
-        .main { padding: 32px 20px 60px; }
-        .card-body { padding: 24px; }
-        .card-title { font-size: 20px; }
+    @media (max-width: 540px) {
+        .oui-hero-status { padding: 36px 16px 40px; }
+        .oui-hero-title-status { font-size: 26px; }
+        .oui-status-wrap { margin: -24px 16px 0; }
+        .oui-status-card { padding: 24px 20px; border-radius: 20px; }
+        .oui-detail-value { max-width: 50%; }
     }
 </style>
+@endpush
 
-<!-- Hero -->
-<div class="hero">
-    <div class="hero-inner">
-        <div class="hero-eyebrow">
-            <span class="hero-eyebrow-dot"></span>
-            <span class="hero-eyebrow-text">Status Check</span>
+@section('content')
+<div class="oui-page" style="background: #F2F3F5;">
+
+    <!-- Modern Hero -->
+    <div class="oui-hero-status">
+        <div class="oui-hero-inner-status">
+            <p class="oui-hero-label-status">Certificate Status</p>
+            <h1 class="oui-hero-title-status">Claim Status</h1>
+            <p class="oui-hero-desc-status">Track your certificate claim progress</p>
         </div>
-        <h1 class="hero-title">Certificate<br><em>status</em></h1>
     </div>
-</div>
 
-<!-- Main Content -->
-<main class="main">
+    <!-- Status Card -->
+    <div class="oui-status-wrap">
+        <div class="oui-status-card">
 
-    <div class="card">
-        <div class="card-accent"></div>
-        <div class="card-body">
-            <h2 class="card-title">Certificate Status</h2>
-
-            <div class="status-header">
-                <span class="status-label">Status:</span>
-                <span class="status-badge status-{{ $certificate->status }}">
-                    {{ strtoupper($certificate->status) }}
+            <!-- Status Header -->
+            <div class="oui-status-header">
+                <span class="oui-status-label">Current Status</span>
+                @php
+                    $badgeClass = match($certificate->status) {
+                        'pending'   => 'badge-pending',
+                        'approved'  => 'badge-approved',
+                        'generated' => 'badge-generated',
+                        'sent'      => 'badge-sent',
+                        default     => 'badge-rejected',
+                    };
+                    $statusLabel = match($certificate->status) {
+                        'pending'   => 'Pending',
+                        'approved'  => 'Approved',
+                        'generated' => 'Generated',
+                        'sent'      => 'Sent',
+                        'rejected'  => 'Rejected',
+                        default     => ucfirst($certificate->status),
+                    };
+                @endphp
+                <span class="oui-status-badge {{ $badgeClass }}">
+                    <span class="oui-status-badge-dot"></span>
+                    {{ $statusLabel }}
                 </span>
             </div>
 
-            <div class="details">
-                <div class="detail-row">
-                    <span class="detail-label">Name</span>
-                    <span class="detail-value">{{ $certificate->name }}</span>
+            <!-- Details -->
+            <div class="oui-details-grid">
+                <div class="oui-detail-row">
+                    <span class="oui-detail-label">Name</span>
+                    <span class="oui-detail-value">{{ $certificate->name }}</span>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Email</span>
-                    <span class="detail-value">{{ $certificate->email }}</span>
+                <div class="oui-detail-row">
+                    <span class="oui-detail-label">Email</span>
+                    <span class="oui-detail-value">{{ $certificate->email }}</span>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Event</span>
-                    <span class="detail-value">{{ $certificate->event }}</span>
+                <div class="oui-detail-row">
+                    <span class="oui-detail-label">Event</span>
+                    <span class="oui-detail-value">{{ $certificate->event }}</span>
                 </div>
                 @if($certificate->certificate_type_name)
-                <div class="detail-row">
-                    <span class="detail-label">Role / Type</span>
-                    <span class="detail-value">{{ $certificate->certificate_type_name }}</span>
+                <div class="oui-detail-row">
+                    <span class="oui-detail-label">Role / Type</span>
+                    <span class="oui-detail-value">{{ $certificate->certificate_type_name }}</span>
+                </div>
+                @endif
+                @if($certificate->certificate_number)
+                <div class="oui-detail-row">
+                    <span class="oui-detail-label">Certificate No.</span>
+                    <span class="oui-detail-value">{{ $certificate->certificate_number }}</span>
                 </div>
                 @endif
                 @if($certificate->message)
-                    <div class="detail-row detail-col">
-                        <span class="detail-label">Message & Impressions</span>
-                        <span class="detail-value">{{ $certificate->message }}</span>
-                    </div>
+                <div class="oui-detail-row">
+                    <span class="oui-detail-label">Message</span>
+                    <span class="oui-detail-value full">{{ $certificate->message }}</span>
+                </div>
                 @endif
                 @if($certificate->next_event)
-                    <div class="detail-row">
-                        <span class="detail-label">Preferred Next Event</span>
-                        <span class="detail-value">{{ $certificate->next_event }}</span>
-                    </div>
-                @endif
-                @if($certificate->certificate_number)
-                    <div class="detail-row">
-                        <span class="detail-label">Certificate Number</span>
-                        <span class="detail-value">{{ $certificate->certificate_number }}</span>
-                    </div>
-                @endif
-            </div>
-
-            @if($certificate->status === 'rejected')
-                <div class="alert-error">
-                    <div class="alert-title">Rejection Reason</div>
-                    <div class="alert-text">{{ $certificate->rejection_reason }}</div>
+                <div class="oui-detail-row">
+                    <span class="oui-detail-label">Preferred Next Event</span>
+                    <span class="oui-detail-value">{{ $certificate->next_event }}</span>
                 </div>
-                @if($certificate->eventRelation?->isClaimOpen())
-                <a href="{{ route('certificate.claim-form', $certificate->eventRelation->slug) }}" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:11px 22px;background:var(--accent);color:#fff;font-family:'Geist',sans-serif;font-size:14px;font-weight:500;border-radius:var(--radius-sm);text-decoration:none;transition:background .2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.35"/></svg>
-                    Re-submit with a Different Role
-                </a>
                 @endif
+            </div>
+
+            <!-- Rejection Alert -->
+            @if($certificate->status === 'rejected')
+            <div class="oui-reject-alert">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div>
+                    <div class="oui-reject-alert-title">Rejection Reason</div>
+                    <div class="oui-reject-alert-text">{{ $certificate->rejection_reason }}</div>
+                </div>
+            </div>
             @endif
 
+            <!-- Download Button -->
             @if($certificate->status === 'generated' || $certificate->status === 'sent')
-                <a href="{{ route('certificate.download') }}?key={{ $certificate->unique_key }}" class="download-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Download Certificate
-                </a>
+            <a href="{{ route('certificate.download') }}?key={{ $certificate->unique_key }}" class="oui-btn-download">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download Certificate
+            </a>
             @endif
 
-            <div class="footer-info">
-                Submitted on: {{ $certificate->created_at->format('d F Y, H:i') }}
+            <!-- Re-submit Button -->
+            @if($certificate->status === 'rejected' && $certificate->eventRelation?->isClaimOpen())
+            <a href="{{ route('certificate.claim-form', $certificate->eventRelation->slug) }}" class="oui-btn-resubmit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+                </svg>
+                Re-submit Claim
+            </a>
+            @endif
+
+            <!-- Footer -->
+            <div class="oui-status-footer">
+                <p class="oui-footer-info">Submitted on {{ $certificate->created_at->format('d M Y, H:i') }}</p>
+                <div class="oui-footer-link">
+                    <a href="{{ route('certificate.index') }}">Submit another claim</a>
+                </div>
             </div>
 
-            <div class="footer-link">
-                <a href="{{ route('certificate.index') }}">Submit another claim</a>
-            </div>
         </div>
     </div>
-
-</main>
+</div>
 @endsection

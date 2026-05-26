@@ -6,30 +6,14 @@
     <title>Admin Login</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://r2.fivemanage.com/eMY1LhlRUcWrX4POpj5V0/kepin/logo_certif.png">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --ink:        #131210;
-            --ink-mid:    #4A4740;
-            --ink-muted:  #8A877F;
-            --ink-faint:  #C5C2BB;
-            --surface:    #F5F2EC;
-            --card:       #FDFCFA;
-            --accent:     #2D5016;
-            --accent-lt:  #EBF2E3;
-            --accent-mid: #4A8022;
-            --danger:     #8C2C1A;
-            --danger-lt:  #F9EDE9;
-            --radius-sm:  6px;
-            --radius-md:  12px;
-            --radius-lg:  18px;
-        }
-
         body {
             font-family: 'Geist', sans-serif;
-            background-color: var(--surface);
-            color: var(--ink);
+            background: #F2F3F5;
+            color: #1C1C1E;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -37,73 +21,110 @@
         }
 
         .login-container {
-            max-width: 420px;
+            max-width: 480px;
             width: 100%;
             padding: 20px;
         }
 
         .card {
-            background: var(--card);
-            border: 1px solid rgba(0,0,0,0.07);
-            border-radius: var(--radius-lg);
-            padding: 40px;
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 36px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo-area img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 16px;
         }
 
         .title {
             font-family: 'Fraunces', serif;
             font-size: 28px;
-            font-weight: 300;
-            color: var(--ink);
+            font-weight: 500;
+            color: #1C1C1E;
             text-align: center;
-            margin-bottom: 32px;
-            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            text-align: center;
+            margin-bottom: 28px;
         }
 
         /* Alert */
         .alert-error {
-            background: var(--danger-lt);
-            border: 1px solid rgba(140,44,26,0.2);
-            border-left: 3px solid var(--danger);
-            border-radius: var(--radius-md);
-            padding: 14px 18px;
+            background: #FFEEED;
+            border-radius: 14px;
+            padding: 14px 16px;
             margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .alert-error svg {
+            width: 18px;
+            height: 18px;
+            color: #FF3B30;
+            flex-shrink: 0;
+            margin-top: 1px;
         }
 
         .alert-error p {
             font-size: 13px;
-            color: var(--danger);
+            color: #B02020;
             margin: 0;
+            line-height: 1.45;
         }
 
         /* Form */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--ink-mid);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #8E8E93;
             margin-bottom: 8px;
             display: block;
         }
 
         .form-input {
             font-family: 'Geist', sans-serif;
-            font-size: 14px;
-            color: var(--ink);
-            background: var(--card);
-            border: 1px solid rgba(0,0,0,0.12);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-size: 15px;
+            color: #1C1C1E;
+            background: #F2F3F5;
+            border: 1.5px solid transparent;
+            border-radius: 14px;
+            padding: 14px 16px;
+            transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
             width: 100%;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(45,80,22,0.1);
+            background: #fff;
+            border-color: #3478F6;
+            box-shadow: 0 0 0 3px rgba(52,120,246,0.12);
+        }
+
+        .form-input::placeholder {
+            color: #AEAEB2;
         }
 
         .checkbox-group {
@@ -117,11 +138,12 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
+            accent-color: #3478F6;
         }
 
         .checkbox-group label {
             font-size: 14px;
-            color: var(--ink-mid);
+            color: #3C3C43;
             cursor: pointer;
         }
 
@@ -132,21 +154,21 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background: var(--ink);
-            color: #FFFFFF;
+            background: #3478F6;
+            color: #fff;
             font-family: 'Geist', sans-serif;
             font-size: 15px;
-            font-weight: 500;
-            padding: 14px 24px;
-            border-radius: var(--radius-sm);
+            font-weight: 600;
+            padding: 16px 24px;
+            border-radius: 16px;
             border: none;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            letter-spacing: 0.01em;
+            transition: background 0.15s, transform 0.1s;
+            box-shadow: 0 2px 10px rgba(52,120,246,0.28);
         }
 
         .submit-btn:hover {
-            background: #2A2821;
+            background: #2563EB;
         }
 
         .submit-btn:active {
@@ -157,13 +179,15 @@
         .back-link {
             text-align: center;
             margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #F2F3F5;
         }
 
         .back-link a {
             font-size: 13px;
-            color: var(--accent);
+            color: #3478F6;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .back-link a:hover {
@@ -171,18 +195,26 @@
         }
 
         @media (max-width: 640px) {
-            .card { padding: 32px 24px; }
+            .card { padding: 32px 24px; border-radius: 20px; }
             .title { font-size: 24px; }
+            .login-container { padding: 16px; }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="card">
-            <h1 class="title">Admin Login</h1>
+            <div class="logo-area">
+                <img src="https://r2.fivemanage.com/eMY1LhlRUcWrX4POpj5V0/kepin/logo_certif.png" alt="Logo">
+                <h1 class="title">Admin Login</h1>
+                <p class="subtitle">Sign in to manage certificates</p>
+            </div>
 
             @if (session('error'))
                 <div class="alert-error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
                     <p>{{ session('error') }}</p>
                 </div>
             @endif
@@ -191,13 +223,13 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" name="email" id="email" class="form-input" required autofocus>
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" name="email" id="email" class="form-input" placeholder="admin@example.com" required autofocus>
                 </div>
 
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" name="password" id="password" class="form-input" required>
+                    <input type="password" name="password" id="password" class="form-input" placeholder="••••••••" required>
                 </div>
 
                 <div class="checkbox-group">
@@ -206,12 +238,12 @@
                 </div>
 
                 <button type="submit" class="submit-btn">
-                    Login
+                    Sign In
                 </button>
             </form>
 
             <div class="back-link">
-                <a href="{{ route('certificate.index') }}">Back to Home</a>
+                <a href="{{ route('certificate.index') }}">← Back to Home</a>
             </div>
         </div>
     </div>
