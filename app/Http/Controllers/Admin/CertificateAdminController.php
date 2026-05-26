@@ -16,12 +16,24 @@ class CertificateAdminController extends Controller
 {
     public function dashboard()
     {
-        $pendingCount = Certificate::pending()->count();
+        $pendingCount   = Certificate::pending()->count();
         $generatedCount = Certificate::whereIn('status', ['generated', 'sent'])->count();
-        $rejectedCount = Certificate::rejected()->count();
-        $eventsCount = Event::count();
-        
-        return view('admin.dashboard', compact('pendingCount', 'generatedCount', 'rejectedCount', 'eventsCount'));
+        $rejectedCount  = Certificate::rejected()->count();
+        $eventsCount    = Event::count();
+        $totalClaims    = Certificate::count();
+
+        $recentPending = Certificate::pending()
+            ->with('event')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        $recentLogs = AdminActivityLog::latest()->limit(10)->get();
+
+        return view('admin.dashboard', compact(
+            'pendingCount', 'generatedCount', 'rejectedCount',
+            'eventsCount', 'totalClaims', 'recentPending', 'recentLogs'
+        ));
     }
 
     public function pending()
