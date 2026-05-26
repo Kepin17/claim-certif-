@@ -114,7 +114,7 @@
     /* Events grid */
     .oui-events-grid {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 16px;
         margin-bottom: 40px;
     }
@@ -326,10 +326,12 @@
     }
 
     @media (max-width: 900px) {
+        .oui-events-grid { grid-template-columns: repeat(2, 1fr); }
         .oui-how-steps { grid-template-columns: 1fr; gap: 24px; }
         .oui-hero-title-modern { font-size: 30px; }
     }
     @media (max-width: 600px) {
+        .oui-events-grid { grid-template-columns: 1fr; }
         .oui-event-card { flex-direction: column; }
         .oui-event-image { width: 100%; height: 180px; }
         .oui-claim-btn-card { width: 100%; justify-content: center; }
