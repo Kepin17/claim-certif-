@@ -11,6 +11,7 @@ Route::get('/claim-certificate/{slug}', [CertificateController::class, 'showClai
 Route::post('/claim-certificate', [CertificateController::class, 'store'])->name('certificate.store')->middleware('throttle:5,1');
 Route::get('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track');
 Route::post('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track.submit')->middleware('throttle:10,1');
+Route::get('/my-certificates', [CertificateController::class, 'participantDashboard'])->name('certificate.participant-dashboard');
 Route::get('/certificate-status/{uniqueKey}', [CertificateController::class, 'status'])->name('certificate.status')->middleware('throttle:30,1');
 Route::get('/download-certificate', [CertificateController::class, 'download'])->name('certificate.download')->middleware('throttle:20,1');
 Route::get('/download-certificate/{certificateNumber}', function($certificateNumber) {

@@ -113,7 +113,7 @@ class CertificateController extends Controller
     {
         $certificate = null;
         $events = \App\Models\Event::active()->get();
-        
+
         if ($request->isMethod('post')) {
             $request->validate([
                 'email' => 'required|email',
@@ -132,6 +132,22 @@ class CertificateController extends Controller
         }
 
         return view('certificates.track', compact('certificate', 'events'));
+    }
+
+    public function participantDashboard(Request $request)
+    {
+        $email = $request->input('email');
+        $certificates = collect();
+
+        if ($email) {
+            $request->validate(['email' => 'required|email']);
+            $certificates = Certificate::where('email', $email)
+                ->with('eventRelation')
+                ->latest()
+                ->get();
+        }
+
+        return view('certificates.participant-dashboard', compact('email', 'certificates'));
     }
 
     public function download(Request $request)
