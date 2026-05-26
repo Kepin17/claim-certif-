@@ -12,14 +12,18 @@ A modern Laravel-based certificate management and verification system with OTP a
 - **Certificate Download**: Download generated certificates in PDF format
 
 ### For Administrators
-- **Dashboard**: Overview of certificate statistics and pending approvals
-- **Event Management**: Create, edit, and manage certificate events
-- **Certificate Approval**: Review and approve/reject certificate claims
+- **Dashboard**: Overview of pending, generated, rejected stats and quick actions
+- **Event Management**: Create, edit, and manage certificate events with optional certificate number prefix
+- **Pending Claims by Event**: Review pending claims grouped and categorized by event
+- **Rejected Claims by Event**: View rejected claims grouped and categorized by event
+- **Generated Certificates by Event**: Browse generated certificates grouped by event
+- **Certificate Approval**: Review and approve/reject claims with quick-select rejection reasons
 - **Custom Certificate Templates**: Upload custom certificate templates and overlay settings
 - **Poster Management**: Upload event posters
 - **Certificate Generation**: Generate certificates with customizable templates
 - **OTP Authentication**: Secure two-factor authentication for admin access
-- **Email Notifications**: Automatic email notifications for certificate updates
+- **Email Notifications**: Automatic email notifications for certificate approvals and rejections
+- **Responsive Navbar**: Mobile-friendly admin navigation
 
 ## Security Features
 
@@ -161,12 +165,13 @@ Upload certificate templates in the admin event management:
 ### Admin Flow
 1. Login with email and password
 2. Enter OTP code sent to email
-3. Access admin dashboard
-4. Review pending certificate claims
-5. Approve or reject claims
-6. Generate certificates for approved claims
-7. Manage events and templates
-8. View generated certificates
+3. Access admin dashboard (shows Pending / Generated / Rejected / Events stats)
+4. Click **Pending** → select event → review individual claims
+5. Approve or reject claims (use quick-select for common rejection reasons)
+6. Certificates are auto-generated and emailed upon approval
+7. Click **Generated** → select event → view, regenerate, or resend email
+8. Click **Rejected** → select event → view rejected claims and reasons
+9. Manage events and templates under **Events**
 
 ## Project Structure
 
@@ -192,11 +197,27 @@ Upload certificate templates in the admin event management:
 ├── resources/
 │   └── views/
 │       ├── admin/
-│       │   ├── events/
-│       │   ├── certificates/
-│       │   └── login.blade.php
+│       │   ├── dashboard.blade.php
+│       │   ├── pending.blade.php            # Events grid for pending claims
+│       │   ├── pending-by-event.blade.php   # Pending claims list per event
+│       │   ├── rejected.blade.php           # Events grid for rejected claims
+│       │   ├── rejected-by-event.blade.php  # Rejected claims list per event
+│       │   ├── generated.blade.php          # Events grid for generated certs
+│       │   ├── generated-by-event.blade.php # Generated certs list per event
+│       │   ├── show.blade.php               # Review a single claim
+│       │   └── events/
 │       ├── certificates/
+│       │   ├── status.blade.php
 │       │   └── claim.blade.php
+│       ├── emails/
+│       │   ├── certificate-approved.blade.php
+│       │   └── certificate-rejected.blade.php
+│       ├── errors/
+│       │   ├── 403.blade.php
+│       │   ├── 404.blade.php
+│       │   └── 500.blade.php
+│       ├── vendor/pagination/
+│       │   └── tailwind.blade.php           # Custom themed pagination
 │       └── layouts/
 │           ├── admin-layout.blade.php
 │           └── user-layout.blade.php

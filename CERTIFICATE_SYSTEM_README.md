@@ -11,11 +11,14 @@ A complete Laravel-based certificate claim system with approval workflow, PDF ge
 - **QR Verification**: Verify certificate authenticity through QR code scanning
 
 ### Admin Side
-- **Dashboard**: Overview of pending, approved, rejected, and generated certificates
-- **Claim Review**: Review pending claims with proof file preview
-- **Approval System**: Approve or reject claims with rejection reasons
+- **Dashboard**: Overview of pending, generated, rejected stats with quick action buttons
+- **Pending Claims by Event**: Pending claims categorized and grouped by event
+- **Rejected Claims by Event**: Rejected claims categorized and grouped by event
+- **Generated Certificates by Event**: Generated certificates grouped by event
+- **Claim Review**: Review pending claims with proof file preview and quick-select rejection reasons
+- **Approval System**: Approve or reject claims with custom or preset rejection reasons
 - **Certificate Management**: Regenerate certificates, resend emails
-- **Bulk Operations**: Process multiple claims efficiently
+- **Responsive Navigation**: Mobile-friendly admin navbar
 
 ### Technical Features
 - **Queue-Based Processing**: Async PDF generation using Laravel Queue
@@ -24,6 +27,10 @@ A complete Laravel-based certificate claim system with approval workflow, PDF ge
 - **QR Code Verification**: Secure certificate validation
 - **Anti-Duplicate Check**: Prevent duplicate claims
 - **Audit Trail**: Track who approved/rejected and when
+- **Unique Key Downloads**: Certificates downloaded via `unique_key` for correct retrieval
+- **Optional Certificate Number Prefix**: Events can have a fixed prefix for certificate numbers
+- **Custom Error Pages**: Branded 403, 404, 500 error pages matching the admin theme
+- **Custom Pagination**: Themed pagination view without Tailwind CSS dependency
 
 ## Installation
 
@@ -114,12 +121,19 @@ php artisan serve
 
 2. **Review Pending Claims**
    - Navigate to `/admin/pending`
-   - Click "Review" on a claim
+   - Select an event from the grid
+   - Click "Review Claim" on any individual claim
    - View details and proof file
-   - Approve or Reject with reason
+   - Approve or Reject (use quick-select for common rejection reasons)
 
-3. **Manage Generated Certificates**
+3. **View Rejected Claims**
+   - Navigate to `/admin/rejected`
+   - Select an event from the grid
+   - View rejected claims with rejection reason per claim
+
+4. **Manage Generated Certificates**
    - Navigate to `/admin/generated`
+   - Select an event from the grid
    - Regenerate certificates if needed
    - Resend emails to users
 
@@ -136,24 +150,35 @@ php artisan serve
 
 ### Admin Routes
 - `GET /admin/dashboard` - Dashboard
-- `GET /admin/pending` - Pending claims
-- `GET /admin/approved` - Approved claims
-- `GET /admin/rejected` - Rejected claims
-- `GET /admin/generated` - Generated certificates
-- `GET /admin/certificate/{id}` - View claim details
+- `GET /admin/pending` - Pending claims (events grid)
+- `GET /admin/pending/event/{eventId}` - Pending claims for specific event
+- `GET /admin/rejected` - Rejected claims (events grid)
+- `GET /admin/rejected/event/{eventId}` - Rejected claims for specific event
+- `GET /admin/generated` - Generated certificates (events grid)
+- `GET /admin/generated/event/{eventId}` - Generated certificates for specific event
+- `GET /admin/certificate/{id}` - View/review claim details
 - `POST /admin/certificate/{id}/approve` - Approve claim
-- `POST /admin/certificate/{id}/reject` - Reject claim
+- `POST /admin/certificate/{id}/reject` - Reject claim with reason
 - `GET /admin/certificate/{id}/preview` - Preview certificate
 - `POST /admin/certificate/{id}/regenerate` - Regenerate PDF
 - `POST /admin/certificate/{id}/resend-email` - Resend email
+- `GET /admin/events` - List all events
+- `GET /admin/events/create` - Create new event
+- `POST /admin/events` - Store new event
+- `GET /admin/events/{event}` - View event
+- `GET /admin/events/{event}/edit` - Edit event
+- `PUT /admin/events/{event}` - Update event
+- `DELETE /admin/events/{event}` - Delete event
 
 ## Status Flow
 
 ```
-PENDING → UNDER_REVIEW → APPROVED → GENERATED → SENT
-                           ↓
-                         REJECTED
+PENDING → GENERATED → SENT
+    ↓
+ REJECTED
 ```
+
+Admin can approve (→ GENERATED) or reject (→ REJECTED) any PENDING claim.
 
 ## Database Schema
 
@@ -162,17 +187,30 @@ PENDING → UNDER_REVIEW → APPROVED → GENERATED → SENT
 - `name` - Participant full name
 - `email` - Participant email
 - `participant_number` - Unique participant ID
-- `event` - Event name
+- `event_id` - Foreign key to events table
+- `event` - Event name (denormalized)
 - `proof_file` - Optional proof file path
-- `status` - Current status (pending, under_review, approved, rejected, generated, sent)
-- `certificate_number` - Generated certificate number
+- `status` - Current status (`pending`, `rejected`, `generated`, `sent`)
+- `certificate_number` - Generated certificate number (format: `PREFIX-YEAR-SEQ` or event prefix)
+- `unique_key` - Unique UUID key used for secure certificate downloads
 - `pdf_path` - PDF file path
 - `qr_code` - QR code URL
 - `rejection_reason` - Reason for rejection
-- `approved_by` - Admin who approved/rejected
-- `approved_at` - Approval/rejection timestamp
+- `approved_by` - Admin who processed the claim
+- `approved_at` - Processing timestamp
 - `created_at` - Creation timestamp
 - `updated_at` - Last update timestamp
+
+### Events Table
+- `id` - Primary key
+- `name` - Event name
+- `slug` - URL-friendly name
+- `date` - Event date
+- `description` - Event description
+- `certificate_template` - PDF template path
+- `certificate_number_prefix` - Optional fixed prefix for certificate numbers
+- `is_active` - Whether the event is open for claims
+- `created_at`, `updated_at` - Timestamps
 
 ## Configuration
 
@@ -214,13 +252,18 @@ Edit `resources/views/certificate/template.blade.php` to customize certificate d
 - Rejection: `resources/views/emails/certificate-rejected.blade.php`
 
 ### Certificate Number Format
-Modify in `app/Http/Controllers/Admin/CertificateAdminController.php`:
-```php
-$eventCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $certificate->event), 0, 3));
-$year = date('Y');
-$sequence = Certificate::whereYear('created_at', $year)->count() + 1;
-$certificateNumber = sprintf('%s-%s-%04d', $eventCode, $year, $sequence);
+Certificate numbers are generated in `app/Services/CertificateService.php`:
+- **Auto format**: `EVT-2026-0001` (derived from event name + year + sequence)
+- **Fixed prefix**: If the event has `certificate_number_prefix` set, it is used directly as the certificate number without auto-generation
+
+Set the prefix in the event creation/edit form (optional field).
+
+### Certificate Download
+Downloads use `unique_key` (UUID) for secure, unambiguous retrieval:
 ```
+GET /download-certificate?key={unique_key}
+```
+This ensures the correct certificate is always returned even when `certificate_number` values are duplicated across events.
 
 ## Troubleshooting
 
