@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Certificates</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 min-h-screen">
-    @include('layouts.user-navigation')
+@extends('layouts.user-layout')
+
+@section('title', 'My Certificates')
+
+@section('content')
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-lg shadow-md p-8 mb-6">
@@ -90,5 +84,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection
