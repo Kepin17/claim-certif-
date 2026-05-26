@@ -237,6 +237,35 @@
         height: 16px;
     }
 
+    /* LinkedIn share button */
+    .oui-btn-linkedin {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 20px;
+        background: #0077B5;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 14px;
+        transition: background 0.15s, transform 0.1s;
+        margin-bottom: 16px;
+    }
+    .oui-btn-linkedin:hover {
+        background: #006097;
+        color: #fff;
+    }
+    .oui-btn-linkedin:active {
+        transform: scale(0.98);
+    }
+    .oui-btn-linkedin svg {
+        width: 16px;
+        height: 16px;
+    }
+
     /* Footer */
     .oui-status-footer {
         text-align: center;
@@ -258,6 +287,10 @@
         text-decoration: underline;
     }
 
+    .oui-page {
+        background: #F2F3F5;
+    }
+
     @media (max-width: 540px) {
         .oui-hero-status { padding: 36px 16px 40px; }
         .oui-hero-title-status { font-size: 26px; }
@@ -265,11 +298,40 @@
         .oui-status-card { padding: 24px 20px; border-radius: 20px; }
         .oui-detail-value { max-width: 50%; }
     }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] .oui-page {
+        background: #1C1C1E;
+    }
+    [data-theme="dark"] .oui-hero-status {
+        background: linear-gradient(135deg, #1A54C4 0%, #0D3A8A 100%);
+    }
+    [data-theme="dark"] .oui-status-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-status-header {
+        border-bottom-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-detail-row {
+        border-bottom-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-detail-label {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-detail-value {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-status-footer {
+        border-top-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-footer-info {
+        color: #8E8E93;
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="oui-page" style="background: #F2F3F5;">
+<div class="oui-page">
 
     <!-- Modern Hero -->
     <div class="oui-hero-status">
@@ -370,6 +432,14 @@
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
                 Download Certificate
+            </a>
+
+            <!-- LinkedIn Share Button -->
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(route('certificate.status', $certificate->unique_key)) }}" target="_blank" rel="noopener noreferrer" class="oui-btn-linkedin">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+                Share on LinkedIn
             </a>
             @endif
 

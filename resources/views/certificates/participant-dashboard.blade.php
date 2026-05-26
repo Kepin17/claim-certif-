@@ -11,6 +11,10 @@
         padding: 0 0 48px;
     }
 
+    .oui-hero {
+        background: #ffffff;
+    }
+
     /* Hero header */
     .oui-hero {
         background: #ffffff;
@@ -395,6 +399,81 @@
         .oui-info-grid { grid-template-columns: 1fr; }
         .oui-search-btn { padding: 0 16px; }
         .oui-cards-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] .oui-page {
+        background: #1C1C1E;
+    }
+    [data-theme="dark"] .oui-hero {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-page-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-search-field {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-search-field:focus-within {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-search-field input {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-search-field input::placeholder {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-count-pill {
+        background: #2C2C2E;
+        border-color: #3A3A3C;
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-card-name {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-card-email {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-info-label {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-info-value {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-card-divider {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-empty {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-empty-icon {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-empty-icon svg {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-empty-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-empty-desc {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-empty-desc strong {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-pagination a {
+        background: #2C2C2E;
+        color: #3478F6;
+    }
+    [data-theme="dark"] .oui-pagination a:hover {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-pagination span.oui-page-disabled {
+        background: #3A3A3C;
+        color: #8E8E93;
     }
 </style>
 @endpush

@@ -90,6 +90,10 @@
         margin-right: auto;
     }
 
+    .oui-page {
+        background: #F2F3F5;
+    }
+
     /* Search bar floating */
     .oui-search-float {
         background: #fff;
@@ -345,11 +349,123 @@
         .oui-quick-actions { flex-direction: column; }
         .oui-quick-action { width: 100%; justify-content: center; }
     }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] .oui-page {
+        background: #1C1C1E;
+    }
+    [data-theme="dark"] .oui-hero-modern {
+        background: linear-gradient(135deg, #1A54C4 0%, #0D3A8A 100%);
+    }
+    [data-theme="dark"] .oui-hero-feature {
+        background: rgba(0,0,0,0.2);
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-hero-feature svg {
+        color: #6FCF97;
+    }
+    [data-theme="dark"] .oui-event-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-event-image {
+        background: linear-gradient(135deg, #3A3A3C 0%, #2C2C2E 100%);
+    }
+    [data-theme="dark"] .oui-event-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-event-detail {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-event-footer {
+        border-top-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-search-float {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-search-field {
+        background: #3A3A3C;
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-search-field:focus {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-search-field input::placeholder {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-search-btn {
+        background: #3478F6;
+    }
+    [data-theme="dark"] .oui-count-pill {
+        background: #2C2C2E;
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-count-dot {
+        background: #3478F6;
+    }
+    [data-theme="dark"] .oui-how-section {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-how-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-how-step h4 {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-how-step p {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-how-icon {
+        background: linear-gradient(135deg, #3A3A3C 0%, #2C2C2E 100%);
+    }
+    [data-theme="dark"] .oui-quick-action {
+        background: #2C2C2E;
+        color: #3478F6;
+        border-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-quick-action:hover {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-no-results {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-no-results strong {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-empty-icon {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-empty-icon svg {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-empty-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-empty-desc {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-pagination a {
+        background: #2C2C2E;
+        color: #3478F6;
+    }
+    [data-theme="dark"] .oui-pagination a:hover {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-pagination span.oui-page-active {
+        background: #3478F6;
+        color: #fff;
+    }
+    [data-theme="dark"] .oui-pagination span.oui-page-disabled {
+        background: #3A3A3C;
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-pagination-info {
+        color: #8E8E93;
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="oui-page" style="background: #F2F3F5;">
+<div class="oui-page">
 
     <!-- Modern Hero -->
     <div class="oui-hero-modern">
@@ -470,7 +586,7 @@
                         </div>
                         <div class="oui-event-footer">
                             <a href="{{ route('certificate.claim-form', $event->slug) }}" class="oui-claim-btn-card">
-                                Claim Certificate
+                                Claim
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="9 18 15 12 9 6"/>
                                 </svg>

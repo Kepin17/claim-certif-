@@ -678,4 +678,191 @@
         .oui-grid-2 { grid-template-columns: 1fr; }
         .oui-card { padding: 20px; border-radius: 18px; }
     }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] .oui-page {
+        background: #1C1C1E;
+    }
+    [data-theme="dark"] .oui-hero {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-page-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-page-desc {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-search-field {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-search-field:focus-within {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-search-field input {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-search-field input::placeholder {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-count-pill {
+        background: #2C2C2E;
+        border-color: #3A3A3C;
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-empty {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-empty-icon {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-empty-icon svg {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-empty-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-empty-desc {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-pagination a {
+        background: #2C2C2E;
+        color: #3478F6;
+    }
+    [data-theme="dark"] .oui-pagination a:hover {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-pagination span.oui-page-disabled {
+        background: #3A3A3C;
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-pagination-info {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-card-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-card-sub {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-section-head {
+        border-bottom-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-section-head h3 {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-label {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-input,
+    [data-theme="dark"] .oui-select,
+    [data-theme="dark"] .oui-textarea {
+        background: #3A3A3C;
+        color: #F5F2EC;
+        border-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-input:focus,
+    [data-theme="dark"] .oui-select:focus,
+    [data-theme="dark"] .oui-textarea:focus {
+        background: #2C2C2E;
+        border-color: #3478F6;
+    }
+    [data-theme="dark"] .oui-input::placeholder,
+    [data-theme="dark"] .oui-textarea::placeholder {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-radio-option {
+        background: #3A3A3C;
+        border-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-radio-option:has(input:checked) {
+        background: #2D5016;
+        border-color: #4A8022;
+    }
+    [data-theme="dark"] .oui-radio-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-radio-sub {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-actions {
+        border-top-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-event-chip {
+        background: #2D5016;
+        border-color: #4A8022;
+        color: #6FCF97;
+    }
+    [data-theme="dark"] .oui-side-title {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-step {
+        border-bottom-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-step-num {
+        background: #2D5016;
+        color: #6FCF97;
+    }
+    [data-theme="dark"] .oui-step h5 {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-step p {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-link-secondary {
+        background: #2C2C2E;
+        border-color: #3A3A3C;
+        color: #3478F6;
+    }
+    [data-theme="dark"] .oui-link-secondary:hover {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-hero-pill {
+        background: #3A3A3C;
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-info-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-info-card h3 {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-info-card p {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-info-card-icon.blue {
+        background: #2D5016;
+        color: #6FCF97;
+    }
+    [data-theme="dark"] .oui-info-card-icon.green {
+        background: #2D5016;
+        color: #6FCF97;
+    }
+    [data-theme="dark"] .oui-info-card-icon.orange {
+        background: #3A3A3C;
+        color: #FF9F0A;
+    }
+    [data-theme="dark"] .oui-tip-list li {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-status-row {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-status-row strong {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-status-row span {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-faq-item {
+        border-bottom-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-faq-item strong {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-faq-item p {
+        color: #8E8E93;
+    }
 </style>

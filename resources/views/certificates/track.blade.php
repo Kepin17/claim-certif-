@@ -152,6 +152,93 @@
         .oui-mobile-tips { display: block; }
         .oui-mobile-links { display: block; }
     }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] .oui-page {
+        background: #1C1C1E;
+    }
+    [data-theme="dark"] .oui-hero {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-page-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-page-desc {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-info-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-info-card h3 {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-status-row {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-status-row strong {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-card-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-card-sub {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-field .oui-label {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-input {
+        background: #3A3A3C;
+        color: #F5F2EC;
+        border-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-input:focus {
+        background: #2C2C2E;
+        border-color: #3478F6;
+    }
+    [data-theme="dark"] .oui-select {
+        background: #3A3A3C;
+        color: #F5F2EC;
+        border-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-side-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-side-title {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-events-preview-title {
+        color: #8E8E93;
+    }
+    [data-theme="dark"] .oui-event-mini {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-event-mini:hover {
+        background: #48484A;
+    }
+    [data-theme="dark"] .oui-event-mini-name {
+        color: #F5F2EC;
+    }
+    [data-theme="dark"] .oui-link-card {
+        background: #2C2C2E;
+        color: #3478F6;
+        border-color: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-link-card:hover {
+        background: #3A3A3C;
+    }
+    [data-theme="dark"] .oui-link-secondary {
+        color: #3478F6;
+    }
+    [data-theme="dark"] .oui-mobile-tips .oui-card {
+        background: #2C2C2E;
+    }
+    [data-theme="dark"] .oui-mobile-tips div {
+        color: #F5F2EC;
+    }
 </style>
 @endpush
 

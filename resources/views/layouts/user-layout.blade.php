@@ -30,6 +30,20 @@
             --radius-lg:  18px;
         }
 
+        [data-theme="dark"] {
+            --ink:        #F5F2EC;
+            --ink-mid:    #C5C2BB;
+            --ink-muted:  #8A877F;
+            --ink-faint:  #4A4740;
+            --surface:    #1C1C1E;
+            --card:       #2C2C2E;
+            --accent:     #4A8022;
+            --accent-lt:  #2D5016;
+            --accent-mid:  #6FCF97;
+            --danger:     #FF6B6B;
+            --danger-lt:  #8C2C1A;
+        }
+
         body {
             font-family: 'Geist', sans-serif;
             background-color: var(--surface);
@@ -37,6 +51,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* ── NAV ── */
@@ -49,9 +64,9 @@
         }
 
         .nav-inner {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 40px;
+            padding: 0 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -148,6 +163,56 @@
         .nav-hamburger.open svg.icon-close { display: block; }
         .nav-hamburger svg.icon-close { display: none; }
 
+        /* Dark mode footer */
+        [data-theme="dark"] .footer {
+            background: #0D0D0D;
+        }
+        [data-theme="dark"] .footer-logo {
+            color: #F5F2EC;
+        }
+        [data-theme="dark"] .footer-copyright {
+            color: #8E8E93;
+        }
+        [data-theme="dark"] .footer-support {
+            color: #8E8E93;
+        }
+        [data-theme="dark"] .footer-support a {
+            color: #3478F6;
+        }
+
+        /* Dark mode nav active */
+        [data-theme="dark"] .nav-link.active {
+            background: rgba(52,120,246,0.15);
+            color: #3478F6;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            cursor: pointer;
+            color: var(--ink-mid);
+            transition: background 0.15s, color 0.15s;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(0,0,0,0.04);
+            color: var(--ink);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
         /* Mobile drawer */
         .nav-drawer {
             display: none;
@@ -217,11 +282,11 @@
         /* ── FOOTER ── */
         .footer {
             background: var(--ink);
-            padding: 32px 40px;
+            padding: 32px 24px;
         }
 
         .footer-inner {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -339,6 +404,16 @@
                 @endif
             </div>
 
+            <!-- Theme toggle -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+
             <!-- Hamburger (mobile) -->
             <button class="nav-hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
                 <svg class="icon-menu" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -413,6 +488,31 @@
     @stack('scripts')
 
     <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = themeToggle?.querySelector('.icon-sun');
+        const moonIcon = themeToggle?.querySelector('.icon-moon');
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (sunIcon && moonIcon) {
+                sunIcon.style.display = theme === 'dark' ? 'none' : 'block';
+                moonIcon.style.display = theme === 'dark' ? 'block' : 'none';
+            }
+        }
+
+        // Load saved theme or default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        themeToggle?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        });
+
+        // Navigation
         const toggle  = document.getElementById('navToggle');
         const drawer  = document.getElementById('navDrawer');
 
