@@ -183,6 +183,31 @@ class CertificateAdminController extends Controller
             ->with('success', 'Certificate rejected.');
     }
 
+    public function resetToPending(Request $request, $id)
+    {
+        $certificate = Certificate::findOrFail($id);
+
+        if ($certificate->status !== 'rejected') {
+            return redirect()->back()->with('error', 'Only rejected claims can be reset.');
+        }
+
+        $certificate->update([
+            'status' => 'pending',
+            'rejection_reason' => null,
+            'approved_by' => null,
+            'approved_at' => null,
+        ]);
+
+        try {
+            Mail::to($certificate->email)->send(new \App\Mail\CertificateResetToPending($certificate));
+        } catch (\Exception $e) {
+            Log::error('Reset to pending email failed: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.pending')
+            ->with('success', 'Claim has been re-opened and user has been notified via email.');
+    }
+
     public function preview($id)
     {
         $certificate = Certificate::findOrFail($id);

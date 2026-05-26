@@ -219,6 +219,39 @@
         display: none !important;
     }
 
+    .action-btn.warning {
+        background: #92400E;
+    }
+
+    .action-btn.warning:hover {
+        background: #6B2D0A;
+    }
+
+    /* Rejection Info Box */
+    .rejection-info {
+        background: var(--danger-lt);
+        border: 1px solid rgba(140,44,26,0.15);
+        border-left: 3px solid var(--danger);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+    }
+
+    .rejection-info-label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--danger);
+        margin-bottom: 8px;
+    }
+
+    .rejection-info-text {
+        font-size: 14px;
+        color: var(--danger);
+        line-height: 1.6;
+        margin: 0;
+    }
+
     @media (max-width: 640px) {
         .main { padding: 32px 20px 60px; }
         .section { padding: 20px; }
@@ -233,7 +266,11 @@
 
     <div class="page-header">
         <h1 class="page-title">Review Claim</h1>
-        <a href="{{ route('admin.pending') }}" class="back-link">Back to Pending</a>
+        @if($certificate->status === 'rejected')
+            <a href="{{ route('admin.rejected') }}" class="back-link">Back to Rejected</a>
+        @else
+            <a href="{{ route('admin.pending') }}" class="back-link">Back to Pending</a>
+        @endif
     </div>
 
     <div class="sections">
@@ -328,6 +365,38 @@
                     </div>
                     <button type="submit" class="action-btn reject">
                         Confirm Rejection
+                    </button>
+                </form>
+            </div>
+        @endif
+
+        @if($certificate->status === 'rejected')
+            <div class="section" style="border-color: rgba(140,44,26,0.15);">
+                <h2 class="section-title" style="color: var(--danger);">Rejection Details</h2>
+                <div class="rejection-info">
+                    <p class="rejection-info-label">Rejection Reason</p>
+                    <p class="rejection-info-text">{{ $certificate->rejection_reason }}</p>
+                </div>
+                @if($certificate->approved_by)
+                <p style="font-size:13px;color:var(--ink-muted);margin-top:12px;margin-bottom:0;">
+                    Rejected by <strong style="color:var(--ink-mid);">{{ $certificate->approved_by }}</strong>
+                    @if($certificate->approved_at)
+                        on {{ $certificate->approved_at->format('d F Y, H:i') }}
+                    @endif
+                </p>
+                @endif
+            </div>
+
+            <div class="actions">
+                <form action="{{ route('admin.reset-to-pending', $certificate->id) }}" method="POST" class="action-form"
+                      onsubmit="return confirm('Reset this claim to pending? The user will be notified by email.');">
+                    @csrf
+                    <button type="submit" class="action-btn warning">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                        Allow Re-claim
                     </button>
                 </form>
             </div>
