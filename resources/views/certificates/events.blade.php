@@ -144,8 +144,8 @@
     .oui-event-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        object-position: top center;
+        object-fit: contain;
+        padding: 8px;
     }
     .oui-event-image-ph {
         width: 100%;
