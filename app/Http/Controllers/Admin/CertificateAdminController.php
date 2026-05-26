@@ -138,7 +138,7 @@ class CertificateAdminController extends Controller
 
     public function approve(Request $request, $id)
     {
-        $certificate = Certificate::with(['eventRelation', 'certificateType'])->findOrFail($id);
+        $certificate = Certificate::with(['eventRelation', 'certificateType'])->lockForUpdate()->findOrFail($id);
 
         $certificateNumber = $this->generateCertificateNumber($certificate);
 
@@ -163,7 +163,7 @@ class CertificateAdminController extends Controller
             'rejection_reason' => 'required|string|max:1000',
         ]);
 
-        $certificate = Certificate::findOrFail($id);
+        $certificate = Certificate::lockForUpdate()->findOrFail($id);
         $certificate->update([
             'status' => 'rejected',
             'rejection_reason' => $request->rejection_reason,
@@ -259,15 +259,17 @@ class CertificateAdminController extends Controller
 
         $count = 0;
         foreach ($certificates as $certificate) {
-            $certificateNumber = $this->generateCertificateNumber($certificate);
-            $certificate->update([
+            $locked = Certificate::lockForUpdate()->find($certificate->id);
+            if (!$locked) continue;
+            $certificateNumber = $this->generateCertificateNumber($locked);
+            $locked->update([
                 'status'             => 'approved',
                 'certificate_number' => $certificateNumber,
                 'approved_by'        => Auth::user()->name,
                 'approved_at'        => now(),
             ]);
-            \App\Jobs\GenerateCertificate::dispatch($certificate->fresh());
-            AdminActivityLog::record('bulk_approved', $certificate);
+            \App\Jobs\GenerateCertificate::dispatch($locked->fresh());
+            AdminActivityLog::record('bulk_approved', $locked);
             $count++;
         }
 
@@ -287,18 +289,20 @@ class CertificateAdminController extends Controller
         $count = 0;
 
         foreach ($certificates as $certificate) {
-            $certificate->update([
+            $locked = Certificate::lockForUpdate()->find($certificate->id);
+            if (!$locked) continue;
+            $locked->update([
                 'status'           => 'rejected',
                 'rejection_reason' => $request->rejection_reason,
                 'approved_by'      => Auth::user()->name,
                 'approved_at'      => now(),
             ]);
             try {
-                Mail::to($certificate->email)->send(new \App\Mail\CertificateRejected($certificate));
+                Mail::to($locked->email)->send(new \App\Mail\CertificateRejected($locked));
             } catch (\Exception $e) {
                 Log::error('Bulk reject email failed: ' . $e->getMessage());
             }
-            AdminActivityLog::record('bulk_rejected', $certificate, $request->rejection_reason);
+            AdminActivityLog::record('bulk_rejected', $locked, $request->rejection_reason);
             $count++;
         }
 
