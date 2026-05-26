@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Certificate;
 
 class AdminActivityLog extends Model
 {
@@ -32,7 +33,7 @@ class AdminActivityLog extends Model
 
     public function certificate()
     {
-        return $this->belongsTo(Certificate::class)->withTrashed();
+        return $this->belongsTo(Certificate::class);
     }
 
     public function admin()
