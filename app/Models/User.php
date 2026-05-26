@@ -20,6 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_active',
+        'role',
         'otp_code',
         'otp_expires_at',
     ];
@@ -43,7 +45,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
+            'otp_expires_at'    => 'datetime',
         ];
     }
 }

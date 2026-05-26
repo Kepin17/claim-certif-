@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\Admin\CertificateAdminController;
+use App\Http\Controllers\Admin\UserController;
 
 // User Routes
 Route::get('/', [CertificateController::class, 'index'])->name('certificate.index');
@@ -41,6 +42,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::get('/export/{eventId}', [CertificateAdminController::class, 'exportCsv'])->name('export');
     Route::get('/activity-log', [CertificateAdminController::class, 'activityLog'])->name('activity-log');
     Route::get('/search', [CertificateAdminController::class, 'search'])->name('search');
+
+    // User Management Routes
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        Route::post('/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('toggle-active');
+    });
 
     // Event Management Routes
     Route::prefix('events')->name('events.')->group(function () {

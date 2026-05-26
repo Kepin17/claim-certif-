@@ -24,6 +24,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $user = Auth::user();
+
+            if (!$user->is_active) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account has been deactivated. Please contact the administrator.',
+                ])->withInput();
+            }
             
             // Generate and store OTP
             $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
