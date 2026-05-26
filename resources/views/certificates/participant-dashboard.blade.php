@@ -96,7 +96,7 @@
 
     /* Results section */
     .oui-section {
-        max-width: 680px;
+        max-width: 1060px;
         margin: 24px auto 0;
         padding: 0 24px;
     }
@@ -123,12 +123,19 @@
         flex-shrink: 0;
     }
 
+    /* Cards grid */
+    .oui-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
     /* Certificate card */
     .oui-card {
         background: #ffffff;
         border-radius: 22px;
         padding: 20px 20px 18px;
-        margin-bottom: 12px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
         transition: transform 0.18s, box-shadow 0.18s;
         position: relative;
@@ -210,7 +217,7 @@
         gap: 10px 16px;
         margin-bottom: 16px;
     }
-    .oui-info-item {}
+    .oui-info-item { min-width: 0; }
     .oui-info-label {
         font-size: 10.5px;
         font-weight: 600;
@@ -311,6 +318,55 @@
         line-height: 1.5;
     }
 
+    /* Pagination */
+    .oui-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 0 4px;
+        flex-wrap: wrap;
+    }
+    .oui-pagination a,
+    .oui-pagination span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 10px;
+        border-radius: 12px;
+        font-size: 13.5px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+    }
+    .oui-pagination a {
+        background: #fff;
+        color: #3478F6;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .oui-pagination a:hover { background: #EBF2FF; }
+    .oui-pagination span.oui-page-active {
+        background: #3478F6;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(52,120,246,0.28);
+        cursor: default;
+    }
+    .oui-pagination span.oui-page-disabled {
+        background: #F2F3F5;
+        color: #AEAEB2;
+        cursor: default;
+    }
+    .oui-pagination-info {
+        text-align: center;
+        font-size: 12px;
+        color: #AEAEB2;
+        font-weight: 500;
+        margin-top: 10px;
+        padding-bottom: 8px;
+    }
+
     /* Re-submit chip */
     .oui-resubmit-link {
         display: inline-flex;
@@ -329,12 +385,16 @@
     .oui-resubmit-link:hover { background: #FFE4B5; }
     .oui-resubmit-link svg { width: 12px; height: 12px; }
 
+    @media (max-width: 900px) {
+        .oui-cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 540px) {
         .oui-page-title { font-size: 24px; }
         .oui-hero { padding: 28px 16px 22px; }
         .oui-section { padding: 0 16px; }
         .oui-info-grid { grid-template-columns: 1fr; }
         .oui-search-btn { padding: 0 16px; }
+        .oui-cards-grid { grid-template-columns: 1fr; }
     }
 </style>
 @endpush
@@ -369,9 +429,10 @@
         @if($certificates->isNotEmpty())
         <div class="oui-count-pill">
             <span class="oui-count-dot"></span>
-            {{ $certificates->count() }} {{ $certificates->count() === 1 ? 'certificate' : 'certificates' }} found
+            {{ $certificates->total() }} {{ $certificates->total() === 1 ? 'certificate' : 'certificates' }} found
         </div>
 
+        <div class="oui-cards-grid">
         @foreach($certificates as $cert)
         @php
             $statusClass = match($cert->status) {
@@ -477,6 +538,46 @@
             </div>
         </div>
         @endforeach
+        </div>
+
+        {{-- Pagination --}}
+        @if($certificates->hasPages())
+        <div class="oui-pagination">
+            {{-- Prev --}}
+            @if($certificates->onFirstPage())
+                <span class="oui-page-disabled">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </span>
+            @else
+                <a href="{{ $certificates->previousPageUrl() }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </a>
+            @endif
+
+            {{-- Page numbers --}}
+            @foreach($certificates->getUrlRange(max(1, $certificates->currentPage()-2), min($certificates->lastPage(), $certificates->currentPage()+2)) as $page => $url)
+                @if($page == $certificates->currentPage())
+                    <span class="oui-page-active">{{ $page }}</span>
+                @else
+                    <a href="{{ $url }}">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            {{-- Next --}}
+            @if($certificates->hasMorePages())
+                <a href="{{ $certificates->nextPageUrl() }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+            @else
+                <span class="oui-page-disabled">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </span>
+            @endif
+        </div>
+        <div class="oui-pagination-info">
+            Showing {{ $certificates->firstItem() }}–{{ $certificates->lastItem() }} of {{ $certificates->total() }}
+        </div>
+        @endif
 
         @elseif($email)
         <div class="oui-empty">

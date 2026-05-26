@@ -144,7 +144,8 @@ class CertificateController extends Controller
             $certificates = Certificate::where('email', $email)
                 ->with('eventRelation')
                 ->latest()
-                ->get();
+                ->paginate(12)
+                ->appends(['email' => $email]);
         }
 
         return view('certificates.participant-dashboard', compact('email', 'certificates'));
