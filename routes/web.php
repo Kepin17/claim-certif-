@@ -43,8 +43,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::get('/activity-log', [CertificateAdminController::class, 'activityLog'])->name('activity-log');
     Route::get('/search', [CertificateAdminController::class, 'search'])->name('search');
 
-    // User Management Routes
-    Route::prefix('users')->name('users.')->group(function () {
+    // User Management Routes (superadmin only)
+    Route::prefix('users')->name('users.')->middleware('superadmin')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::post('/', [UserController::class, 'store'])->name('store');

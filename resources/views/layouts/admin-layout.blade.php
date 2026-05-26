@@ -318,7 +318,9 @@
                 <a href="{{ route('admin.pending') }}" class="nav-link {{ request()->routeIs('admin.pending') ? 'active' : '' }}">Pending</a>
                 <a href="{{ route('admin.rejected') }}" class="nav-link {{ request()->routeIs('admin.rejected*') ? 'active' : '' }}">Rejected</a>
                 <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->routeIs('admin.generated*') ? 'active' : '' }}">Generated</a>
+                @if(auth()->user()?->role === 'superadmin')
                 <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">Users</a>
+                @endif
                 <a href="{{ route('admin.activity-log') }}" class="nav-link {{ request()->routeIs('admin.activity-log') ? 'active' : '' }}">Log</a>
                 <form action="{{ route('admin.search') }}" method="GET" style="display:flex;align-items:center;">
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Search…" style="padding:6px 12px;font-size:13px;font-family:'Geist',sans-serif;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.08);border-radius:6px;color:var(--ink);width:140px;transition:width 0.2s;" onfocus="this.style.width='200px'" onblur="this.style.width='140px'">
@@ -341,7 +343,9 @@
             <a href="{{ route('admin.pending') }}" class="nav-link {{ request()->routeIs('admin.pending') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Pending</a>
             <a href="{{ route('admin.rejected') }}" class="nav-link {{ request()->routeIs('admin.rejected*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Rejected</a>
             <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->routeIs('admin.generated*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Generated</a>
+            @if(auth()->user()?->role === 'superadmin')
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Users</a>
+            @endif
             <a href="{{ route('admin.activity-log') }}" class="nav-link {{ request()->routeIs('admin.activity-log') ? 'active' : '' }}" onclick="document.querySelector('.nav-mobile-menu').classList.remove('open')">Log</a>
             <form action="{{ route('admin.search') }}" method="GET" style="padding:4px 0;">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search claims…" style="width:100%;padding:10px 14px;font-size:14px;font-family:'Geist',sans-serif;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.08);border-radius:6px;color:var(--ink);">

@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'otp.verified' => \App\Http\Middleware\CheckOTPVerification::class,
+            'superadmin'   => \App\Http\Middleware\SuperAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
