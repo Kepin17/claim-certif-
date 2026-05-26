@@ -110,6 +110,25 @@
         box-shadow: 0 0 0 3px rgba(45,80,22,0.1);
     }
 
+    /* Export Toolbar */
+    .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 16px;
+    }
+
+    .export-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 16px; border-radius: var(--radius-sm);
+        font-size: 13px; font-weight: 500;
+        background: var(--card); color: var(--ink-mid);
+        border: 1px solid rgba(0,0,0,0.1);
+        text-decoration: none; font-family: 'Geist', sans-serif;
+        transition: background 0.2s;
+    }
+    .export-btn:hover { background: var(--surface); }
+
     /* Card Grid */
     .cards-grid {
         display: grid;
@@ -296,6 +315,12 @@
             <div class="empty-state">No generated certificates for this event.</div>
         </div>
     @else
+        <div class="toolbar">
+            <a href="{{ route('admin.export', $event->id) }}?status=generated" class="export-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+            </a>
+        </div>
         <div class="cards-grid">
             @foreach($certificates as $certificate)
                 <div class="card">
