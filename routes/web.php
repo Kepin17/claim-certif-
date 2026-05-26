@@ -69,7 +69,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
 
 // Default login route for Laravel auth middleware
 Route::get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
-Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.post')->middleware('guest');
+Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.post')->middleware(['guest', 'throttle:3,5']);
 
 // Admin Login Routes (redirect to default)
 Route::get('/admin/login', function () {

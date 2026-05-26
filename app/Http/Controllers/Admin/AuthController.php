@@ -7,12 +7,19 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
     public function showLoginForm()
     {
         return view('admin.login');
+    }
+
+    protected function throttleKey(Request $request): string
+    {
+        return Str::transliterate(Str::lower($request->input('email')) . '|' . $request->ip());
     }
 
     public function login(Request $request)
@@ -22,15 +29,27 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        $key = $this->throttleKey($request);
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            return back()->withErrors([
+                'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+            ])->withInput();
+        }
+
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $user = Auth::user();
 
             if (!$user->is_active) {
                 Auth::logout();
+                RateLimiter::hit($key, 300);
                 return back()->withErrors([
                     'email' => 'Your account has been deactivated. Please contact the administrator.',
                 ])->withInput();
             }
+
+            RateLimiter::clear($key);
             
             // Generate and store OTP
             $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
@@ -64,6 +83,8 @@ class AuthController extends Controller
             session(['otp_user_id' => $user->id]);
             return redirect()->route('admin.otp.verify')->with('info', 'OTP code has been sent to your email.');
         }
+
+        RateLimiter::hit($key, 300);
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
