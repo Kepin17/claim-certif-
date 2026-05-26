@@ -142,7 +142,8 @@
     .oui-event-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
+        background: #fff;
     }
     .oui-event-image-ph {
         width: 100%;
