@@ -114,29 +114,30 @@
     /* Events grid */
     .oui-events-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        grid-template-columns: 1fr;
+        gap: 16px;
         margin-bottom: 40px;
     }
 
-    /* Event card */
+    /* Event card - horizontal layout */
     .oui-event-card {
         background: #fff;
-        border-radius: 24px;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
-        transition: transform 0.25s, box-shadow 0.25s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+        transition: transform 0.2s, box-shadow 0.2s;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        align-items: stretch;
     }
     .oui-event-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 16px 40px rgba(0,0,0,0.06);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1), 0 12px 32px rgba(0,0,0,0.06);
     }
 
     .oui-event-image {
-        width: 100%;
-        height: 180px;
+        width: 180px;
+        flex-shrink: 0;
         background: linear-gradient(135deg, #EBF2FF 0%, #E0E8FF 100%);
         position: relative;
         overflow: hidden;
@@ -145,7 +146,7 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
-        padding: 8px;
+        padding: 10px;
     }
     .oui-event-image-ph {
         width: 100%;
@@ -162,18 +163,19 @@
     }
 
     .oui-event-content {
-        padding: 20px;
+        padding: 20px 24px;
         flex: 1;
         display: flex;
         flex-direction: column;
+        min-width: 0;
     }
 
     .oui-event-title {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 700;
         color: #1C1C1E;
         line-height: 1.35;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .oui-event-details {
@@ -197,22 +199,20 @@
 
     .oui-event-footer {
         margin-top: auto;
-        padding-top: 14px;
-        border-top: 1px solid #F2F3F5;
+        padding-top: 12px;
     }
     .oui-claim-btn-card {
-        width: 100%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        padding: 14px 20px;
+        padding: 12px 20px;
         background: #3478F6;
         color: #fff;
         font-size: 14px;
         font-weight: 600;
         text-decoration: none;
-        border-radius: 14px;
+        border-radius: 12px;
         transition: background 0.15s, transform 0.1s;
     }
     .oui-claim-btn-card:hover {
@@ -326,12 +326,13 @@
     }
 
     @media (max-width: 900px) {
-        .oui-events-grid { grid-template-columns: repeat(2, 1fr); }
         .oui-how-steps { grid-template-columns: 1fr; gap: 24px; }
         .oui-hero-title-modern { font-size: 30px; }
     }
     @media (max-width: 600px) {
-        .oui-events-grid { grid-template-columns: 1fr; }
+        .oui-event-card { flex-direction: column; }
+        .oui-event-image { width: 100%; height: 180px; }
+        .oui-claim-btn-card { width: 100%; justify-content: center; }
         .oui-hero-modern { padding: 36px 16px 40px; }
         .oui-hero-title-modern { font-size: 26px; }
         .oui-hero-desc-modern { font-size: 14px; }
