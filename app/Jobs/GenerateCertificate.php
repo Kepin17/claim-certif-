@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\CertificateApproved;
 use App\Models\Certificate;
 use App\Services\CertificateService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,21 +17,37 @@ class GenerateCertificate implements ShouldQueue
     public int $tries = 3;
     public int $timeout = 120;
 
-    public function __construct(public Certificate $certificate) {}
+    public function __construct(
+        public int $certificateId
+    ) {}
 
     public function handle(): void
     {
-        $certificate = $this->certificate->fresh(['eventRelation', 'certificateType']);
+        $certificate = Certificate::with([
+            'eventRelation',
+            'certificateType'
+        ])->find($this->certificateId);
 
-        if (!$certificate || !in_array($certificate->status, ['approved', 'generated'])) {
-            Log::warning('GenerateCertificate job skipped', ['id' => $this->certificate->id, 'status' => $certificate?->status]);
+        if (!$certificate) {
+            Log::warning('Certificate not found', [
+                'id' => $this->certificateId
+            ]);
+            return;
+        }
+
+        if (!in_array($certificate->status, ['approved', 'generated'])) {
+            Log::warning('GenerateCertificate job skipped', [
+                'id' => $certificate->id,
+                'status' => $certificate->status,
+            ]);
             return;
         }
 
         try {
-            $service = new CertificateService();
+            $service = app(CertificateService::class);
+
             $pdfPath = $service->generateCertificate($certificate);
-            $qrCode  = $service->generateQRCode($certificate);
+            $qrCode = $service->generateQRCode($certificate);
 
             $certificate->update([
                 'status'   => 'generated',
@@ -38,21 +55,28 @@ class GenerateCertificate implements ShouldQueue
                 'qr_code'  => $qrCode,
             ]);
 
-            $certificate->refresh();
+            Mail::to($certificate->email)
+                ->send(new CertificateApproved($certificate));
 
-            Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
-
-            $certificate->update(['status' => 'sent']);
+            $certificate->update([
+                'status' => 'sent'
+            ]);
 
             \App\Http\Controllers\Admin\CertificateAdminController::clearDashboardCache();
 
-            Log::info('GenerateCertificate job completed', ['id' => $certificate->id]);
-
-        } catch (\Exception $e) {
-            Log::error('GenerateCertificate job failed', [
-                'id'    => $certificate->id,
-                'error' => $e->getMessage(),
+            Log::info('GenerateCertificate job completed', [
+                'id' => $certificate->id,
             ]);
+
+        } catch (\Throwable $e) {
+            Log::error('GenerateCertificate job failed', [
+                'id' => $certificate->id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             throw $e;
         }
     }
@@ -60,8 +84,8 @@ class GenerateCertificate implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Log::error('GenerateCertificate job permanently failed', [
-            'id'    => $this->certificate->id,
-            'error' => $exception->getMessage(),
+            'id' => $this->certificateId,
+            'message' => $exception->getMessage(),
         ]);
     }
 }
