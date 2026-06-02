@@ -153,7 +153,7 @@ class CertificateAdminController extends Controller
             'approved_at'        => now(),
         ]);
 
-        \App\Jobs\GenerateCertificate::dispatch($certificate->fresh());
+        \App\Jobs\GenerateCertificate::dispatch($certificate->id);
 
         AdminActivityLog::record('approved', $certificate);
 
@@ -230,7 +230,7 @@ class CertificateAdminController extends Controller
         }
 
         $certificate->update(['status' => 'approved']);
-        \App\Jobs\GenerateCertificate::dispatch($certificate->fresh());
+        \App\Jobs\GenerateCertificate::dispatch($certificate->id);
 
         return back()->with('success', 'Certificate queued for regeneration — email will be resent to ' . $certificate->email);
     }
