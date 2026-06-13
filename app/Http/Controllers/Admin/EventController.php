@@ -34,6 +34,7 @@ class EventController extends Controller
             'certificate_number_prefix' => 'nullable|string|max:255',
             'claim_deadline' => 'nullable|date',
             'requires_attendance_proof' => 'nullable',
+            'requires_payment_proof' => 'nullable',
         ]);
 
         $templatePath = null;
@@ -67,6 +68,7 @@ class EventController extends Controller
             'certificate_number_prefix' => $request->certificate_number_prefix,
             'claim_deadline' => $request->claim_deadline ?: null,
             'requires_attendance_proof' => $request->has('requires_attendance_proof'),
+            'requires_payment_proof' => $request->has('requires_payment_proof'),
         ]);
 
         $this->syncCertificateTypes($event, $request->input('certificate_types', []));
@@ -101,6 +103,7 @@ class EventController extends Controller
             'certificate_number_prefix' => 'nullable|string|max:255',
             'claim_deadline' => 'nullable|date',
             'requires_attendance_proof' => 'nullable',
+            'requires_payment_proof' => 'nullable',
         ]);
 
         $templatePath = $event->certificate_template;
@@ -142,6 +145,7 @@ class EventController extends Controller
             'certificate_number_prefix' => $request->certificate_number_prefix,
             'claim_deadline' => $request->claim_deadline ?: null,
             'requires_attendance_proof' => $request->has('requires_attendance_proof'),
+            'requires_payment_proof' => $request->has('requires_payment_proof'),
         ]);
 
         $this->syncCertificateTypes($event, $request->input('certificate_types', []));

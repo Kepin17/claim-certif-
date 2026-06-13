@@ -401,7 +401,7 @@ class CertificateAdminController extends Controller
             })
             ->when($request->action, fn($q) => $q->where('action', $request->action))
             ->latest()
-            ->paginate(30);
+            ->paginate(15);
 
         return view('admin.activity-log', compact('logs'));
     }

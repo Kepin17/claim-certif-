@@ -5,14 +5,26 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\Admin\CertificateAdminController;
 use App\Http\Controllers\Admin\UserController;
 
+// User Profile Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\Admin\AuthController::class, 'showUserProfile'])->name('user.profile');
+    Route::put('/profile', [\App\Http\Controllers\Admin\AuthController::class, 'updateUserProfile'])->name('user.profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\Admin\AuthController::class, 'updateUserPassword'])->name('user.password.update');
+    Route::post('/profile/verify-email', [\App\Http\Controllers\Admin\AuthController::class, 'verifyEmailChange'])->name('user.profile.verify-email');
+});
+
 // User Routes
 Route::get('/', [CertificateController::class, 'index'])->name('certificate.index');
-Route::get('/claim-certificate/{slug}', [CertificateController::class, 'showClaimForm'])->name('certificate.claim-form');
-Route::post('/claim-certificate', [CertificateController::class, 'store'])->name('certificate.store')->middleware('throttle:5,1');
 Route::get('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track');
 Route::post('/track-certificate', [CertificateController::class, 'track'])->name('certificate.track.submit')->middleware('throttle:10,1');
-Route::get('/my-certificates', [CertificateController::class, 'participantDashboard'])->name('certificate.participant-dashboard');
 Route::get('/certificate-status/{uniqueKey}', [CertificateController::class, 'status'])->name('certificate.status')->middleware('throttle:30,1');
+
+// Protected User Routes (require authentication)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/claim-certificate/{slug}', [CertificateController::class, 'showClaimForm'])->name('certificate.claim-form');
+    Route::post('/claim-certificate', [CertificateController::class, 'store'])->name('certificate.store')->middleware('throttle:5,1');
+    Route::get('/my-certificates', [CertificateController::class, 'participantDashboard'])->name('certificate.participant-dashboard');
+});
 Route::get('/download-certificate', [CertificateController::class, 'download'])->name('certificate.download')->middleware('throttle:20,1');
 Route::get('/download-certificate/{certificateNumber}', function($certificateNumber) {
     return redirect()->route('certificate.download', ['number' => $certificateNumber]);
@@ -69,19 +81,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     });
 });
 
-// Default login route for Laravel auth middleware
+// Shared Login Route (for both admin and regular users)
 Route::get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.post')->middleware('guest');
+Route::post('/check-email', [\App\Http\Controllers\Admin\AuthController::class, 'checkEmail'])->name('check.email');
+Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Admin Login Routes (redirect to default)
-Route::get('/admin/login', function () {
-    return redirect()->route('login');
-})->name('admin.login');
-
-// Admin Logout
-Route::post('/admin/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
-
-// OTP Verification Routes
-Route::get('/admin/otp/verify', [\App\Http\Controllers\Admin\AuthController::class, 'showOTPVerify'])->name('admin.otp.verify');
-Route::post('/admin/otp/verify', [\App\Http\Controllers\Admin\AuthController::class, 'verifyOTP'])->name('admin.otp.verify.post');
-Route::get('/admin/otp/resend', [\App\Http\Controllers\Admin\AuthController::class, 'resendOTP'])->name('admin.otp.resend');
+// OTP Verification Routes (for admin users)
+Route::get('/otp/verify', [\App\Http\Controllers\Admin\AuthController::class, 'showOTPVerify'])->name('otp.verify');
+Route::post('/otp/verify', [\App\Http\Controllers\Admin\AuthController::class, 'verifyOTP'])->name('otp.verify.post');
+Route::get('/otp/resend', [\App\Http\Controllers\Admin\AuthController::class, 'resendOTP'])->name('otp.resend');

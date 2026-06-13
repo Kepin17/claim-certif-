@@ -64,7 +64,7 @@
         <a href="{{ route('admin.approved') }}" class="nav-link {{ request()->is('admin/approved') ? 'active' : '' }}">Approved</a>
         <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->is('admin/generated') ? 'active' : '' }}">Generated</a>
     </div>
-    <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
+    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
         @csrf
         <button type="submit" class="nav-logout" style="background: none; border: none; cursor: pointer; font-family: 'Geist', sans-serif; font-size: 13px;">Logout</button>
     </form>

@@ -18,6 +18,7 @@ class Certificate extends Model
         'event',
         'proof_file',
         'attendance_photo',
+        'payment_proof',
         'message',
         'next_event',
         'status',

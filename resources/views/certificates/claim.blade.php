@@ -8,10 +8,21 @@
 
 @section('content')
 @php
-    $feedbackStep = (isset($certificateTypes) && $certificateTypes->count() > 0) ? 3 : 2;
     $hasCertificateTypes = isset($certificateTypes) && $certificateTypes->count() > 0;
-    $attendanceStep = $hasCertificateTypes ? 3 : 2;
-    $feedbackStep = isset($event) && $event->requires_attendance_proof ? $attendanceStep + 1 : $attendanceStep;
+    $baseStep = $hasCertificateTypes ? 3 : 2;
+    $attendanceStep = $baseStep;
+    $paymentStep = $baseStep;
+    $currentStep = $baseStep;
+
+    if (isset($event) && $event->requires_attendance_proof) {
+        $paymentStep = $currentStep + 1;
+        $currentStep++;
+    }
+    if (isset($event) && $event->requires_payment_proof) {
+        $paymentStep = $currentStep;
+        $currentStep++;
+    }
+    $feedbackStep = $currentStep;
 @endphp
 <div class="oui-page">
 
@@ -101,11 +112,13 @@
                             <div class="oui-grid-2">
                                 <div class="oui-field">
                                     <label for="name" class="oui-label">Full name<span class="req">*</span></label>
-                                    <input type="text" name="name" id="name" value="{{ old('name') }}" class="oui-input" placeholder="e.g. John Smith" required>
+                                    <input type="text" name="name" id="name" value="{{ old('name', $user->name ?? auth()->user()->name) }}" class="oui-input" placeholder="e.g. John Smith" required>
+                                    <p class="oui-hint">Edit in your <a href="{{ route('user.profile') }}" style="color:var(--accent);">profile</a> if needed</p>
                                 </div>
                                 <div class="oui-field">
-                                    <label for="email" class="oui-label">Email address<span class="req">*</span></label>
-                                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="oui-input" placeholder="you@email.com" required>
+                                    <label for="email" class="oui-label">Email address</label>
+                                    <input type="email" id="email" value="{{ $user->email ?? auth()->user()->email }}" class="oui-input" readonly disabled style="background:var(--surface);color:var(--ink-muted);">
+                                    <input type="hidden" name="email" value="{{ $user->email ?? auth()->user()->email }}">
                                     <p class="oui-hint">Your certificate will be sent to this email</p>
                                 </div>
                             </div>
@@ -253,6 +266,83 @@
                                 } catch (err) {
                                     showError('Could not access camera. Please ensure you have granted camera permissions.');
                                     btnStart.style.display = 'inline-flex';
+                                }
+                            });
+                        })();
+                        </script>
+                        @endif
+
+                        @if(isset($event) && $event->requires_payment_proof)
+                        <div class="oui-form-block">
+                            <div class="oui-section-head">
+                                <span class="oui-section-num">{{ $paymentStep }}</span>
+                                <div>
+                                    <h3>Payment Proof<span class="req">*</span></h3>
+                                    <p>Upload payment receipt or proof of payment</p>
+                                </div>
+                            </div>
+                            <div class="oui-field">
+                                <div class="payment-upload-container" style="text-align:center;">
+                                    <input type="file" name="payment_proof" id="payment_proof_input" accept="image/*,.pdf" required style="display:none;">
+                                    <div id="payment-preview-container" style="margin-bottom:12px; display:none;">
+                                        <img id="payment-preview" src="" alt="Payment Proof" style="max-width:100%; max-height:300px; border-radius:8px; border:1px solid rgba(0,0,0,0.1);" />
+                                        <div id="payment-filename" style="margin-top:8px; font-size:13px; color:#666;"></div>
+                                    </div>
+                                    <button type="button" id="btn-select-payment" class="oui-btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;font-size:14px;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                            <polyline points="21 15 16 10 5 21"/>
+                                        </svg>
+                                        Select from Gallery
+                                    </button>
+                                    <button type="button" id="btn-change-payment" class="oui-btn-primary" style="display:none;align-items:center;gap:8px;padding:12px 20px;font-size:14px;background:#6B7280;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                        Change File
+                                    </button>
+                                    <p class="oui-hint" style="margin-top:8px;">Upload receipt, transfer screenshot, or payment proof (JPG, PNG, PDF - Max 5MB)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                        (function() {
+                            const paymentInput = document.getElementById('payment_proof_input');
+                            const btnSelect = document.getElementById('btn-select-payment');
+                            const btnChange = document.getElementById('btn-change-payment');
+                            const previewContainer = document.getElementById('payment-preview-container');
+                            const previewImg = document.getElementById('payment-preview');
+                            const filenameDiv = document.getElementById('payment-filename');
+
+                            btnSelect.addEventListener('click', function() {
+                                paymentInput.click();
+                            });
+
+                            btnChange.addEventListener('click', function() {
+                                paymentInput.click();
+                            });
+
+                            paymentInput.addEventListener('change', function(e) {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    filenameDiv.textContent = file.name;
+                                    if (file.type.startsWith('image/')) {
+                                        const reader = new FileReader();
+                                        reader.onload = function(e) {
+                                            previewImg.src = e.target.result;
+                                            previewContainer.style.display = 'block';
+                                        };
+                                        reader.readAsDataURL(file);
+                                    } else {
+                                        previewImg.src = '';
+                                        previewImg.style.display = 'none';
+                                        previewContainer.style.display = 'block';
+                                    }
+                                    btnSelect.style.display = 'none';
+                                    btnChange.style.display = 'inline-flex';
                                 }
                             });
                         })();

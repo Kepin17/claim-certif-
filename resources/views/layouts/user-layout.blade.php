@@ -199,6 +199,110 @@
             flex-shrink: 0;
         }
 
+        /* User dropdown */
+        .user-dropdown {
+            position: relative;
+        }
+        .user-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            transition: background 0.15s, color 0.15s;
+        }
+        .user-dropdown-btn:hover {
+            background: rgba(0,0,0,0.04);
+            color: var(--ink);
+        }
+        .user-dropdown-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        .user-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--card);
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-width: 180px;
+            display: none;
+            flex-direction: column;
+            z-index: 300;
+        }
+        .user-dropdown-menu.show {
+            display: flex;
+        }
+        .user-dropdown-menu a,
+        .user-dropdown-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s, color 0.15s;
+        }
+        .user-dropdown-menu a:hover,
+        .user-dropdown-menu button:hover {
+            background: rgba(0,0,0,0.04);
+            color: var(--ink);
+        }
+        .user-dropdown-menu a:first-child {
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+        }
+        .user-dropdown-menu form:last-child button {
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            width: 100%;
+        }
+        .user-dropdown-menu svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+        .user-dropdown-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.06);
+            margin: 4px 0;
+        }
+
+        /* Login button */
+        .login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: background 0.15s, transform 0.1s;
+        }
+        .login-btn:hover {
+            background: #2563EB;
+        }
+        .login-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
         /* Theme toggle */
         .theme-toggle {
             display: flex;
@@ -419,11 +523,7 @@
                    class="nav-link {{ request()->routeIs('certificate.track') ? 'active' : '' }}">
                     Track Status
                 </a>
-                <a href="{{ route('certificate.participant-dashboard') }}"
-                   class="nav-link {{ request()->routeIs('certificate.participant-dashboard') ? 'active' : '' }}">
-                    My Certificates
-                </a>
-                @if(auth()->check())
+                @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin'))
                 <a href="{{ route('admin.dashboard') }}"
                    class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     Admin
@@ -442,6 +542,54 @@
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
                 </button>
+
+                <!-- User Auth -->
+                @if(auth()->check())
+                <div class="user-dropdown" id="userDropdown">
+                    <button class="user-dropdown-btn" onclick="toggleUserDropdown()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>{{ auth()->user()->name ?? auth()->user()->email }}</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:-2px;">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="user-dropdown-menu" id="userDropdownMenu">
+                        <a href="{{ route('user.profile') }}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            My Profile
+                        </a>
+                        <div class="user-dropdown-divider"></div>
+                        <a href="{{ route('certificate.participant-dashboard') }}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                            My Certificates
+                        </a>
+                        <div class="user-dropdown-divider"></div>
+                        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                            @csrf
+                            <button type="submit">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @else
+                <a href="{{ route('login') }}" class="login-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Login
+                </a>
+                @endif
 
                 <!-- Hamburger (mobile) -->
                 <button class="nav-hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
@@ -477,6 +625,16 @@
                 </svg>
                 Track Status
             </a>
+            @if(auth()->check())
+            <div class="drawer-divider"></div>
+            <a href="{{ route('user.profile') }}"
+               class="drawer-link {{ request()->routeIs('user.profile') ? 'active' : '' }}"
+               role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                My Profile
+            </a>
             <a href="{{ route('certificate.participant-dashboard') }}"
                class="drawer-link {{ request()->routeIs('certificate.participant-dashboard') ? 'active' : '' }}"
                role="menuitem">
@@ -485,12 +643,32 @@
                 </svg>
                 My Certificates
             </a>
-            @if(auth()->check())
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;" role="menuitem">
+                @csrf
+                <button type="submit" class="drawer-link" style="width:100%;border:none;background:none;cursor:pointer;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke_linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </button>
+            </form>
+            @else
+            <div class="drawer-divider"></div>
+            <a href="{{ route('login') }}"
+               class="drawer-link {{ request()->routeIs('login') ? 'active' : '' }}"
+               role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke_linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                Login
+            </a>
+            @endif
+            @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin'))
             <div class="drawer-divider"></div>
             <a href="{{ route('admin.dashboard') }}"
                class="drawer-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
                role="menuitem">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke_linecap="round" stroke_linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
                 Admin
@@ -540,6 +718,21 @@
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             setTheme(newTheme);
+        });
+
+        // User dropdown
+        function toggleUserDropdown() {
+            const menu = document.getElementById('userDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                const menu = document.getElementById('userDropdownMenu');
+                if (menu) menu.classList.remove('show');
+            }
         });
 
         // Navigation

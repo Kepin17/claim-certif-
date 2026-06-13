@@ -36,21 +36,28 @@ class CertificateController extends Controller
         }
 
         $certificateTypes = $event->activeCertificateTypes;
-        return view('certificates.claim', compact('event', 'certificateTypes'));
+        $user = auth()->user();
+        
+        return view('certificates.claim', compact('event', 'certificateTypes', 'user'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $event = \App\Models\Event::with('activeCertificateTypes')->findOrFail($request->input('event_id'));
+
+        $rules = [
             'name'                  => 'required|string|max:255',
-            'email'                 => 'required|email|max:255',
+            'email'                 => 'nullable|email|max:255',
             'event_id'              => 'required|exists:events,id',
             'certificate_type_id'   => 'nullable|exists:certificate_types,id',
             'message'               => 'nullable|string|max:1000',
             'next_event'            => 'nullable|string|max:255',
             'proof_file'            => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'attendance_photo'      => 'nullable|string',
-        ]);
+            'payment_proof'         => $event->requires_payment_proof ? 'required|file|mimes:pdf,jpg,jpeg,png|max:5120' : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ];
+
+        $validated = $request->validate($rules);
 
         $event = \App\Models\Event::with('activeCertificateTypes')->findOrFail($validated['event_id']);
 
@@ -92,17 +99,27 @@ class CertificateController extends Controller
             $attendancePhotoPath = $this->saveBase64Image($request->input('attendance_photo'), 'attendance-photos');
         }
 
+        // Handle payment proof file upload
+        $paymentProofPath = null;
+        if ($event->requires_payment_proof && $request->hasFile('payment_proof')) {
+            $paymentProofPath = $request->file('payment_proof')->store('payment-proofs', 'public');
+        }
+
+        // Get authenticated user's email
+        $userEmail = auth()->user()->email;
+
         $certificate = Certificate::create([
             'event_id'              => $validated['event_id'],
             'certificate_type_id'   => $certType?->id,
             'certificate_type_name' => $certType?->name,
             'name'                  => $validated['name'],
-            'email'                 => $validated['email'],
+            'email'                 => $userEmail,
             'event'                 => $event->name,
             'message'               => $validated['message'],
             'next_event'            => $validated['next_event'],
             'proof_file'            => $proofPath,
-            'attendance_photo'        => $attendancePhotoPath,
+            'attendance_photo'      => $attendancePhotoPath,
+            'payment_proof'         => $paymentProofPath,
             'status'                => 'pending',
         ]);
 
@@ -145,17 +162,13 @@ class CertificateController extends Controller
 
     public function participantDashboard(Request $request)
     {
-        $email = $request->input('email');
-        $certificates = collect();
-
-        if ($email) {
-            $request->validate(['email' => 'required|email']);
-            $certificates = Certificate::where('email', $email)
-                ->with('eventRelation')
-                ->latest()
-                ->paginate(12)
-                ->appends(['email' => $email]);
-        }
+        $user = auth()->user();
+        $email = $user->email;
+        
+        $certificates = Certificate::where('email', $email)
+            ->with('eventRelation')
+            ->latest()
+            ->paginate(12);
 
         return view('certificates.participant-dashboard', compact('email', 'certificates'));
     }

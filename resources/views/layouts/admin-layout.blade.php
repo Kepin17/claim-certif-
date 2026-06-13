@@ -325,7 +325,7 @@
                 <form action="{{ route('admin.search') }}" method="GET" style="display:flex;align-items:center;">
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Search…" style="padding:6px 12px;font-size:13px;font-family:'Geist',sans-serif;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.08);border-radius:6px;color:var(--ink);width:140px;transition:width 0.2s;" onfocus="this.style.width='200px'" onblur="this.style.width='140px'">
                 </form>
-                <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" class="nav-logout">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -350,7 +350,7 @@
             <form action="{{ route('admin.search') }}" method="GET" style="padding:4px 0;">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search claims…" style="width:100%;padding:10px 14px;font-size:14px;font-family:'Geist',sans-serif;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.08);border-radius:6px;color:var(--ink);">
             </form>
-            <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                 @csrf
                 <button type="submit" class="nav-logout">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -50,4 +50,28 @@ class User extends Authenticatable
             'otp_expires_at'    => 'datetime',
         ];
     }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is superadmin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    /**
+     * Check if user has admin access (admin or superadmin)
+     */
+    public function hasAdminAccess(): bool
+    {
+        return $this->role === 'admin' || $this->role === 'superadmin';
+    }
 }

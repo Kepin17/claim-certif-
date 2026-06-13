@@ -481,24 +481,11 @@
 @section('content')
 <div class="oui-page">
 
-    {{-- Hero / Search --}}
+    {{-- Hero --}}
     <div class="oui-hero">
         <div class="oui-hero-inner">
             <p class="oui-page-label">Certificates</p>
             <h1 class="oui-page-title">My Certificates</h1>
-
-            <form method="GET" action="{{ route('certificate.participant-dashboard') }}">
-                <div class="oui-search-wrap">
-                    <label class="oui-search-field">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                        <input type="email" name="email" placeholder="Enter your email address"
-                               value="{{ old('email', $email) }}" required>
-                    </label>
-                    <button type="submit" class="oui-search-btn">Search</button>
-                </div>
-            </form>
         </div>
     </div>
 

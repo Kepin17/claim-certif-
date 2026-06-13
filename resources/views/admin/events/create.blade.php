@@ -301,6 +301,17 @@
                         <span class="toggle-slider"></span>
                     </div>
                 </label>
+
+                <label class="toggle-item">
+                    <div class="toggle-label">
+                        <strong>Require Payment Proof</strong>
+                        <span>Users must upload payment receipt or proof when claiming</span>
+                    </div>
+                    <div class="toggle-switch">
+                        <input type="checkbox" name="requires_payment_proof" id="requires_payment_proof">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
             </div>
 
             <div class="form-group">

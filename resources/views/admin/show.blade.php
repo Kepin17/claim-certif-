@@ -340,6 +340,17 @@
                     <img src="{{ asset('storage/' . $certificate->attendance_photo) }}" alt="Attendance Proof" style="max-width:100%; max-height:300px; border-radius:8px; margin-top:12px; border:1px solid rgba(0,0,0,0.1);" />
                 </div>
             @endif
+            @if($certificate->payment_proof)
+                <div style="margin-top: 16px;">
+                    <span class="info-label">Payment Proof</span>
+                    <div style="margin-top:8px;">
+                        <a href="{{ asset('storage/' . $certificate->payment_proof) }}" target="_blank" class="proof-link">View Full File</a>
+                    </div>
+                    @if(in_array(strtolower(pathinfo($certificate->payment_proof, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png']))
+                        <img src="{{ asset('storage/' . $certificate->payment_proof) }}" alt="Payment Proof" style="max-width:100%; max-height:300px; border-radius:8px; margin-top:12px; border:1px solid rgba(0,0,0,0.1);" />
+                    @endif
+                </div>
+            @endif
         </div>
 
         @if($certificate->status === 'pending')

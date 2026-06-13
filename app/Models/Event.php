@@ -33,6 +33,7 @@ class Event extends Model
         'certificate_number_prefix',
         'claim_deadline',
         'requires_attendance_proof',
+        'requires_payment_proof',
     ];
 
     protected $casts = [
@@ -40,6 +41,7 @@ class Event extends Model
         'claim_deadline' => 'datetime',
         'is_active' => 'boolean',
         'requires_attendance_proof' => 'boolean',
+        'requires_payment_proof' => 'boolean',
     ];
 
     public function isClaimOpen(): bool

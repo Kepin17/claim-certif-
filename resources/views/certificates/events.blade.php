@@ -5,577 +5,611 @@
 @push('scripts')
 @include('certificates.partials.oui-shared')
 <style>
-    /* Modern Hero with gradient */
-    .oui-hero-modern {
+    /* ─── Base ─────────────────────────────────── */
+    .ev-page { background: var(--surface); min-height: 100vh; }
+
+    /* ─── Hero ──────────────────────────────────── */
+    .ev-hero {
         background: linear-gradient(135deg, #3478F6 0%, #1A54C4 100%);
-        padding: 48px 24px 52px;
+        padding: 60px 24px 100px;
         position: relative;
-        height: 350px;
         overflow: hidden;
     }
-    .oui-hero-modern::before {
+    .ev-hero::before {
         content: '';
         position: absolute;
-        top: -50%; right: -20%;
-        width: 600px; height: 600px;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        top: -40%; right: -15%;
+        width: 700px; height: 700px;
+        background: radial-gradient(circle, rgba(255,255,255,0.09) 0%, transparent 65%);
         border-radius: 50%;
+        pointer-events: none;
     }
-    .oui-hero-modern::after {
+    .ev-hero::after {
         content: '';
         position: absolute;
-        bottom: -30%; left: -10%;
-        width: 400px; height: 400px;
-        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+        bottom: -40%; left: -10%;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 65%);
         border-radius: 50%;
+        pointer-events: none;
     }
-    .oui-hero-inner-modern {
+    .ev-hero-inner {
         max-width: 1200px;
         margin: 0 auto;
         position: relative;
         z-index: 1;
     }
-    .oui-hero-label-modern {
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,0.85);
-        margin-bottom: 12px;
-    }
-    .oui-hero-title-modern {
-        font-size: 38px;
-        font-weight: 800;
-        color: #fff;
-        letter-spacing: -0.8px;
-        line-height: 1.1;
-        margin-bottom: 16px;
-    }
-    .oui-hero-desc-modern {
-        font-size: 16px;
-        color: rgba(255,255,255,0.9);
-        line-height: 1.6;
-        max-width: 580px;
-    }
-
-    /* Feature cards in hero */
-    .oui-hero-features {
-        display: flex;
-        gap: 16px;
-        margin-top: 28px;
-        flex-wrap: wrap;
-    }
-    .oui-hero-feature {
+    .ev-hero-label {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background: rgba(255,255,255,0.25);
+        gap: 7px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.8);
+        background: rgba(255,255,255,0.12);
+        padding: 5px 12px;
+        border-radius: 50px;
+        border: 1px solid rgba(255,255,255,0.2);
+        margin-bottom: 20px;
+    }
+    .ev-hero-label svg { width: 13px; height: 13px; }
+    .ev-hero-title {
+        font-size: 46px;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -1.2px;
+        line-height: 1.05;
+        margin-bottom: 16px;
+        max-width: 660px;
+    }
+    .ev-hero-desc {
+        font-size: 17px;
+        color: rgba(255,255,255,0.88);
+        line-height: 1.65;
+        max-width: 540px;
+        margin-bottom: 32px;
+    }
+    .ev-hero-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .ev-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 16px;
+        background: rgba(255,255,255,0.18);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.3);
+        border: 1px solid rgba(255,255,255,0.28);
         border-radius: 50px;
         font-size: 13px;
         font-weight: 600;
         color: #fff;
     }
-    .oui-hero-feature svg {
-        width: 16px; height: 16px;
+    .ev-hero-badge svg { width: 15px; height: 15px; }
+
+    /* ─── Main wrap ─────────────────────────────── */
+    .ev-main {
+        max-width: 1200px;
+        margin: -52px auto 0;
+        padding: 0 24px 60px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* ─── Search bar ────────────────────────────── */
+    .ev-search-card {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 16px 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 32px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .ev-search-input-wrap {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--surface);
+        border-radius: 13px;
+        padding: 0 16px;
+        height: 50px;
+    }
+    .ev-search-input-wrap svg {
+        width: 18px; height: 18px;
+        color: #AEAEB2;
         flex-shrink: 0;
     }
-
-    /* Section container */
-    .oui-events-wrap {
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
+    .ev-search-input-wrap input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: 'Geist', sans-serif;
+        font-size: 15px;
+        color: var(--ink);
+        outline: none;
     }
-
-    .oui-page {
-        background: #F2F3F5;
+    .ev-search-input-wrap input::placeholder { color: #AEAEB2; }
+    .ev-search-btn {
+        height: 50px;
+        padding: 0 22px;
+        background: #3478F6;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        border-radius: 13px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+        transition: background 0.15s, transform 0.1s;
+        box-shadow: 0 2px 10px rgba(52,120,246,0.3);
     }
+    .ev-search-btn:hover { background: #2563EB; }
+    .ev-search-btn:active { transform: scale(0.97); }
+    .ev-search-btn svg { width: 16px; height: 16px; }
+    .ev-search-btn .btn-text { display: block; }
+    .ev-search-btn .btn-icon { display: none; }
 
-    /* Search bar floating */
-    .oui-search-float {
-        background: #fff;
+    /* ─── Section header ────────────────────────── */
+    .ev-section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        gap: 12px;
+    }
+    .ev-section-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -0.3px;
+    }
+    .ev-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(52,120,246,0.1);
+        color: #3478F6;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 5px 12px;
         border-radius: 20px;
-        padding: 20px 24px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
-        margin: -32px auto 32px;
-        max-width: 700px;
-        position: relative;
-        top: -30px;
-        z-index: 10;
     }
-    .oui-search-float .oui-search-field {
-        height: 54px;
-        border-radius: 14px;
-    }
-    .oui-search-float .oui-search-btn {
-        height: 54px;
-        padding: 0 28px;
+    .ev-count-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: #3478F6;
     }
 
-    /* Events grid */
-    .oui-events-grid {
+    /* ─── Events grid ───────────────────────────── */
+    .ev-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 40px;
+        gap: 18px;
+        margin-bottom: 36px;
     }
 
-    /* Event card - horizontal layout */
-    .oui-event-card {
-        background: #fff;
+    /* ─── Event card (vertical) ─────────────────── */
+    .ev-card {
+        background: var(--card);
         border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         display: flex;
-        flex-direction: row;
-        align-items: stretch;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .oui-event-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.1), 0 12px 32px rgba(0,0,0,0.06);
+    .ev-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.1);
     }
-
-    .oui-event-image {
-        width: 180px;
-        flex-shrink: 0;
-        background: linear-gradient(135deg, #EBF2FF 0%, #E0E8FF 100%);
-        position: relative;
+    .ev-card-image {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: linear-gradient(135deg, #EBF2FF 0%, #D8E8FF 100%);
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
     }
-    .oui-event-image img {
+    .ev-card-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
     }
-    .oui-event-image-ph {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .oui-event-image-ph svg {
-        width: 48px;
-        height: 48px;
+    .ev-card-image-ph svg {
+        width: 48px; height: 48px;
         color: #3478F6;
-        opacity: 0.5;
+        opacity: 0.4;
     }
-
-    .oui-event-content {
-        padding: 20px 24px;
+    .ev-card-body {
+        padding: 18px 20px 20px;
+        display: flex;
+        flex-direction: column;
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
     }
-
-    .oui-event-title {
-        font-size: 16px;
+    .ev-card-title {
+        font-size: 15px;
         font-weight: 700;
-        color: #1C1C1E;
+        color: var(--ink);
         line-height: 1.35;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
-
-    .oui-event-details {
+    .ev-card-meta {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 5px;
         margin-bottom: 16px;
     }
-    .oui-event-detail {
+    .ev-card-meta-row {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: #8E8E93;
+        gap: 7px;
+        font-size: 12.5px;
+        color: var(--ink-muted);
     }
-    .oui-event-detail svg {
-        width: 14px; height: 14px;
+    .ev-card-meta-row svg {
+        width: 13px; height: 13px;
         flex-shrink: 0;
         color: #3478F6;
     }
-
-    .oui-event-footer {
-        margin-top: auto;
-        padding-top: 12px;
-    }
-    .oui-claim-btn-card {
-        display: inline-flex;
+    .ev-card-footer { margin-top: auto; }
+    .ev-claim-btn {
+        display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 12px 20px;
+        gap: 7px;
+        padding: 11px 20px;
         background: #3478F6;
         color: #fff;
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 13.5px;
+        font-weight: 700;
         text-decoration: none;
         border-radius: 12px;
         transition: background 0.15s, transform 0.1s;
+        box-shadow: 0 2px 8px rgba(52,120,246,0.25);
     }
-    .oui-claim-btn-card:hover {
-        background: #2563EB;
-        color: #fff;
-    }
-    .oui-claim-btn-card:active {
-        transform: scale(0.98);
-    }
+    .ev-claim-btn:hover { background: #2563EB; color: #fff; }
+    .ev-claim-btn:active { transform: scale(0.98); }
+    .ev-claim-btn svg { width: 15px; height: 15px; }
 
-    /* No results */
-    .oui-no-results {
+    /* ─── Empty state ───────────────────────────── */
+    .ev-empty {
         grid-column: 1 / -1;
-        padding: 48px 24px;
+        padding: 56px 24px;
         text-align: center;
-        background: #fff;
-        border-radius: 24px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        background: var(--card);
+        border-radius: 20px;
+        border: 1px solid rgba(0,0,0,0.05);
     }
-    .oui-no-results strong {
-        color: #1C1C1E;
+    .ev-empty-icon {
+        width: 72px; height: 72px;
+        background: var(--surface);
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+    .ev-empty-icon svg { width: 32px; height: 32px; color: #AEAEB2; }
+    .ev-empty-title { font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+    .ev-empty-desc { font-size: 14px; color: var(--ink-muted); }
+
+    /* ─── Pagination ────────────────────────────── */
+    .ev-pagination-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 40px;
     }
 
-    /* How it works section */
-    .oui-how-section {
-        background: #fff;
+    /* ─── Divider section ───────────────────────── */
+    .ev-divider {
+        height: 1px;
+        background: rgba(0,0,0,0.06);
+        margin: 40px 0;
+    }
+
+    /* ─── How It Works ──────────────────────────── */
+    .ev-how {
+        background: var(--card);
         border-radius: 24px;
-        padding: 36px 32px;
-        margin-bottom: 40px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        padding: 40px 36px;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        margin-bottom: 24px;
     }
-    .oui-how-title {
-        font-size: 22px;
-        font-weight: 700;
-        color: #1C1C1E;
+    .ev-how-head {
         text-align: center;
-        margin-bottom: 32px;
+        margin-bottom: 36px;
     }
-    .oui-how-steps {
+    .ev-how-head h2 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -0.3px;
+        margin-bottom: 6px;
+    }
+    .ev-how-head p {
+        font-size: 14px;
+        color: var(--ink-muted);
+    }
+    .ev-how-steps {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 28px;
+        gap: 8px;
+        position: relative;
     }
-    .oui-how-step {
+    .ev-how-step {
         text-align: center;
+        padding: 28px 20px;
+        background: var(--surface);
+        border-radius: 18px;
+        position: relative;
     }
-    .oui-how-icon {
-        width: 64px;
-        height: 64px;
-        background: linear-gradient(135deg, #EBF2FF 0%, #E0E8FF 100%);
-        border-radius: 20px;
+    .ev-how-num {
+        position: absolute;
+        top: 16px;
+        left: 20px;
+        font-size: 11px;
+        font-weight: 800;
+        color: #3478F6;
+        background: rgba(52,120,246,0.1);
+        width: 24px;
+        height: 24px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .ev-how-icon {
+        width: 60px; height: 60px;
+        background: linear-gradient(135deg, rgba(52,120,246,0.12) 0%, rgba(52,120,246,0.06) 100%);
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 16px;
     }
-    .oui-how-icon svg {
-        width: 28px; height: 28px;
-        color: #3478F6;
-    }
-    .oui-how-step h4 {
-        font-size: 15px;
+    .ev-how-icon svg { width: 26px; height: 26px; color: #3478F6; }
+    .ev-how-step h4 {
+        font-size: 14px;
         font-weight: 700;
-        color: #1C1C1E;
-        margin-bottom: 8px;
+        color: var(--ink);
+        margin-bottom: 6px;
     }
-    .oui-how-step p {
+    .ev-how-step p {
         font-size: 13px;
-        color: #8E8E93;
+        color: var(--ink-muted);
         line-height: 1.5;
     }
 
-    /* Quick actions */
-    .oui-quick-actions {
-        display: flex;
+    /* ─── Quick Actions ─────────────────────────── */
+    .ev-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 14px;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-bottom: 40px;
+        margin-bottom: 8px;
     }
-    .oui-quick-action {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 14px 24px;
-        background: #fff;
-        color: #3478F6;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        border-radius: 50px;
-        border: 1.5px solid #E5E5EA;
-        transition: all 0.15s;
-    }
-    .oui-quick-action:hover {
-        background: #EBF2FF;
-        border-color: #3478F6;
-        color: #3478F6;
-    }
-    .oui-quick-action svg {
-        width: 16px; height: 16px;
-    }
-
-    /* Pagination */
-    .oui-pagination-wrap {
+    .ev-action {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 12px;
-        margin-top: 32px;
+        gap: 14px;
+        padding: 18px 20px;
+        background: var(--card);
+        border: 1.5px solid rgba(0,0,0,0.06);
+        border-radius: 18px;
+        text-decoration: none;
+        transition: all 0.16s;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .ev-action:hover {
+        border-color: #3478F6;
+        box-shadow: 0 4px 16px rgba(52,120,246,0.12);
+        transform: translateY(-2px);
+    }
+    .ev-action-icon {
+        width: 44px; height: 44px;
+        border-radius: 13px;
+        background: rgba(52,120,246,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .ev-action-icon svg { width: 20px; height: 20px; color: #3478F6; }
+    .ev-action-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 2px;
+    }
+    .ev-action-desc {
+        font-size: 12px;
+        color: var(--ink-muted);
+    }
+    .ev-action-arrow {
+        margin-left: auto;
+        width: 20px; height: 20px;
+        color: #AEAEB2;
+        flex-shrink: 0;
     }
 
-    @media (max-width: 900px) {
-        .oui-events-grid { grid-template-columns: repeat(2, 1fr); }
-        .oui-how-steps { grid-template-columns: 1fr; gap: 24px; }
-        .oui-hero-title-modern { font-size: 30px; }
+    /* ─── Alert ─────────────────────────────────── */
+    .ev-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        margin-bottom: 20px;
     }
-    @media (max-width: 600px) {
-        .oui-events-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .oui-event-card { flex-direction: column; border-radius: 16px; }
-        .oui-event-image { width: 100%; height: 160px; }
-        .oui-event-image img { object-fit: contain; max-height: 100%; max-width: 100%; }
-        .oui-event-content { padding: 14px 14px; }
-        .oui-event-title { font-size: 13px; margin-bottom: 6px; line-height: 1.3; }
-        .oui-event-details { gap: 4px; margin-bottom: 12px; }
-        .oui-event-detail { font-size: 11px; gap: 5px; }
-        .oui-event-detail svg { width: 11px; height: 11px; }
-        .oui-event-footer { padding-top: 10px; }
-        .oui-claim-btn-card { width: 100%; justify-content: center; padding: 10px 14px; font-size: 12px; border-radius: 10px; }
-        .oui-claim-btn-card svg { width: 14px; height: 14px; }
-        .oui-hero-modern { padding: 28px 12px 32px; }
-        .oui-hero-title-modern { font-size: 22px; }
-        .oui-hero-desc-modern { font-size: 12px; }
-        .oui-search-float { margin: -12px 12px 16px; padding: 12px; top: -12px; border-radius: 14px; }
-        .oui-search-float .oui-search-wrap { flex-direction: row; gap: 10px; align-items: stretch; }
-        .oui-search-float .oui-search-field { height: 52px; border-radius: 12px; flex: 1; }
-        .oui-search-float .oui-search-field input { font-size: 16px; }
-        .oui-search-float .oui-search-btn { height: 52px; width: 52px; padding: 0; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-        .oui-search-float .oui-search-btn .btn-text { display: none; }
-        .oui-search-float .oui-search-btn .btn-icon { display: block; width: 22px; height: 22px; }
-        .oui-count-pill { font-size: 11px; padding: 3px 8px; margin-bottom: 12px; }
-        .oui-how-section { padding: 20px 12px; margin-bottom: 20px; }
-        .oui-quick-actions { flex-direction: column; margin-bottom: 20px; }
-        .oui-quick-action { width: 100%; justify-content: center; padding: 10px 16px; }
+    .ev-alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+    .ev-alert.error { background: #FFF0F0; color: #C0392B; }
+
+    /* ─── Responsive ────────────────────────────── */
+    @media (max-width: 960px) {
+        .ev-grid { grid-template-columns: repeat(2, 1fr); }
+        .ev-hero-title { font-size: 36px; }
+    }
+    @media (max-width: 640px) {
+        .ev-hero { padding: 44px 20px 84px; }
+        .ev-hero-title { font-size: 28px; }
+        .ev-hero-desc { font-size: 15px; }
+        .ev-main { padding: 0 14px 48px; }
+        .ev-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ev-card-body { padding: 14px 14px 16px; }
+        .ev-card-title { font-size: 13px; }
+        .ev-card-meta-row { font-size: 11.5px; }
+        .ev-search-btn .btn-text { display: none; }
+        .ev-search-btn .btn-icon { display: block; }
+        .ev-search-btn { width: 50px; padding: 0; justify-content: center; }
+        .ev-how { padding: 28px 20px; }
+        .ev-how-steps { grid-template-columns: 1fr; }
+        .ev-actions { grid-template-columns: 1fr; }
     }
     @media (max-width: 400px) {
-        .oui-search-float { margin: -16px 8px 20px; padding: 12px; }
-        .oui-hero-title-modern { font-size: 22px; }
-        .oui-hero-features { flex-direction: column; gap: 10px; }
-        .oui-hero-feature { font-size: 12px; padding: 8px 12px; }
+        .ev-grid { grid-template-columns: 1fr; }
+        .ev-hero-title { font-size: 24px; }
     }
 
-    /* Dark mode overrides */
-    [data-theme="dark"] .oui-page {
-        background: #1C1C1E;
-    }
-    [data-theme="dark"] .oui-hero-modern {
-        background: linear-gradient(135deg, #1A54C4 0%, #0D3A8A 100%);
-    }
-    [data-theme="dark"] .oui-hero-feature {
-        background: rgba(0,0,0,0.2);
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-hero-feature svg {
-        color: #6FCF97;
-    }
-    [data-theme="dark"] .oui-event-card {
-        background: #2C2C2E;
-    }
-    [data-theme="dark"] .oui-event-image {
-        background: linear-gradient(135deg, #3A3A3C 0%, #2C2C2E 100%);
-    }
-    [data-theme="dark"] .oui-event-title {
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-event-detail {
-        color: #8E8E93;
-    }
-    [data-theme="dark"] .oui-event-footer {
-        border-top-color: #3A3A3C;
-    }
-    [data-theme="dark"] .oui-search-float {
-        background: #2C2C2E;
-    }
-    [data-theme="dark"] .oui-search-field {
-        background: #3A3A3C;
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-search-field:focus {
-        background: #2C2C2E;
-    }
-    [data-theme="dark"] .oui-search-field input::placeholder {
-        color: #8E8E93;
-    }
-    [data-theme="dark"] .oui-search-btn {
-        background: #3478F6;
-    }
-    [data-theme="dark"] .oui-count-pill {
-        background: #2C2C2E;
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-count-dot {
-        background: #3478F6;
-    }
-    [data-theme="dark"] .oui-how-section {
-        background: #2C2C2E;
-    }
-    [data-theme="dark"] .oui-how-title {
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-how-step h4 {
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-how-step p {
-        color: #8E8E93;
-    }
-    [data-theme="dark"] .oui-how-icon {
-        background: linear-gradient(135deg, #3A3A3C 0%, #2C2C2E 100%);
-    }
-    [data-theme="dark"] .oui-quick-action {
-        background: #2C2C2E;
-        color: #3478F6;
-        border-color: #3A3A3C;
-    }
-    [data-theme="dark"] .oui-quick-action:hover {
-        background: #3A3A3C;
-    }
-    [data-theme="dark"] .oui-no-results {
-        background: #2C2C2E;
-    }
-    [data-theme="dark"] .oui-no-results strong {
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-empty-icon {
-        background: #3A3A3C;
-    }
-    [data-theme="dark"] .oui-empty-icon svg {
-        color: #8E8E93;
-    }
-    [data-theme="dark"] .oui-empty-title {
-        color: #F5F2EC;
-    }
-    [data-theme="dark"] .oui-empty-desc {
-        color: #8E8E93;
-    }
-    [data-theme="dark"] .oui-pagination a {
-        background: #2C2C2E;
-        color: #3478F6;
-    }
-    [data-theme="dark"] .oui-pagination a:hover {
-        background: #3A3A3C;
-    }
-    [data-theme="dark"] .oui-pagination span.oui-page-active {
-        background: #3478F6;
-        color: #fff;
-    }
-    [data-theme="dark"] .oui-pagination span.oui-page-disabled {
-        background: #3A3A3C;
-        color: #8E8E93;
-    }
-    [data-theme="dark"] .oui-pagination-info {
-        color: #8E8E93;
-    }
+    /* ─── Dark mode ─────────────────────────────── */
+    [data-theme="dark"] .ev-hero { background: linear-gradient(135deg, #1A54C4 0%, #0D3A8A 100%); }
+    [data-theme="dark"] .ev-card { background: #2C2C2E; border-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .ev-card-image { background: linear-gradient(135deg, #3A3A3C 0%, #2C2C2E 100%); }
+    [data-theme="dark"] .ev-card-title { color: #F5F2EC; }
+    [data-theme="dark"] .ev-empty { background: #2C2C2E; }
+    [data-theme="dark"] .ev-empty-icon { background: #3A3A3C; }
+    [data-theme="dark"] .ev-empty-title { color: #F5F2EC; }
+    [data-theme="dark"] .ev-how { background: #2C2C2E; border-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .ev-how-step { background: #3A3A3C; }
+    [data-theme="dark"] .ev-how-step h4 { color: #F5F2EC; }
+    [data-theme="dark"] .ev-action { background: #2C2C2E; border-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .ev-action-title { color: #F5F2EC; }
+    [data-theme="dark"] .ev-search-card { background: #2C2C2E; }
+    [data-theme="dark"] .ev-search-input-wrap { background: #3A3A3C; }
+    [data-theme="dark"] .ev-search-input-wrap input { color: #F5F2EC; }
+    [data-theme="dark"] .oui-pagination a { background: #2C2C2E; color: #3478F6; }
+    [data-theme="dark"] .oui-pagination a:hover { background: #3A3A3C; }
+    [data-theme="dark"] .oui-pagination span.oui-page-active { background: #3478F6; color: #fff; }
+    [data-theme="dark"] .oui-pagination span.oui-page-disabled { background: #3A3A3C; color: #8E8E93; }
+    [data-theme="dark"] .oui-pagination-info { color: #8E8E93; }
 </style>
 @endpush
 
 @section('content')
-<div class="oui-page">
+<div class="ev-page">
 
-    <!-- Modern Hero -->
-    <div class="oui-hero-modern">
-        <div class="oui-hero-inner-modern">
-            <p class="oui-hero-label-modern">Certificate Claim System</p>
-            <h1 class="oui-hero-title-modern">Claim Your Event Certificate</h1>
-            <p class="oui-hero-desc-modern">Select your event, complete the claim form, and receive your certificate via email after approval.</p>
-            <div class="oui-hero-features">
-                <span class="oui-hero-feature">
+    <!-- Hero -->
+    <div class="ev-hero">
+        <div class="ev-hero-inner">
+            <div class="ev-hero-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+                </svg>
+                Certificate Claim System
+            </div>
+            <h1 class="ev-hero-title">Claim Your Event Certificate</h1>
+            <p class="ev-hero-desc">Select your event, complete the claim form, and receive your verified certificate via email after approval.</p>
+            <div class="ev-hero-badges">
+                <span class="ev-hero-badge">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     Simple Process
                 </span>
-                <span class="oui-hero-feature">
+                <span class="ev-hero-badge">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     Verified Certificates
                 </span>
-                <span class="oui-hero-feature">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                <span class="ev-hero-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                     Email Delivery
                 </span>
             </div>
         </div>
     </div>
 
-    <div class="oui-section oui-events-wrap">
+    <!-- Main content -->
+    <div class="ev-main">
 
-        <!-- Floating Search -->
-        <div class="oui-search-float">
-            <form method="GET" action="{{ route('certificate.index') }}">
-                <div class="oui-search-wrap">
-                    <label class="oui-search-field">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                        <input type="text" id="eventSearch" placeholder="Search events...">
-                    </label>
-                    <button type="submit" class="oui-search-btn">
-                        <span class="btn-text">Search</span>
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                    </button>
+        <!-- Search -->
+        <div class="ev-search-card">
+            <form method="GET" action="{{ route('certificate.index') }}" style="display:contents;">
+                <div class="ev-search-input-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="text" id="eventSearch" placeholder="Search events by name…">
                 </div>
+                <button type="submit" class="ev-search-btn">
+                    <span class="btn-text">Search</span>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
             </form>
         </div>
 
         @if(session('error'))
-            <div class="oui-alert oui-alert-error" style="margin-bottom:20px">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <span>{{ session('error') }}</span>
-            </div>
+        <div class="ev-alert error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ session('error') }}</span>
+        </div>
         @endif
 
-        <!-- Count pill -->
+        <!-- Events header -->
         @if($events->total() > 0)
-        <div class="oui-count-pill" style="margin-bottom:20px">
-            <span class="oui-count-dot"></span>
-            <span id="searchCount">{{ $events->total() }}</span> {{ Str::plural('event', $events->total()) }} available
+        <div class="ev-section-head">
+            <h2 class="ev-section-title">Active Events</h2>
+            <div class="ev-count-badge">
+                <span class="ev-count-dot"></span>
+                <span id="searchCount">{{ $events->total() }}</span> {{ Str::plural('event', $events->total()) }}
+            </div>
         </div>
         @endif
 
         <!-- Events Grid -->
-        <div class="oui-events-grid" id="eventsGrid">
+        <div class="ev-grid" id="eventsGrid">
 
             @if($events->total() === 0)
-                <div class="oui-no-results">
-                    <div class="oui-empty-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                    </div>
-                    <div class="oui-empty-title">No active events</div>
-                    <div class="oui-empty-desc">Please check back later or contact the administrator.</div>
+            <div class="ev-empty">
+                <div class="ev-empty-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
                 </div>
+                <div class="ev-empty-title">No active events</div>
+                <div class="ev-empty-desc">Please check back later or contact the administrator.</div>
+            </div>
 
             @else
                 @foreach($events as $event)
-                <article class="oui-event-card" data-title="{{ strtolower($event->name) }}">
+                <article class="ev-card" data-title="{{ strtolower($event->name) }}">
 
-                    <div class="oui-event-image">
+                    <div class="ev-card-image">
                         @if($event->poster)
-                            <img src="{{ asset('storage/' . $event->poster) }}" alt="">
+                            <img src="{{ asset('storage/' . $event->poster) }}" alt="{{ $event->name }}">
                         @else
-                            <div class="oui-event-image-ph">
+                            <div class="ev-card-image-ph">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
                                 </svg>
@@ -583,19 +617,20 @@
                         @endif
                     </div>
 
-                    <div class="oui-event-content">
-                        <h3 class="oui-event-title">{{ $event->name }}</h3>
-                        <div class="oui-event-details">
+                    <div class="ev-card-body">
+                        <h3 class="ev-card-title">{{ $event->name }}</h3>
+
+                        <div class="ev-card-meta">
                             @if($event->date)
-                            <div class="oui-event-detail">
+                            <div class="ev-card-meta-row">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                                    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                                 </svg>
                                 {{ $event->date->format('d M Y') }}
                             </div>
                             @endif
                             @if($event->location)
-                            <div class="oui-event-detail">
+                            <div class="ev-card-meta-row">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                                 </svg>
@@ -603,7 +638,7 @@
                             </div>
                             @endif
                             @if($event->certificates_count > 0)
-                            <div class="oui-event-detail">
+                            <div class="ev-card-meta-row">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                                 </svg>
@@ -611,10 +646,11 @@
                             </div>
                             @endif
                         </div>
-                        <div class="oui-event-footer">
-                            <a href="{{ route('certificate.claim-form', $event->slug) }}" class="oui-claim-btn-card">
-                                Claim
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+
+                        <div class="ev-card-footer">
+                            <a href="{{ route('certificate.claim-form', $event->slug) }}" class="ev-claim-btn">
+                                Claim Certificate
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="9 18 15 12 9 6"/>
                                 </svg>
                             </a>
@@ -624,7 +660,7 @@
                 </article>
                 @endforeach
 
-                <div class="oui-no-results" id="noResults" style="display:none">
+                <div class="ev-empty" id="noResults" style="display:none;">
                     No events match "<strong id="noResultsTerm"></strong>"
                 </div>
             @endif
@@ -633,7 +669,7 @@
 
         <!-- Pagination -->
         @if($events->hasPages())
-        <div class="oui-pagination-wrap">
+        <div class="ev-pagination-wrap oui-pagination-wrap">
             <div class="oui-pagination">
                 @if($events->onFirstPage())
                     <span class="oui-page-disabled">
@@ -669,53 +705,77 @@
         </div>
         @endif
 
+        <div class="ev-divider"></div>
+
         <!-- How It Works -->
-        <div class="oui-how-section">
-            <h2 class="oui-how-title">How It Works</h2>
-            <div class="oui-how-steps">
-                <div class="oui-how-step">
-                    <div class="oui-how-icon">
+        <div class="ev-how">
+            <div class="ev-how-head">
+                <h2>How It Works</h2>
+                <p>Three simple steps to get your certificate</p>
+            </div>
+            <div class="ev-how-steps">
+                <div class="ev-how-step">
+                    <div class="ev-how-num">1</div>
+                    <div class="ev-how-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                         </svg>
                     </div>
-                    <h4>Select Event</h4>
-                    <p>Choose the event you participated in from the list above.</p>
+                    <h4>Find Your Event</h4>
+                    <p>Browse or search the list of available events you participated in.</p>
                 </div>
-                <div class="oui-how-step">
-                    <div class="oui-how-icon">
+                <div class="ev-how-step">
+                    <div class="ev-how-num">2</div>
+                    <div class="ev-how-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
                     </div>
-                    <h4>Complete Form</h4>
-                    <p>Fill in your details and submit the claim form.</p>
+                    <h4>Fill the Form</h4>
+                    <p>Complete your details and submit the claim request with required attachments.</p>
                 </div>
-                <div class="oui-how-step">
-                    <div class="oui-how-icon">
+                <div class="ev-how-step">
+                    <div class="ev-how-num">3</div>
+                    <div class="ev-how-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                            <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                         </svg>
                     </div>
-                    <h4>Receive Certificate</h4>
-                    <p>Get your certificate via email after approval.</p>
+                    <h4>Get Your Certificate</h4>
+                    <p>Receive your verified certificate via email after admin approval.</p>
                 </div>
             </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="oui-quick-actions">
-            <a href="{{ route('certificate.track') }}" class="oui-quick-action">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <div class="ev-actions">
+            <a href="{{ route('certificate.track') }}" class="ev-action">
+                <div class="ev-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ev-action-title">Track Claim Status</div>
+                    <div class="ev-action-desc">Check the status of your certificate claim</div>
+                </div>
+                <svg class="ev-action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
                 </svg>
-                Track Claim Status
             </a>
-            <a href="{{ route('certificate.participant-dashboard') }}" class="oui-quick-action">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            <a href="{{ route('certificate.participant-dashboard') }}" class="ev-action">
+                <div class="ev-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ev-action-title">My Certificates</div>
+                    <div class="ev-action-desc">View all certificates linked to your account</div>
+                </div>
+                <svg class="ev-action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
                 </svg>
-                My Certificates
             </a>
         </div>
 
@@ -725,12 +785,10 @@
 @push('scripts')
 <script>
     const searchInput = document.getElementById('eventSearch');
-    const cards       = document.querySelectorAll('.oui-event-card');
+    const cards       = document.querySelectorAll('.ev-card');
     const countEl     = document.getElementById('searchCount');
-    const countPill   = countEl?.closest('.oui-count-pill');
     const noResults   = document.getElementById('noResults');
     const termEl      = document.getElementById('noResultsTerm');
-    const grid        = document.getElementById('eventsGrid');
 
     searchInput?.addEventListener('input', function () {
         const q = this.value.trim().toLowerCase();
@@ -738,13 +796,12 @@
 
         cards.forEach(card => {
             const title = card.dataset.title || '';
-            const show  = title.includes(q);
+            const show  = !q || title.includes(q);
             card.style.display = show ? '' : 'none';
             if (show) visible++;
         });
 
         if (countEl) countEl.textContent = visible;
-        if (countPill) countPill.innerHTML = `<span class="oui-count-dot"></span><span id="searchCount">${visible}</span> ${visible === 1 ? 'event' : 'events'} available`;
 
         if (noResults && termEl) {
             noResults.style.display = (visible === 0 && q !== '') ? 'block' : 'none';
@@ -753,4 +810,5 @@
     });
 </script>
 @endpush
+
 @endsection
