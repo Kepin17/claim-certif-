@@ -353,10 +353,13 @@
         .oui-hero-modern { padding: 28px 12px 32px; }
         .oui-hero-title-modern { font-size: 22px; }
         .oui-hero-desc-modern { font-size: 12px; }
-        .oui-search-float { margin: -12px 8px 16px; padding: 14px; top: -12px; border-radius: 14px; }
-        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 8px; }
-        .oui-search-float .oui-search-field { height: 48px; border-radius: 12px; }
-        .oui-search-float .oui-search-btn { height: 44px; padding: 0 16px; width: 100%; border-radius: 12px; }
+        .oui-search-float { margin: -12px 12px 16px; padding: 12px; top: -12px; border-radius: 14px; }
+        .oui-search-float .oui-search-wrap { flex-direction: row; gap: 10px; align-items: stretch; }
+        .oui-search-float .oui-search-field { height: 52px; border-radius: 12px; flex: 1; }
+        .oui-search-float .oui-search-field input { font-size: 16px; }
+        .oui-search-float .oui-search-btn { height: 52px; width: 52px; padding: 0; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .oui-search-float .oui-search-btn .btn-text { display: none; }
+        .oui-search-float .oui-search-btn .btn-icon { display: block; width: 22px; height: 22px; }
         .oui-count-pill { font-size: 11px; padding: 3px 8px; margin-bottom: 12px; }
         .oui-how-section { padding: 20px 12px; margin-bottom: 20px; }
         .oui-quick-actions { flex-direction: column; margin-bottom: 20px; }
@@ -521,7 +524,12 @@
                         </svg>
                         <input type="text" id="eventSearch" placeholder="Search events...">
                     </label>
-                    <button type="submit" class="oui-search-btn">Search</button>
+                    <button type="submit" class="oui-search-btn">
+                        <span class="btn-text">Search</span>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </button>
                 </div>
             </form>
         </div>

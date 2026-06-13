@@ -110,6 +110,8 @@
     }
     .oui-search-btn:hover  { background: #2563EB; }
     .oui-search-btn:active { transform: scale(0.97); }
+    .oui-search-btn .btn-icon { display: none; }
+    .oui-search-btn .btn-text { display: inline; }
 
     .oui-count-pill {
         display: inline-flex;
