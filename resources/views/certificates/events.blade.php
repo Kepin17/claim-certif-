@@ -145,12 +145,15 @@
         background: linear-gradient(135deg, #EBF2FF 0%, #E0E8FF 100%);
         position: relative;
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .oui-event-image img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
-        padding: 10px;
+        object-fit: cover;
+        display: block;
     }
     .oui-event-image-ph {
         width: 100%;
@@ -337,7 +340,8 @@
     @media (max-width: 600px) {
         .oui-events-grid { grid-template-columns: 1fr; }
         .oui-event-card { flex-direction: column; }
-        .oui-event-image { width: 100%; height: 180px; }
+        .oui-event-image { width: 100%; height: 220px; }
+        .oui-event-image img { object-fit: contain; max-height: 100%; max-width: 100%; }
         .oui-claim-btn-card { width: 100%; justify-content: center; }
         .oui-hero-modern { padding: 36px 16px 40px; }
         .oui-hero-title-modern { font-size: 26px; }

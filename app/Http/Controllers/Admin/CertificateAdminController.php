@@ -238,7 +238,7 @@ class CertificateAdminController extends Controller
     public function resendEmail($id)
     {
         $certificate = Certificate::findOrFail($id);
-        
+
         if (!in_array($certificate->status, ['generated', 'sent'])) {
             return back()->with('error', 'Only generated certificates can have emails resent.');
         }
@@ -250,6 +250,38 @@ class CertificateAdminController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Email resend failed: ' . $e->getMessage());
         }
+    }
+
+    public function destroy($id)
+    {
+        $certificate = Certificate::findOrFail($id);
+
+        if (!in_array($certificate->status, ['generated', 'sent'])) {
+            return back()->with('error', 'Only generated certificates can be deleted.');
+        }
+
+        // Delete PDF file if exists
+        if ($certificate->pdf_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($certificate->pdf_path);
+        }
+
+        // Delete attendance photo if exists
+        if ($certificate->attendance_photo) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($certificate->attendance_photo);
+        }
+
+        // Delete proof file if exists
+        if ($certificate->proof_file) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($certificate->proof_file);
+        }
+
+        $email = $certificate->email;
+        $eventName = $certificate->event;
+
+        AdminActivityLog::record('deleted_generated', $certificate);
+        $certificate->delete();
+
+        return back()->with('success', "Certificate for {$email} has been deleted. User can now re-claim with the same email for event: {$eventName}");
     }
 
     public function bulkApprove(Request $request)

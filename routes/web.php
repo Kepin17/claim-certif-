@@ -37,6 +37,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::get('/certificate/{id}/preview', [CertificateAdminController::class, 'preview'])->name('preview');
     Route::post('/certificate/{id}/regenerate', [CertificateAdminController::class, 'regenerate'])->name('regenerate');
     Route::post('/certificate/{id}/resend-email', [CertificateAdminController::class, 'resendEmail'])->name('resend-email');
+    Route::delete('/certificate/{id}', [CertificateAdminController::class, 'destroy'])->name('destroy');
     Route::post('/certificate/{id}/reset-to-pending', [CertificateAdminController::class, 'resetToPending'])->name('reset-to-pending');
     Route::post('/bulk-approve', [CertificateAdminController::class, 'bulkApprove'])->name('bulk-approve');
     Route::post('/bulk-reject', [CertificateAdminController::class, 'bulkReject'])->name('bulk-reject');
