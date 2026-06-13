@@ -138,9 +138,13 @@ class AuthController extends Controller
         }
 
         // Send OTP via email
-        Mail::raw("Your OTP code is: {$otp}\n\nThis code will expire in 10 minutes.", function($message) use ($user) {
-            $message->to($user->email)
-                ->subject('Your OTP Code');
+        Mail::send('emails.otp', [
+            'otp'     => $otp,
+            'name'    => $user->name,
+            'message' => 'Use the code below to complete your sign in. This code will expire in 10 minutes.',
+            'subject' => 'Login Verification',
+        ], function ($message) use ($user) {
+            $message->to($user->email)->subject('Your OTP Code — Certificate Portal');
         });
 
         // Logout and redirect to OTP verification
@@ -251,9 +255,13 @@ class AuthController extends Controller
         }
 
         // Send OTP via email
-        Mail::raw("Your OTP code is: {$otp}\n\nThis code will expire in 10 minutes.", function($message) use ($user) {
-            $message->to($user->email)
-                ->subject('Your OTP Code');
+        Mail::send('emails.otp', [
+            'otp'     => $otp,
+            'name'    => $user->name,
+            'message' => 'Use the code below to complete your sign in. This code will expire in 10 minutes.',
+            'subject' => 'Login Verification',
+        ], function ($message) use ($user) {
+            $message->to($user->email)->subject('Your OTP Code — Certificate Portal');
         });
 
         return redirect()->route('otp.verify')->with('info', 'OTP code has been resent to your email.');
@@ -320,9 +328,13 @@ class AuthController extends Controller
             }
 
             // Send OTP to NEW email address
-            Mail::raw("Your email verification code is: {$otp}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this change, please ignore this email.", function($message) use ($validated) {
-                $message->to($validated['email'])
-                    ->subject('Verify Your New Email Address');
+            Mail::send('emails.otp', [
+                'otp'     => $otp,
+                'name'    => $user->name,
+                'message' => 'Use the code below to verify your new email address. This code will expire in 10 minutes.',
+                'subject' => 'Email Change Verification',
+            ], function ($message) use ($validated) {
+                $message->to($validated['email'])->subject('Verify Your New Email — Certificate Portal');
             });
 
             return redirect()->route('user.profile')
