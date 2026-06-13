@@ -27,13 +27,13 @@ class EventController extends Controller
             'description' => 'nullable|string',
             'date' => 'nullable|date',
             'location' => 'nullable|string|max:255',
-            'is_active' => 'nullable|boolean',
+            'is_active' => 'nullable',
             'max_participants' => 'nullable|integer|min:1',
             'certificate_template' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'certificate_number_prefix' => 'nullable|string|max:255',
             'claim_deadline' => 'nullable|date',
-            'requires_attendance_proof' => 'nullable|boolean',
+            'requires_attendance_proof' => 'nullable',
         ]);
 
         $templatePath = null;
@@ -94,13 +94,13 @@ class EventController extends Controller
             'description' => 'nullable|string',
             'date' => 'nullable|date',
             'location' => 'nullable|string|max:255',
-            'is_active' => 'nullable|boolean',
+            'is_active' => 'nullable',
             'max_participants' => 'nullable|integer|min:1',
             'certificate_template' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'certificate_number_prefix' => 'nullable|string|max:255',
             'claim_deadline' => 'nullable|date',
-            'requires_attendance_proof' => 'nullable|boolean',
+            'requires_attendance_proof' => 'nullable',
         ]);
 
         $templatePath = $event->certificate_template;

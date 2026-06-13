@@ -342,12 +342,19 @@
         .oui-hero-modern { padding: 36px 16px 40px; }
         .oui-hero-title-modern { font-size: 26px; }
         .oui-hero-desc-modern { font-size: 14px; }
-        .oui-search-float { margin: -24px 16px 24px; padding: 16px; }
-        .oui-search-float .oui-search-field { height: 48px; }
-        .oui-search-float .oui-search-btn { height: 48px; padding: 0 20px; }
+        .oui-search-float { margin: -20px 12px 24px; padding: 14px; top: -20px; }
+        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 10px; }
+        .oui-search-float .oui-search-field { height: 48px; width: 100%; }
+        .oui-search-float .oui-search-btn { height: 44px; padding: 0 20px; width: 100%; }
         .oui-how-section { padding: 28px 20px; }
         .oui-quick-actions { flex-direction: column; }
         .oui-quick-action { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 400px) {
+        .oui-search-float { margin: -16px 8px 20px; padding: 12px; }
+        .oui-hero-title-modern { font-size: 22px; }
+        .oui-hero-features { flex-direction: column; gap: 10px; }
+        .oui-hero-feature { font-size: 12px; padding: 8px 12px; }
     }
 
     /* Dark mode overrides */

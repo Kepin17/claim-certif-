@@ -428,18 +428,43 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <div class="checkbox-group">
-                    <input type="checkbox" name="is_active" id="is_active" {{ $event->is_active ? 'checked' : '' }}>
-                    <label for="is_active">Active Event (visible to users)</label>
-                </div>
-            </div>
+            <style>
+                .toggle-row { display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
+                .toggle-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; background: var(--surface); border-radius: 10px; border: 1px solid rgba(0,0,0,0.06); }
+                .toggle-label { font-size: 14px; color: var(--ink-mid); }
+                .toggle-label strong { display: block; color: var(--ink); font-weight: 500; margin-bottom: 2px; }
+                .toggle-label span { font-size: 12px; color: var(--ink-muted); }
+                .toggle-switch { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+                .toggle-switch input { opacity: 0; width: 0; height: 0; }
+                .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #C7C7CC; border-radius: 26px; transition: background 0.2s; }
+                .toggle-slider::before { content: ''; position: absolute; height: 22px; width: 22px; left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+                .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+                .toggle-switch input:checked + .toggle-slider::before { transform: translateX(22px); }
+                .toggle-switch input:focus + .toggle-slider { box-shadow: 0 0 0 3px rgba(45,80,22,0.1); }
+            </style>
 
-            <div class="form-group">
-                <div class="checkbox-group">
-                    <input type="checkbox" name="requires_attendance_proof" id="requires_attendance_proof" {{ $event->requires_attendance_proof ? 'checked' : '' }}>
-                    <label for="requires_attendance_proof">Require attendance proof photo (users must capture photo with camera when claiming)</label>
-                </div>
+            <div class="toggle-row">
+                <label class="toggle-item">
+                    <div class="toggle-label">
+                        <strong>Active Event</strong>
+                        <span>Visible to users</span>
+                    </div>
+                    <div class="toggle-switch">
+                        <input type="checkbox" name="is_active" id="is_active" {{ $event->is_active ? 'checked' : '' }}>
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+
+                <label class="toggle-item">
+                    <div class="toggle-label">
+                        <strong>Require Attendance Proof</strong>
+                        <span>Users must capture photo with camera when claiming</span>
+                    </div>
+                    <div class="toggle-switch">
+                        <input type="checkbox" name="requires_attendance_proof" id="requires_attendance_proof" {{ $event->requires_attendance_proof ? 'checked' : '' }}>
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
             </div>
 
             <!-- Certificate Template Upload -->
