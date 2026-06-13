@@ -20,9 +20,9 @@
             --ink-faint:  #C5C2BB;
             --surface:    #F5F2EC;
             --card:       #FDFCFA;
-            --accent:     #2D5016;
-            --accent-lt:  #EBF2E3;
-            --accent-mid: #4A8022;
+            --accent:     #3478F6;
+            --accent-lt:  #EBF2FF;
+            --accent-mid: #2563EB;
             --danger:     #8C2C1A;
             --danger-lt:  #F9EDE9;
             --radius-sm:  6px;
@@ -37,9 +37,9 @@
             --ink-faint:  #4A4740;
             --surface:    #1C1C1E;
             --card:       #2C2C2E;
-            --accent:     #4A8022;
-            --accent-lt:  #2D5016;
-            --accent-mid:  #6FCF97;
+            --accent:     #3478F6;
+            --accent-lt:  #1A3A6B;
+            --accent-mid:  #60A5FA;
             --danger:     #FF6B6B;
             --danger-lt:  #8C2C1A;
         }
@@ -451,7 +451,7 @@
         }
 
         .footer-support a {
-            color: #A8D88A;
+            color: #60A5FA;
             text-decoration: none;
             font-weight: 500;
             transition: opacity 0.15s;
