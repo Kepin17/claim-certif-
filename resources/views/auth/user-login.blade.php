@@ -378,15 +378,10 @@
         emailStatus.textContent = 'Checking…';
         emailStatus.style.color = '#8E8E93';
 
-        fetch('{{ route('check.email') }}', {
-            method: 'POST',
+        fetch('{{ route('check.email') }}?email=' + encodeURIComponent(email), {
+            method: 'GET',
             signal: abortCtrl.signal,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept':       'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-            },
-            body: JSON.stringify({ email })
+            headers: { 'Accept': 'application/json' }
         })
         .then(r => r.json())
         .then(data => {

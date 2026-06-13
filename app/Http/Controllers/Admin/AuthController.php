@@ -19,14 +19,15 @@ class AuthController extends Controller
 
     public function checkEmail(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
-        
-        $user = User::where('email', $request->email)->first();
-        
-        return response()->json([
-            'exists' => !!$user,
-            'email' => $request->email,
-        ]);
+        $email = $request->query('email', '');
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['exists' => false]);
+        }
+
+        $exists = User::where('email', $email)->exists();
+
+        return response()->json(['exists' => $exists]);
     }
 
     protected function throttleKey(Request $request): string

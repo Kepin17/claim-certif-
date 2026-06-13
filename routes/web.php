@@ -85,7 +85,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
 // Shared Login Route (for both admin and regular users)
 Route::get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.post')->middleware('guest');
-Route::post('/check-email', [\App\Http\Controllers\Admin\AuthController::class, 'checkEmail'])->name('check.email');
+Route::get('/check-email', [\App\Http\Controllers\Admin\AuthController::class, 'checkEmail'])->name('check.email');
 Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // OTP Verification Routes (for admin users)
