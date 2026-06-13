@@ -378,7 +378,7 @@
         emailStatus.textContent = 'Checking…';
         emailStatus.style.color = '#8E8E93';
 
-        fetch('{{ route('check.email') }}?email=' + encodeURIComponent(email), {
+        fetch('/check-email?email=' + encodeURIComponent(email), {
             method: 'GET',
             signal: abortCtrl.signal,
             headers: { 'Accept': 'application/json' }
