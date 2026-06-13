@@ -33,6 +33,7 @@ class EventController extends Controller
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'certificate_number_prefix' => 'nullable|string|max:255',
             'claim_deadline' => 'nullable|date',
+            'requires_attendance_proof' => 'nullable|boolean',
         ]);
 
         $templatePath = null;
@@ -65,6 +66,7 @@ class EventController extends Controller
             'overlay_role_color' => $request->input('overlay_role_color', '#1a2e6e'),
             'certificate_number_prefix' => $request->certificate_number_prefix,
             'claim_deadline' => $request->claim_deadline ?: null,
+            'requires_attendance_proof' => $request->has('requires_attendance_proof'),
         ]);
 
         $this->syncCertificateTypes($event, $request->input('certificate_types', []));
@@ -98,6 +100,7 @@ class EventController extends Controller
             'poster' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
             'certificate_number_prefix' => 'nullable|string|max:255',
             'claim_deadline' => 'nullable|date',
+            'requires_attendance_proof' => 'nullable|boolean',
         ]);
 
         $templatePath = $event->certificate_template;
@@ -138,6 +141,7 @@ class EventController extends Controller
             'overlay_role_color' => $request->input('overlay_role_color', $event->overlay_role_color),
             'certificate_number_prefix' => $request->certificate_number_prefix,
             'claim_deadline' => $request->claim_deadline ?: null,
+            'requires_attendance_proof' => $request->has('requires_attendance_proof'),
         ]);
 
         $this->syncCertificateTypes($event, $request->input('certificate_types', []));

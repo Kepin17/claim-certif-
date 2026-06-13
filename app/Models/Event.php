@@ -32,12 +32,14 @@ class Event extends Model
         'overlay_role_color',
         'certificate_number_prefix',
         'claim_deadline',
+        'requires_attendance_proof',
     ];
 
     protected $casts = [
         'date' => 'date',
         'claim_deadline' => 'datetime',
         'is_active' => 'boolean',
+        'requires_attendance_proof' => 'boolean',
     ];
 
     public function isClaimOpen(): bool

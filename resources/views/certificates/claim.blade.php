@@ -9,6 +9,9 @@
 @section('content')
 @php
     $feedbackStep = (isset($certificateTypes) && $certificateTypes->count() > 0) ? 3 : 2;
+    $hasCertificateTypes = isset($certificateTypes) && $certificateTypes->count() > 0;
+    $attendanceStep = $hasCertificateTypes ? 3 : 2;
+    $feedbackStep = isset($event) && $event->requires_attendance_proof ? $attendanceStep + 1 : $attendanceStep;
 @endphp
 <div class="oui-page">
 
@@ -131,6 +134,129 @@
                                 @endforeach
                             </div>
                         </div>
+                        @endif
+
+                        @if(isset($event) && $event->requires_attendance_proof)
+                        <div class="oui-form-block">
+                            <div class="oui-section-head">
+                                <span class="oui-section-num">{{ $attendanceStep }}</span>
+                                <div>
+                                    <h3>Attendance Proof<span class="req">*</span></h3>
+                                    <p>Capture your photo as proof of attendance</p>
+                                </div>
+                            </div>
+                            <div class="oui-field">
+                                <div id="camera-container" style="text-align:center;">
+                                    <div id="camera-preview-container" style="position:relative; max-width:100%; margin-bottom:12px;">
+                                        <video id="camera-video" autoplay playsinline style="width:100%; max-width:400px; border-radius:8px; display:none;"></video>
+                                        <canvas id="camera-canvas" style="width:100%; max-width:400px; border-radius:8px; display:none;"></canvas>
+                                        <img id="camera-photo" src="" alt="Captured photo" style="width:100%; max-width:400px; border-radius:8px; display:none;" />
+                                    </div>
+                                    <div id="camera-controls" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                                        <button type="button" id="btn-start-camera" class="oui-btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;font-size:14px;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+                                            </svg>
+                                            Open Camera
+                                        </button>
+                                        <button type="button" id="btn-capture" class="oui-btn-primary" style="display:none;align-items:center;gap:8px;padding:12px 20px;font-size:14px;background:#8B5CF6;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+                                            </svg>
+                                            Capture Photo
+                                        </button>
+                                        <button type="button" id="btn-retake" class="oui-btn-primary" style="display:none;align-items:center;gap:8px;padding:12px 20px;font-size:14px;background:#6B7280;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                                            </svg>
+                                            Retake
+                                        </button>
+                                    </div>
+                                    <p id="camera-error" class="oui-hint" style="color:var(--danger);display:none;margin-top:12px;"></p>
+                                    <p class="oui-hint" style="margin-top:8px;">Please allow camera access when prompted. Your photo will be used as proof of attendance.</p>
+                                    <input type="hidden" name="attendance_photo" id="attendance_photo_input" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                        (function() {
+                            const video = document.getElementById('camera-video');
+                            const canvas = document.getElementById('camera-canvas');
+                            const photo = document.getElementById('camera-photo');
+                            const btnStart = document.getElementById('btn-start-camera');
+                            const btnCapture = document.getElementById('btn-capture');
+                            const btnRetake = document.getElementById('btn-retake');
+                            const input = document.getElementById('attendance_photo_input');
+                            const errorEl = document.getElementById('camera-error');
+                            let stream = null;
+
+                            function showError(msg) {
+                                errorEl.textContent = msg;
+                                errorEl.style.display = 'block';
+                            }
+
+                            function clearError() {
+                                errorEl.style.display = 'none';
+                            }
+
+                            btnStart.addEventListener('click', async function() {
+                                clearError();
+                                try {
+                                    stream = await navigator.mediaDevices.getUserMedia({
+                                        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                                        audio: false
+                                    });
+                                    video.srcObject = stream;
+                                    video.style.display = 'block';
+                                    photo.style.display = 'none';
+                                    btnStart.style.display = 'none';
+                                    btnCapture.style.display = 'inline-flex';
+                                    btnRetake.style.display = 'none';
+                                } catch (err) {
+                                    showError('Could not access camera. Please ensure you have granted camera permissions.');
+                                    console.error('Camera error:', err);
+                                }
+                            });
+
+                            btnCapture.addEventListener('click', function() {
+                                if (!stream) return;
+                                const ctx = canvas.getContext('2d');
+                                canvas.width = video.videoWidth;
+                                canvas.height = video.videoHeight;
+                                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                                input.value = dataUrl;
+                                photo.src = dataUrl;
+                                video.style.display = 'none';
+                                photo.style.display = 'block';
+                                btnCapture.style.display = 'none';
+                                btnRetake.style.display = 'inline-flex';
+                                // Stop the camera stream
+                                stream.getTracks().forEach(track => track.stop());
+                                stream = null;
+                            });
+
+                            btnRetake.addEventListener('click', async function() {
+                                clearError();
+                                input.value = '';
+                                photo.style.display = 'none';
+                                try {
+                                    stream = await navigator.mediaDevices.getUserMedia({
+                                        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                                        audio: false
+                                    });
+                                    video.srcObject = stream;
+                                    video.style.display = 'block';
+                                    btnCapture.style.display = 'inline-flex';
+                                    btnRetake.style.display = 'none';
+                                } catch (err) {
+                                    showError('Could not access camera. Please ensure you have granted camera permissions.');
+                                    btnStart.style.display = 'inline-flex';
+                                }
+                            });
+                        })();
+                        </script>
                         @endif
 
                         <div class="oui-form-block">

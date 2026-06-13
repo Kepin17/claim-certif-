@@ -272,6 +272,13 @@
             </div>
 
             <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" name="requires_attendance_proof" id="requires_attendance_proof">
+                    <label for="requires_attendance_proof">Require attendance proof photo (users must capture photo with camera when claiming)</label>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="certificate_template" class="form-label">Certificate Template Image</label>
                 <div class="file-upload">
                     <input type="file" name="certificate_template" id="certificate_template" accept="image/png,image/jpg,image/jpeg">

@@ -435,6 +435,13 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" name="requires_attendance_proof" id="requires_attendance_proof" {{ $event->requires_attendance_proof ? 'checked' : '' }}>
+                    <label for="requires_attendance_proof">Require attendance proof photo (users must capture photo with camera when claiming)</label>
+                </div>
+            </div>
+
             <!-- Certificate Template Upload -->
             <div class="form-group">
                 <label for="certificate_template" class="form-label">Certificate Template Image</label>

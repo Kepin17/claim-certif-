@@ -331,6 +331,15 @@
                     <a href="{{ asset('storage/' . $certificate->proof_file) }}" target="_blank" class="proof-link">View Proof</a>
                 </div>
             @endif
+            @if($certificate->attendance_photo)
+                <div style="margin-top: 16px;">
+                    <span class="info-label">Attendance Photo</span>
+                    <div style="margin-top:8px;">
+                        <a href="{{ asset('storage/' . $certificate->attendance_photo) }}" target="_blank" class="proof-link">View Full Photo</a>
+                    </div>
+                    <img src="{{ asset('storage/' . $certificate->attendance_photo) }}" alt="Attendance Proof" style="max-width:100%; max-height:300px; border-radius:8px; margin-top:12px; border:1px solid rgba(0,0,0,0.1);" />
+                </div>
+            @endif
         </div>
 
         @if($certificate->status === 'pending')

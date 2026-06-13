@@ -17,6 +17,7 @@ class Certificate extends Model
         'email',
         'event',
         'proof_file',
+        'attendance_photo',
         'message',
         'next_event',
         'status',

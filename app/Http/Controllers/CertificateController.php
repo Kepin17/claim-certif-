@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Certificate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -48,6 +49,7 @@ class CertificateController extends Controller
             'message'               => 'nullable|string|max:1000',
             'next_event'            => 'nullable|string|max:255',
             'proof_file'            => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'attendance_photo'      => 'nullable|string',
         ]);
 
         $event = \App\Models\Event::with('activeCertificateTypes')->findOrFail($validated['event_id']);
@@ -84,6 +86,12 @@ class CertificateController extends Controller
             $proofPath = $request->file('proof_file')->store('proofs', 'public');
         }
 
+        // Handle attendance photo from camera (base64)
+        $attendancePhotoPath = null;
+        if ($event->requires_attendance_proof && $request->filled('attendance_photo')) {
+            $attendancePhotoPath = $this->saveBase64Image($request->input('attendance_photo'), 'attendance-photos');
+        }
+
         $certificate = Certificate::create([
             'event_id'              => $validated['event_id'],
             'certificate_type_id'   => $certType?->id,
@@ -94,6 +102,7 @@ class CertificateController extends Controller
             'message'               => $validated['message'],
             'next_event'            => $validated['next_event'],
             'proof_file'            => $proofPath,
+            'attendance_photo'        => $attendancePhotoPath,
             'status'                => 'pending',
         ]);
 
@@ -191,5 +200,21 @@ class CertificateController extends Controller
             ->firstOrFail();
 
         return view('certificates.verify', compact('certificate'));
+    }
+
+    private function saveBase64Image(string $base64Data, string $folder): string
+    {
+        // Extract the actual base64 content (remove data:image/xxx;base64, prefix)
+        if (str_contains($base64Data, ',')) {
+            $base64Data = explode(',', $base64Data)[1];
+        }
+
+        $imageData = base64_decode($base64Data);
+        $filename = Str::random(20) . '.jpg';
+        $path = $folder . '/' . $filename;
+
+        Storage::disk('public')->put($path, $imageData);
+
+        return $path;
     }
 }
