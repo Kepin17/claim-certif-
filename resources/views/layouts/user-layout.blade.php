@@ -6,6 +6,7 @@
     <meta name="description" content="Certificate Claim System - Claim and verify your certificates easily">
     <meta name="keywords" content="certificate, verification, claim, event, training">
     <meta name="robots" content="index, follow">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Certificate Claim System')</title>
     <link rel="icon" type="image/png" href="https://r2.fivemanage.com/eMY1LhlRUcWrX4POpj5V0/kepin/logo_certif.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">

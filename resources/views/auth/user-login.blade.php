@@ -343,36 +343,47 @@
     setupToggle('toggleConfirmPassword', 'password_confirmation', 'eyeIconConfirm');
 
     // Auto-detect email on blur
-    emailInput.addEventListener('blur', function() {
-        const email = this.value.trim();
-        if (!email || !this.validity.valid) { emailStatus.textContent = ''; return; }
+    let checkController = null;
+
+    function checkEmail(email) {
+        if (checkController) checkController.abort();
+        checkController = new AbortController();
 
         emailStatus.textContent = 'Checking…';
         emailStatus.style.color = '#8E8E93';
 
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+                       || document.querySelector('input[name="_token"]')?.value
+                       || '';
+
         fetch('{{ route('check.email') }}', {
             method: 'POST',
+            signal: checkController.signal,
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify({ email })
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok && r.status !== 422) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
         .then(data => {
             if (data.exists) {
                 emailStatus.textContent = '✓ Account found — enter your password';
                 emailStatus.style.color = '#34C759';
-                nameField.style.display  = 'none';
+                nameField.style.display   = 'none';
                 nameInput.removeAttribute('required');
                 newUserHint.style.display = 'none';
                 confirmField.style.display = 'none';
                 confirmInput.removeAttribute('required');
                 btnText.textContent = 'Sign In';
             } else {
-                emailStatus.textContent = 'No account found — we\'ll create one for you';
+                emailStatus.textContent = 'New account — fill in your name below';
                 emailStatus.style.color = '#3478F6';
-                nameField.style.display  = 'block';
+                nameField.style.display   = 'block';
                 nameInput.setAttribute('required', 'required');
                 newUserHint.style.display = 'block';
                 confirmField.style.display = 'block';
@@ -381,10 +392,27 @@
                 nameInput.focus();
             }
         })
-        .catch(() => { emailStatus.textContent = ''; });
+        .catch(err => {
+            if (err.name === 'AbortError') return;
+            emailStatus.textContent = 'Could not verify email — please continue';
+            emailStatus.style.color = '#8E8E93';
+        });
+    }
+
+    emailInput.addEventListener('blur', function() {
+        const email = this.value.trim();
+        if (!email || !this.validity.valid) { emailStatus.textContent = ''; return; }
+        checkEmail(email);
     });
 
-    emailInput.addEventListener('input', () => { emailStatus.textContent = ''; });
+    emailInput.addEventListener('input', () => {
+        emailStatus.textContent = '';
+        nameField.style.display = 'none';
+        nameInput.removeAttribute('required');
+        confirmField.style.display = 'none';
+        confirmInput.removeAttribute('required');
+        btnText.textContent = 'Continue';
+    });
 
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         const email = emailInput.value.trim();
