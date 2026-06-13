@@ -310,6 +310,26 @@
         </div>
     </div>
 
+    <!-- Quick Generate Form -->
+    <div style="background: var(--card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px;">
+        <h3 style="font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; color: var(--ink); margin-bottom: 16px;">Quick Generate Certificate</h3>
+        <form action="{{ route('admin.quick-generate', $event->id) }}" method="POST" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: end;">
+            @csrf
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px;">Name</label>
+                <input type="text" name="name" placeholder="Participant name" required style="width: 100%; padding: 12px 14px; font-family: 'Geist', sans-serif; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius-sm);">
+            </div>
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px;">Email</label>
+                <input type="email" name="email" placeholder="participant@email.com" required style="width: 100%; padding: 12px 14px; font-family: 'Geist', sans-serif; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius-sm);">
+            </div>
+            <button type="submit" style="height: 44px; background: #3478F6; color: #fff; font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s;">
+                Generate & Send
+            </button>
+        </form>
+        <p style="font-size: 12px; color: var(--ink-muted); margin-top: 10px;">Certificate will be generated and sent immediately without admin validation.</p>
+    </div>
+
     @if($certificates->count() === 0)
         <div class="card">
             <div class="empty-state">No generated certificates for this event.</div>
@@ -373,15 +393,6 @@
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
                                 </svg>
                                 Resend Email
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.send-manual', $certificate->id) }}" method="POST" class="action-form">
-                            @csrf
-                            <button type="submit" style="background: #3478F6;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke_linejoin="round" style="vertical-align: middle; margin-right: 6px;">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><line x1="2" y1="6" x2="22" y2="6"/>
-                                </svg>
-                                Send Manual
                             </button>
                         </form>
                         <form action="{{ route('admin.destroy', $certificate->id) }}" method="POST" class="action-form" onsubmit="return confirm('Are you sure you want to delete this certificate? This will allow the user to re-claim with the same email.');">

@@ -427,63 +427,41 @@ class CertificateAdminController extends Controller
         return view('admin.search', compact('results', 'query'));
     }
 
-    public function createManual()
-    {
-        $events = Event::where('is_active', true)->orderBy('name')->get();
-        return view('admin.manual-create', compact('events'));
-    }
-
-    public function storeManual(Request $request)
+    public function quickGenerate(Request $request, $eventId)
     {
         $request->validate([
-            'event_id' => 'required|exists:events,id',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'certificate_type_id' => 'nullable|exists:certificate_types,id',
         ]);
 
-        $event = Event::findOrFail($request->event_id);
+        $event = Event::findOrFail($eventId);
 
         $certificate = Certificate::create([
-            'event_id' => $request->event_id,
+            'event_id' => $eventId,
             'name' => $request->name,
             'email' => $request->email,
             'event' => $event->name,
             'certificate_type_id' => $request->certificate_type_id,
             'status' => 'approved',
+            'certificate_number' => $this->generateCertificateNumber(new Certificate(['event_id' => $eventId, 'event' => $event->name])),
             'approved_by' => Auth::user()->name,
             'approved_at' => now(),
         ]);
 
-        // Generate certificate number
-        $certificateNumber = $this->generateCertificateNumber($certificate);
-        $certificate->update(['certificate_number' => $certificateNumber]);
+        // Generate PDF immediately (sync)
+        \App\Jobs\GenerateCertificate::dispatchSync($certificate->id);
 
-        // Queue generation
-        \App\Jobs\GenerateCertificate::dispatch($certificate->id);
-
-        AdminActivityLog::record('manual_created', $certificate);
-
-        return redirect()->route('admin.generated')
-            ->with('success', 'Certificate created manually for ' . $request->email . ' — generation queued.');
-    }
-
-    public function sendManual(Request $request, $id)
-    {
-        $certificate = Certificate::findOrFail($id);
-
-        if (!in_array($certificate->status, ['generated', 'sent'])) {
-            return back()->with('error', 'Certificate must be generated before sending email.');
-        }
-
+        // Send email immediately
         try {
             Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
             $certificate->update(['status' => 'sent']);
-            AdminActivityLog::record('manual_sent', $certificate);
-            return back()->with('success', 'Certificate sent to ' . $certificate->email);
         } catch (\Exception $e) {
-            Log::error('Manual send failed: ' . $e->getMessage());
-            return back()->with('error', 'Email send failed: ' . $e->getMessage());
+            Log::error('Quick generate email failed: ' . $e->getMessage());
         }
+
+        AdminActivityLog::record('quick_generated', $certificate);
+
+        return back()->with('success', 'Certificate generated and sent to ' . $request->email);
     }
 }
