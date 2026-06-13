@@ -342,95 +342,113 @@
     setupToggle('togglePassword', 'password', 'eyeIcon');
     setupToggle('toggleConfirmPassword', 'password_confirmation', 'eyeIconConfirm');
 
-    // Auto-detect email on blur
-    let checkController = null;
+    // ── Email auto-detect ──────────────────────────────────
+    let emailChecked = false;
+    let emailExists  = null;
+    let abortCtrl    = null;
 
-    function checkEmail(email) {
-        if (checkController) checkController.abort();
-        checkController = new AbortController();
+    function applyResult(exists) {
+        emailChecked = true;
+        emailExists  = exists;
+        if (exists) {
+            emailStatus.textContent    = '✓ Account found — enter your password';
+            emailStatus.style.color    = '#34C759';
+            nameField.style.display    = 'none';
+            nameInput.removeAttribute('required');
+            newUserHint.style.display  = 'none';
+            confirmField.style.display = 'none';
+            confirmInput.removeAttribute('required');
+            btnText.textContent        = 'Sign In';
+        } else {
+            emailStatus.textContent    = 'New account — fill in your name below';
+            emailStatus.style.color    = '#3478F6';
+            nameField.style.display    = 'block';
+            nameInput.setAttribute('required', 'required');
+            newUserHint.style.display  = 'block';
+            confirmField.style.display = 'block';
+            confirmInput.setAttribute('required', 'required');
+            btnText.textContent        = 'Create Account';
+            nameInput.focus();
+        }
+    }
 
+    function runCheck(email, callback) {
+        if (abortCtrl) abortCtrl.abort();
+        abortCtrl = new AbortController();
         emailStatus.textContent = 'Checking…';
         emailStatus.style.color = '#8E8E93';
 
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
-                       || document.querySelector('input[name="_token"]')?.value
-                       || '';
-
         fetch('{{ route('check.email') }}', {
             method: 'POST',
-            signal: checkController.signal,
+            signal: abortCtrl.signal,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+                'Accept':       'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
             },
             body: JSON.stringify({ email })
         })
-        .then(r => {
-            if (!r.ok && r.status !== 422) throw new Error('HTTP ' + r.status);
-            return r.json();
-        })
+        .then(r => r.json())
         .then(data => {
-            if (data.exists) {
-                emailStatus.textContent = '✓ Account found — enter your password';
-                emailStatus.style.color = '#34C759';
-                nameField.style.display   = 'none';
-                nameInput.removeAttribute('required');
-                newUserHint.style.display = 'none';
-                confirmField.style.display = 'none';
-                confirmInput.removeAttribute('required');
-                btnText.textContent = 'Sign In';
-            } else {
-                emailStatus.textContent = 'New account — fill in your name below';
-                emailStatus.style.color = '#3478F6';
-                nameField.style.display   = 'block';
-                nameInput.setAttribute('required', 'required');
-                newUserHint.style.display = 'block';
-                confirmField.style.display = 'block';
-                confirmInput.setAttribute('required', 'required');
-                btnText.textContent = 'Create Account';
-                nameInput.focus();
-            }
+            applyResult(!!data.exists);
+            if (callback) callback(!!data.exists);
         })
         .catch(err => {
             if (err.name === 'AbortError') return;
-            emailStatus.textContent = 'Could not verify email — please continue';
-            emailStatus.style.color = '#8E8E93';
+            emailStatus.textContent = '';
+            emailChecked = false;
+            if (callback) callback(null);
         });
     }
 
-    emailInput.addEventListener('blur', function() {
+    emailInput.addEventListener('blur', function () {
         const email = this.value.trim();
         if (!email || !this.validity.valid) { emailStatus.textContent = ''; return; }
-        checkEmail(email);
+        if (emailChecked) return;
+        runCheck(email, null);
     });
 
-    emailInput.addEventListener('input', () => {
-        emailStatus.textContent = '';
-        nameField.style.display = 'none';
+    emailInput.addEventListener('input', function () {
+        emailChecked = false;
+        emailExists  = null;
+        emailStatus.textContent    = '';
+        nameField.style.display    = 'none';
         nameInput.removeAttribute('required');
         confirmField.style.display = 'none';
         confirmInput.removeAttribute('required');
-        btnText.textContent = 'Continue';
+        btnText.textContent        = 'Continue';
     });
 
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    // ── Form submit ─────────────────────────────────────────
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
         const email = emailInput.value.trim();
-        const name  = nameInput.value.trim();
+        const form  = this;
 
-        if (!emailStatus.textContent && email) {
+        // Email not checked yet → run check first, then decide
+        if (!emailChecked && email) {
             e.preventDefault();
-            emailInput.blur();
-            setTimeout(() => this.submit(), 600);
+            runCheck(email, function (exists) {
+                if (exists === true) {
+                    // existing user, just submit
+                    form.submit();
+                }
+                // new user: fields are now shown, user must fill name — don't auto-submit
+                // check failed (null): let form submit and let server handle it
+                else if (exists === null) {
+                    form.submit();
+                }
+            });
             return;
         }
 
-        if (nameField.style.display === 'block' && !name) {
+        // New user fields visible but name empty
+        if (nameField.style.display === 'block' && !nameInput.value.trim()) {
             e.preventDefault();
             nameInput.focus();
             return;
         }
 
+        // Password confirmation mismatch
         if (confirmField.style.display === 'block') {
             if (passwordInput.value !== confirmInput.value) {
                 e.preventDefault();
