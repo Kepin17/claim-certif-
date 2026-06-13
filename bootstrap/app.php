@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'otp.verified' => \App\Http\Middleware\CheckOTPVerification::class,
             'superadmin'   => \App\Http\Middleware\SuperAdmin::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            '/check-email',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
