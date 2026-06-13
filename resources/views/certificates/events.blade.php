@@ -338,21 +338,27 @@
         .oui-hero-title-modern { font-size: 30px; }
     }
     @media (max-width: 600px) {
-        .oui-events-grid { grid-template-columns: 1fr; }
-        .oui-event-card { flex-direction: column; }
-        .oui-event-image { width: 100%; height: 220px; }
+        .oui-events-grid { grid-template-columns: 1fr; gap: 12px; }
+        .oui-event-card { flex-direction: column; border-radius: 16px; }
+        .oui-event-image { width: 100%; height: 160px; }
         .oui-event-image img { object-fit: contain; max-height: 100%; max-width: 100%; }
-        .oui-claim-btn-card { width: 100%; justify-content: center; }
-        .oui-hero-modern { padding: 36px 16px 40px; }
-        .oui-hero-title-modern { font-size: 26px; }
-        .oui-hero-desc-modern { font-size: 14px; }
-        .oui-search-float { margin: -20px 12px 24px; padding: 14px; top: -20px; }
-        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 10px; }
-        .oui-search-float .oui-search-field { height: 48px; width: 100%; }
-        .oui-search-float .oui-search-btn { height: 44px; padding: 0 20px; width: 100%; }
-        .oui-how-section { padding: 28px 20px; }
-        .oui-quick-actions { flex-direction: column; }
-        .oui-quick-action { width: 100%; justify-content: center; }
+        .oui-event-content { padding: 14px 16px; }
+        .oui-event-title { font-size: 14px; margin-bottom: 6px; }
+        .oui-event-details { gap: 4px; margin-bottom: 12px; }
+        .oui-event-detail { font-size: 12px; gap: 6px; }
+        .oui-event-detail svg { width: 12px; height: 12px; }
+        .oui-claim-btn-card { width: 100%; justify-content: center; padding: 10px 16px; font-size: 13px; border-radius: 10px; }
+        .oui-hero-modern { padding: 32px 16px 36px; }
+        .oui-hero-title-modern { font-size: 24px; }
+        .oui-hero-desc-modern { font-size: 13px; }
+        .oui-search-float { margin: -16px 12px 20px; padding: 12px; top: -16px; border-radius: 16px; }
+        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 8px; }
+        .oui-search-float .oui-search-field { height: 44px; border-radius: 12px; }
+        .oui-search-float .oui-search-btn { height: 40px; padding: 0 16px; width: 100%; border-radius: 12px; }
+        .oui-count-pill { font-size: 12px; padding: 4px 10px; }
+        .oui-how-section { padding: 24px 16px; margin-bottom: 24px; }
+        .oui-quick-actions { flex-direction: column; margin-bottom: 24px; }
+        .oui-quick-action { width: 100%; justify-content: center; padding: 12px 20px; }
     }
     @media (max-width: 400px) {
         .oui-search-float { margin: -16px 8px 20px; padding: 12px; }
