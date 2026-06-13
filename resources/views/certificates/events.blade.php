@@ -338,27 +338,29 @@
         .oui-hero-title-modern { font-size: 30px; }
     }
     @media (max-width: 600px) {
-        .oui-events-grid { grid-template-columns: 1fr; gap: 12px; }
-        .oui-event-card { flex-direction: column; border-radius: 16px; }
-        .oui-event-image { width: 100%; height: 160px; }
+        .oui-events-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .oui-event-card { flex-direction: column; border-radius: 12px; }
+        .oui-event-image { width: 100%; height: 100px; }
         .oui-event-image img { object-fit: contain; max-height: 100%; max-width: 100%; }
-        .oui-event-content { padding: 14px 16px; }
-        .oui-event-title { font-size: 14px; margin-bottom: 6px; }
-        .oui-event-details { gap: 4px; margin-bottom: 12px; }
-        .oui-event-detail { font-size: 12px; gap: 6px; }
-        .oui-event-detail svg { width: 12px; height: 12px; }
-        .oui-claim-btn-card { width: 100%; justify-content: center; padding: 10px 16px; font-size: 13px; border-radius: 10px; }
-        .oui-hero-modern { padding: 32px 16px 36px; }
-        .oui-hero-title-modern { font-size: 24px; }
-        .oui-hero-desc-modern { font-size: 13px; }
-        .oui-search-float { margin: -16px 12px 20px; padding: 12px; top: -16px; border-radius: 16px; }
-        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 8px; }
-        .oui-search-float .oui-search-field { height: 44px; border-radius: 12px; }
-        .oui-search-float .oui-search-btn { height: 40px; padding: 0 16px; width: 100%; border-radius: 12px; }
-        .oui-count-pill { font-size: 12px; padding: 4px 10px; }
-        .oui-how-section { padding: 24px 16px; margin-bottom: 24px; }
-        .oui-quick-actions { flex-direction: column; margin-bottom: 24px; }
-        .oui-quick-action { width: 100%; justify-content: center; padding: 12px 20px; }
+        .oui-event-content { padding: 8px 10px; }
+        .oui-event-title { font-size: 11px; margin-bottom: 4px; line-height: 1.3; }
+        .oui-event-details { gap: 2px; margin-bottom: 8px; }
+        .oui-event-detail { font-size: 9px; gap: 4px; }
+        .oui-event-detail svg { width: 10px; height: 10px; }
+        .oui-event-footer { padding-top: 8px; }
+        .oui-claim-btn-card { width: 100%; justify-content: center; padding: 6px 10px; font-size: 10px; border-radius: 8px; }
+        .oui-claim-btn-card svg { width: 12px; height: 12px; }
+        .oui-hero-modern { padding: 28px 12px 32px; }
+        .oui-hero-title-modern { font-size: 22px; }
+        .oui-hero-desc-modern { font-size: 12px; }
+        .oui-search-float { margin: -12px 8px 16px; padding: 10px; top: -12px; border-radius: 14px; }
+        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 6px; }
+        .oui-search-float .oui-search-field { height: 40px; border-radius: 10px; }
+        .oui-search-float .oui-search-btn { height: 36px; padding: 0 12px; width: 100%; border-radius: 10px; }
+        .oui-count-pill { font-size: 11px; padding: 3px 8px; margin-bottom: 12px; }
+        .oui-how-section { padding: 20px 12px; margin-bottom: 20px; }
+        .oui-quick-actions { flex-direction: column; margin-bottom: 20px; }
+        .oui-quick-action { width: 100%; justify-content: center; padding: 10px 16px; }
     }
     @media (max-width: 400px) {
         .oui-search-float { margin: -16px 8px 20px; padding: 12px; }
