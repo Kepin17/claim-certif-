@@ -353,10 +353,10 @@
         .oui-hero-modern { padding: 28px 12px 32px; }
         .oui-hero-title-modern { font-size: 22px; }
         .oui-hero-desc-modern { font-size: 12px; }
-        .oui-search-float { margin: -12px 8px 16px; padding: 10px; top: -12px; border-radius: 14px; }
-        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 6px; }
-        .oui-search-float .oui-search-field { height: 40px; border-radius: 10px; }
-        .oui-search-float .oui-search-btn { height: 36px; padding: 0 12px; width: 100%; border-radius: 10px; }
+        .oui-search-float { margin: -12px 8px 16px; padding: 14px; top: -12px; border-radius: 14px; }
+        .oui-search-float .oui-search-wrap { flex-direction: column; gap: 8px; }
+        .oui-search-float .oui-search-field { height: 48px; border-radius: 12px; }
+        .oui-search-float .oui-search-btn { height: 44px; padding: 0 16px; width: 100%; border-radius: 12px; }
         .oui-count-pill { font-size: 11px; padding: 3px 8px; margin-bottom: 12px; }
         .oui-how-section { padding: 20px 12px; margin-bottom: 20px; }
         .oui-quick-actions { flex-direction: column; margin-bottom: 20px; }
