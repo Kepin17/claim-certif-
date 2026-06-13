@@ -86,6 +86,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
 Route::get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.post')->middleware('guest');
 Route::get('/check-email', [\App\Http\Controllers\Admin\AuthController::class, 'checkEmail'])->name('check.email');
+
+// Password Reset Routes
+Route::get('/forgot-password', [\App\Http\Controllers\PasswordResetController::class, 'showForgotForm'])->name('password.request')->middleware('guest');
+Route::post('/forgot-password', [\App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email')->middleware('guest');
+Route::get('/reset-password/{token}', [\App\Http\Controllers\PasswordResetController::class, 'showResetForm'])->name('password.reset')->middleware('guest');
+Route::post('/reset-password', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update')->middleware('guest');
 Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // OTP Verification Routes (for admin users)

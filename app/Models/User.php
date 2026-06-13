@@ -74,4 +74,16 @@ class User extends Authenticatable
     {
         return $this->role === 'admin' || $this->role === 'superadmin';
     }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $url = url(route('password.reset', ['token' => $token, 'email' => $this->email], false));
+
+        \Mail::send('emails.reset-password', [
+            'name'  => $this->name,
+            'url'   => $url,
+        ], function ($message) {
+            $message->to($this->email)->subject('Reset Your Password — Certificate Portal');
+        });
+    }
 }

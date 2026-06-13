@@ -279,7 +279,10 @@
             </div>
 
             <div class="a-field" id="passwordField">
-                <label for="password" class="a-label">Password</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+                    <label for="password" class="a-label" style="margin-bottom:0;">Password</label>
+                    <a href="{{ route('password.request') }}" style="font-size:12px;color:#3478F6;text-decoration:none;font-weight:500;">Forgot password?</a>
+                </div>
                 <div class="a-input-wrap">
                     <input type="password" name="password" id="password" class="a-input with-toggle" placeholder="Min. 8 characters" required minlength="8">
                     <button type="button" class="a-pw-toggle" id="togglePassword" tabindex="-1">
