@@ -265,7 +265,7 @@
                 required
                 autofocus
             >
-            <p class="otp-timer">Code expires in <span id="countdown">10:00</span></p>
+            <p class="otp-timer">Code expires in <span id="countdown">{{ $secondsLeft > 0 ? sprintf('%02d:%02d', intdiv($secondsLeft, 60), $secondsLeft % 60) : 'Expired' }}</span></p>
 
             <button type="submit" class="otp-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -277,12 +277,21 @@
 
         <div class="otp-resend">
             <p>Didn't receive the code?</p>
-            <a href="{{ route('otp.resend') }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                </svg>
-                Resend Code
-            </a>
+            @if($resendSeconds > 0)
+                <span id="resendWrap" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#8E8E93;padding:8px 16px;border-radius:20px;background:rgba(0,0,0,0.04);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    Resend available in <span id="resendCountdown">{{ sprintf('%d:%02d', intdiv($resendSeconds, 60), $resendSeconds % 60) }}</span>
+                </span>
+            @else
+                <a href="{{ route('otp.resend') }}" id="resendLink">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                    </svg>
+                    Resend Code
+                </a>
+            @endif
         </div>
 
     </div>
@@ -294,21 +303,47 @@
         this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
     });
 
-    // Countdown timer 10 minutes
-    let seconds = 600;
-    const el = document.getElementById('countdown');
-    const timer = setInterval(() => {
-        seconds--;
-        if (seconds <= 0) {
-            clearInterval(timer);
-            el.textContent = 'Expired';
-            el.style.color = '#C0392B';
+    // Resend cooldown countdown
+    @if($resendSeconds > 0)
+    let resendSecs = {{ $resendSeconds }};
+    const resendEl = document.getElementById('resendCountdown');
+    const resendTimer = setInterval(() => {
+        resendSecs--;
+        if (resendSecs <= 0) {
+            clearInterval(resendTimer);
+            document.getElementById('resendWrap').innerHTML =
+                '<a href="{{ route('otp.resend') }}" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#3478F6;text-decoration:none;padding:8px 16px;border-radius:20px;background:rgba(52,120,246,0.08);">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>' +
+                'Resend Code</a>';
             return;
         }
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        el.textContent = `${m}:${s}`;
-        if (seconds <= 60) el.style.color = '#E53935';
+        const m = Math.floor(resendSecs / 60);
+        const s = (resendSecs % 60).toString().padStart(2, '0');
+        resendEl.textContent = `${m}:${s}`;
     }, 1000);
+    @endif
+
+    // Countdown timer — based on real server expiry
+    let seconds = {{ $secondsLeft }};
+    const el = document.getElementById('countdown');
+
+    if (seconds <= 0) {
+        el.textContent = 'Expired';
+        el.style.color = '#C0392B';
+    } else {
+        const timer = setInterval(() => {
+            seconds--;
+            if (seconds <= 0) {
+                clearInterval(timer);
+                el.textContent = 'Expired';
+                el.style.color = '#C0392B';
+                return;
+            }
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            el.textContent = `${m}:${s}`;
+            if (seconds <= 60) el.style.color = '#E53935';
+        }, 1000);
+    }
 </script>
 @endsection

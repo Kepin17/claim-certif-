@@ -128,11 +128,7 @@ class AuthController extends Controller
             $user->otp_expires_at = now()->addMinutes(10);
             $user->save();
             
-            \Log::info('OTP Generated and Saved', [
-                'user_id' => $user->id,
-                'otp' => $otp,
-                'expires_at' => $user->otp_expires_at,
-            ]);
+            \Log::info('OTP Generated', ['user_id' => $user->id]);
         } catch (\Exception $e) {
             \Log::error('Failed to save OTP', [
                 'error' => $e->getMessage(),
@@ -167,7 +163,22 @@ class AuthController extends Controller
         if (!session('otp_user_id')) {
             return redirect()->route('login');
         }
-        return view('admin.otp-verify');
+
+        $userId = session('otp_user_id');
+        $user   = User::find($userId);
+        $secondsLeft  = 0;
+        $resendSeconds = 0;
+
+        if ($user && $user->otp_expires_at) {
+            $secondsLeft = max(0, (int) now()->diffInSeconds($user->otp_expires_at, false));
+        }
+
+        $resendKey = 'otp-resend:' . $userId;
+        if (RateLimiter::tooManyAttempts($resendKey, 1)) {
+            $resendSeconds = RateLimiter::availableIn($resendKey);
+        }
+
+        return view('admin.otp-verify', compact('secondsLeft', 'resendSeconds'));
     }
 
     public function verifyOTP(Request $request)
@@ -186,27 +197,26 @@ class AuthController extends Controller
             return redirect()->route('login')->with('error', 'User not found. Please login again.');
         }
 
-        // Debug: Log OTP values
-        \Log::info('OTP Verification', [
-            'submitted_otp' => $request->otp,
-            'stored_otp' => $user->otp_code,
-            'expires_at' => $user->otp_expires_at,
-            'now' => now(),
-            'is_expired' => !$user->otp_expires_at || $user->otp_expires_at < now(),
-        ]);
+        // Rate limit OTP attempts: max 5 per 10 minutes
+        $otpKey = 'otp-attempt:' . $userId . ':' . $request->ip();
+        if (RateLimiter::tooManyAttempts($otpKey, 5)) {
+            // Invalidate session so attacker cannot keep trying
+            session()->forget('otp_user_id');
+            session()->forget('otp_verified');
+            return redirect()->route('login')
+                ->with('error', 'Too many incorrect attempts. Please login again.');
+        }
 
         // Verify OTP
         if ($user->otp_code === $request->otp && $user->otp_expires_at && $user->otp_expires_at > now()) {
-            // Clear OTP
+            // Clear OTP and rate limit counter on success
+            RateLimiter::clear($otpKey);
             try {
                 $user->otp_code = null;
                 $user->otp_expires_at = null;
                 $user->save();
             } catch (\Exception $e) {
-                \Log::error('Failed to clear OTP', [
-                    'error' => $e->getMessage(),
-                    'user_id' => $user->id,
-                ]);
+                \Log::error('Failed to clear OTP', ['error' => $e->getMessage(), 'user_id' => $user->id]);
             }
 
             // Login user
@@ -214,20 +224,20 @@ class AuthController extends Controller
             session(['otp_verified' => true]);
             session()->forget('otp_user_id');
             $request->session()->regenerate();
-            
-            // Redirect based on role
+
             if ($user->role === 'admin' || $user->role === 'superadmin') {
-                \Log::info('Admin user logged in', ['user_id' => $user->id, 'role' => $user->role]);
                 return redirect()->route('admin.dashboard');
-            } else {
-                // Regular user (role = 'user' or null) - redirect to events page
-                \Log::info('Regular user logged in', ['user_id' => $user->id, 'role' => $user->role]);
-                return redirect()->route('certificate.index')
-                    ->with('success', 'Welcome, ' . $user->name . '!');
             }
+            return redirect()->route('certificate.index')
+                ->with('success', 'Welcome, ' . $user->name . '!');
         }
 
-        return back()->withErrors(['otp' => 'Invalid or expired OTP code.'])->withInput();
+        // Wrong OTP — count attempt
+        RateLimiter::hit($otpKey, 600);
+        $attemptsLeft = max(0, 5 - RateLimiter::attempts($otpKey));
+        return back()->withErrors([
+            'otp' => 'Invalid or expired OTP code. ' . $attemptsLeft . ' attempt(s) remaining.',
+        ])->withInput();
     }
 
     public function resendOTP(Request $request)
@@ -242,19 +252,24 @@ class AuthController extends Controller
             return redirect()->route('login');
         }
 
+        // Cooldown: allow 1 resend per 5 minutes
+        $resendKey = 'otp-resend:' . $userId;
+        if (RateLimiter::tooManyAttempts($resendKey, 1)) {
+            $seconds  = RateLimiter::availableIn($resendKey);
+            $minutes  = ceil($seconds / 60);
+            return redirect()->route('otp.verify')
+                ->with('error', "Please wait {$minutes} minute(s) before requesting a new code.");
+        }
+        RateLimiter::hit($resendKey, 300); // 5 minutes
+
         // Generate new OTP
         $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        
+
         try {
             $user->otp_code = $otp;
             $user->otp_expires_at = now()->addMinutes(10);
             $user->save();
-            
-            \Log::info('OTP Regenerated', [
-                'user_id' => $user->id,
-                'otp' => $otp,
-                'expires_at' => $user->otp_expires_at,
-            ]);
+            \Log::info('OTP Regenerated', ['user_id' => $user->id]);
         } catch (\Exception $e) {
             \Log::error('Failed to regenerate OTP', [
                 'error' => $e->getMessage(),
