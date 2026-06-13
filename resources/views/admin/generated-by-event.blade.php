@@ -375,6 +375,15 @@
                                 Resend Email
                             </button>
                         </form>
+                        <form action="{{ route('admin.send-manual', $certificate->id) }}" method="POST" class="action-form">
+                            @csrf
+                            <button type="submit" style="background: #3478F6;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke_linejoin="round" style="vertical-align: middle; margin-right: 6px;">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><line x1="2" y1="6" x2="22" y2="6"/>
+                                </svg>
+                                Send Manual
+                            </button>
+                        </form>
                         <form action="{{ route('admin.destroy', $certificate->id) }}" method="POST" class="action-form" onsubmit="return confirm('Are you sure you want to delete this certificate? This will allow the user to re-claim with the same email.');">
                             @csrf
                             @method('DELETE')

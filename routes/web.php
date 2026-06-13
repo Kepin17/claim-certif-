@@ -56,6 +56,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::get('/export/{eventId}', [CertificateAdminController::class, 'exportCsv'])->name('export');
     Route::get('/activity-log', [CertificateAdminController::class, 'activityLog'])->name('activity-log');
     Route::get('/search', [CertificateAdminController::class, 'search'])->name('search');
+    Route::get('/manual-create', [CertificateAdminController::class, 'createManual'])->name('manual-create');
+    Route::post('/manual-create', [CertificateAdminController::class, 'storeManual'])->name('manual-create.store');
+    Route::post('/certificate/{id}/send-manual', [CertificateAdminController::class, 'sendManual'])->name('send-manual');
 
     // User Management Routes (superadmin only)
     Route::prefix('users')->name('users.')->middleware('superadmin')->group(function () {

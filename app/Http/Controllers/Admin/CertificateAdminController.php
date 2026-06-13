@@ -426,4 +426,64 @@ class CertificateAdminController extends Controller
 
         return view('admin.search', compact('results', 'query'));
     }
+
+    public function createManual()
+    {
+        $events = Event::where('is_active', true)->orderBy('name')->get();
+        return view('admin.manual-create', compact('events'));
+    }
+
+    public function storeManual(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'certificate_type_id' => 'nullable|exists:certificate_types,id',
+        ]);
+
+        $event = Event::findOrFail($request->event_id);
+
+        $certificate = Certificate::create([
+            'event_id' => $request->event_id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'event' => $event->name,
+            'certificate_type_id' => $request->certificate_type_id,
+            'status' => 'approved',
+            'approved_by' => Auth::user()->name,
+            'approved_at' => now(),
+        ]);
+
+        // Generate certificate number
+        $certificateNumber = $this->generateCertificateNumber($certificate);
+        $certificate->update(['certificate_number' => $certificateNumber]);
+
+        // Queue generation
+        \App\Jobs\GenerateCertificate::dispatch($certificate->id);
+
+        AdminActivityLog::record('manual_created', $certificate);
+
+        return redirect()->route('admin.generated')
+            ->with('success', 'Certificate created manually for ' . $request->email . ' — generation queued.');
+    }
+
+    public function sendManual(Request $request, $id)
+    {
+        $certificate = Certificate::findOrFail($id);
+
+        if (!in_array($certificate->status, ['generated', 'sent'])) {
+            return back()->with('error', 'Certificate must be generated before sending email.');
+        }
+
+        try {
+            Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
+            $certificate->update(['status' => 'sent']);
+            AdminActivityLog::record('manual_sent', $certificate);
+            return back()->with('success', 'Certificate sent to ' . $certificate->email);
+        } catch (\Exception $e) {
+            Log::error('Manual send failed: ' . $e->getMessage());
+            return back()->with('error', 'Email send failed: ' . $e->getMessage());
+        }
+    }
 }

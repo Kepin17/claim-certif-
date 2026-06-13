@@ -63,6 +63,7 @@
         <a href="{{ route('admin.pending') }}" class="nav-link {{ request()->is('admin/pending') ? 'active' : '' }}">Pending</a>
         <a href="{{ route('admin.approved') }}" class="nav-link {{ request()->is('admin/approved') ? 'active' : '' }}">Approved</a>
         <a href="{{ route('admin.generated') }}" class="nav-link {{ request()->is('admin/generated') ? 'active' : '' }}">Generated</a>
+        <a href="{{ route('admin.manual-create') }}" class="nav-link {{ request()->is('admin/manual-create') ? 'active' : '' }}">Manual Create</a>
     </div>
     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
         @csrf
