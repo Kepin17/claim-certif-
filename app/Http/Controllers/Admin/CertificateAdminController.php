@@ -489,6 +489,7 @@ class CertificateAdminController extends Controller
         $request->validate([
             'event_id' => 'required',
             'file' => 'required|file|max:10240',
+            'role' => 'nullable|string|max:255',
         ]);
 
         $event = Event::findOrFail($request->event_id);
@@ -503,6 +504,19 @@ class CertificateAdminController extends Controller
         
         if (empty($data)) {
             return back()->with('error', 'File kosong atau tidak dapat dibaca.');
+        }
+
+        // Handle Role / Certificate Type
+        $roleName = $request->input('role');
+        if ($roleName === 'manual') {
+            $roleName = $request->input('role_manual');
+        }
+        $certificateType = null;
+        if (!empty($roleName)) {
+            $certificateType = \App\Models\CertificateType::firstOrCreate(
+                ['event_id' => $event->id, 'name' => $roleName],
+                ['role_text' => $roleName, 'is_active' => true, 'sort_order' => 0]
+            );
         }
 
         // Remove header
@@ -523,13 +537,20 @@ class CertificateAdminController extends Controller
             
             if (empty($email) || empty($name)) continue;
             
+            $dummyCert = new Certificate(['event_id' => $event->id, 'event' => $event->name]);
+            if ($certificateType) {
+                $dummyCert->setRelation('certificateType', $certificateType);
+            }
+
             $certificate = Certificate::create([
                 'event_id' => $event->id,
                 'name' => $name,
                 'email' => $email,
                 'event' => $event->name,
+                'certificate_type_id' => $certificateType ? $certificateType->id : null,
+                'certificate_type_name' => $certificateType ? $certificateType->name : null,
                 'status' => 'approved',
-                'certificate_number' => $this->generateCertificateNumber(new Certificate(['event_id' => $event->id, 'event' => $event->name])),
+                'certificate_number' => $this->generateCertificateNumber($dummyCert),
                 'approved_by' => Auth::user()->name,
                 'approved_at' => now(),
             ]);

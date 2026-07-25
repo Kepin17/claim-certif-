@@ -377,6 +377,18 @@
             </div>
             
             <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Sebagai Apa (Role)</label>
+                <select name="role" id="role_select" onchange="handleRoleChange()" style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
+                    <option value="">-- Tidak ada role khusus --</option>
+                    <option value="Peserta">Peserta</option>
+                    <option value="Pemateri">Pemateri</option>
+                    <option value="Panitia">Panitia</option>
+                    <option value="manual">Lainnya (Input Manual)...</option>
+                </select>
+                <input type="text" name="role_manual" id="role_manual" placeholder="Ketik role di sini..." style="display:none; width:100%; margin-top:8px; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+            </div>
+            
+            <div style="margin-bottom:20px;">
                 <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Upload File CSV</label>
                 <input type="file" name="file" accept=".csv" required style="width:100%; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
                 <div style="margin-top:8px; font-size:12px; color:var(--ink-muted);">
@@ -400,6 +412,18 @@ function openImportModal(e) {
 }
 function closeImportModal() {
     document.getElementById('importModal').style.display = 'none';
+}
+function handleRoleChange() {
+    var select = document.getElementById('role_select');
+    var manualInput = document.getElementById('role_manual');
+    if (select.value === 'manual') {
+        manualInput.style.display = 'block';
+        manualInput.required = true;
+    } else {
+        manualInput.style.display = 'none';
+        manualInput.required = false;
+        manualInput.value = '';
+    }
 }
 </script>
 @endpush
