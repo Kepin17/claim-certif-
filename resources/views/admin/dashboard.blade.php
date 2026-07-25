@@ -611,15 +611,7 @@
                 <div class="qa-sub">Audit trail</div>
             </div>
         </a>
-        <a href="#" class="qa-card" onclick="openImportModal(event)">
-            <div class="qa-icon" style="background:rgba(16,185,129,0.12);color:#10B981;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            </div>
-            <div>
-                <div class="qa-label">Import Excel</div>
-                <div class="qa-sub">Generate certificates</div>
-            </div>
-        </a>
+
             <div class="qa-icon" style="background:rgba(45,80,22,0.1);color:var(--accent);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="12" y1="17" x2="8" y2="17"/></svg>
             </div>
@@ -650,42 +642,6 @@
 
 </div>
 
-{{-- ── Import Excel Modal ── --}}
-<div id="importModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-    <div class="modal-content" style="background:var(--card); width:100%; max-width:500px; border-radius:var(--radius-lg); padding:30px; box-shadow:0 15px 50px rgba(0,0,0,0.1);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0; font-family:'Fraunces', serif; font-weight:300; font-size:24px;">Import Excel (CSV)</h3>
-            <button onclick="closeImportModal()" style="background:none; border:none; cursor:pointer; color:var(--ink-muted);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-        </div>
-        
-        <form action="{{ route('admin.import-excel') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Pilih Event</label>
-                <select name="event_id" required style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
-                    <option value="">-- Pilih Event --</option>
-                    @foreach($allEvents as $event)
-                        <option value="{{ $event->id }}">{{ $event->name }} {{ $event->is_active ? '' : '(Inactive)' }}</option>
-                    @endforeach
-                </select>
-            </div>
-            
-            <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Upload File CSV</label>
-                <input type="file" name="file" accept=".csv" required style="width:100%; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
-                <div style="margin-top:8px; font-size:12px; color:var(--ink-muted);">
-                    Silakan gunakan format CSV. <a href="{{ route('admin.download-template') }}" style="color:var(--accent); font-weight:500; text-decoration:none;">Download Template</a>
-                </div>
-            </div>
-            
-            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:30px;">
-                <button type="button" onclick="closeImportModal()" style="padding:10px 20px; border:1px solid rgba(0,0,0,0.1); background:transparent; border-radius:8px; cursor:pointer; font-weight:500;">Batal</button>
-                <button type="submit" style="padding:10px 20px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer; font-weight:500;">Import & Generate</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 @push('scripts')
 <script>
 /* ── Count-up animation ── */
@@ -708,15 +664,6 @@ window.addEventListener('load', () => {
         seg.style.width = seg.dataset.width;
     });
 });
-
-/* ── Import Modal ── */
-function openImportModal(e) {
-    e.preventDefault();
-    document.getElementById('importModal').style.display = 'flex';
-}
-function closeImportModal() {
-    document.getElementById('importModal').style.display = 'none';
-}
 </script>
 @endpush
 
