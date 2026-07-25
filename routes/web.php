@@ -57,6 +57,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::get('/activity-log', [CertificateAdminController::class, 'activityLog'])->name('activity-log');
     Route::get('/search', [CertificateAdminController::class, 'search'])->name('search');
     Route::post('/event/{eventId}/quick-generate', [CertificateAdminController::class, 'quickGenerate'])->name('quick-generate');
+    Route::post('/certificate/import-excel', [CertificateAdminController::class, 'importExcel'])->name('import-excel');
+    Route::get('/certificate/template', [CertificateAdminController::class, 'downloadTemplate'])->name('download-template');
 
     // User Management Routes (superadmin only)
     Route::prefix('users')->name('users.')->middleware('superadmin')->group(function () {

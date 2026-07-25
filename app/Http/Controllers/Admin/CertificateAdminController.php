@@ -37,8 +37,10 @@ class CertificateAdminController extends Controller
             ->latest()
             ->limit(10)
             ->get();
+            
+        $allEvents = Event::latest()->get();
 
-        return view('admin.dashboard', array_merge($stats, compact('recentPending', 'recentLogs')));
+        return view('admin.dashboard', array_merge($stats, compact('recentPending', 'recentLogs', 'allEvents')));
     }
 
     public static function clearDashboardCache(): void
@@ -463,5 +465,80 @@ class CertificateAdminController extends Controller
         AdminActivityLog::record('quick_generated', $certificate);
 
         return back()->with('success', 'Certificate generated and sent to ' . $request->email);
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_sertifikat.csv"',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['email', 'nama lengkap']);
+            fputcsv($file, ['peserta@example.com', 'Budi Santoso']);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required',
+            'file' => 'required|file|max:10240',
+        ]);
+
+        $event = Event::findOrFail($request->event_id);
+        $file = $request->file('file');
+        
+        $path = $file->getRealPath();
+        
+        // Read CSV
+        $content = file_get_contents($path);
+        $lines = explode(PHP_EOL, $content);
+        $data = array_filter(array_map('str_getcsv', $lines));
+        
+        if (empty($data)) {
+            return back()->with('error', 'File kosong atau tidak dapat dibaca.');
+        }
+
+        // Remove header
+        $header = array_shift($data);
+        
+        $emailIdx = array_search('email', array_map('strtolower', $header));
+        $nameIdx = array_search('nama lengkap', array_map('strtolower', $header));
+
+        if ($emailIdx === false) $emailIdx = 0;
+        if ($nameIdx === false) $nameIdx = 1;
+        
+        $count = 0;
+        foreach ($data as $row) {
+            if (count($row) < 2) continue;
+            
+            $email = trim($row[$emailIdx] ?? '');
+            $name = trim($row[$nameIdx] ?? '');
+            
+            if (empty($email) || empty($name)) continue;
+            
+            $certificate = Certificate::create([
+                'event_id' => $event->id,
+                'name' => $name,
+                'email' => $email,
+                'event' => $event->name,
+                'status' => 'approved',
+                'certificate_number' => $this->generateCertificateNumber(new Certificate(['event_id' => $event->id, 'event' => $event->name])),
+                'approved_by' => Auth::user()->name,
+                'approved_at' => now(),
+            ]);
+
+            \App\Jobs\GenerateCertificate::dispatch($certificate->id);
+            AdminActivityLog::record('quick_generated', $certificate);
+            $count++;
+        }
+
+        return back()->with('success', $count . ' Sertifikat berhasil diimpor dan sedang diproses.');
     }
 }
