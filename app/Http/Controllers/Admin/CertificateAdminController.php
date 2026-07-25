@@ -562,4 +562,62 @@ class CertificateAdminController extends Controller
 
         return back()->with('success', $count . ' Sertifikat berhasil diimpor dan sedang diproses.');
     }
+
+    public function manualSend(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required',
+            'role' => 'nullable|string|max:255',
+            'participants' => 'required|array|min:1',
+            'participants.*.name' => 'required|string|max:255',
+            'participants.*.email' => 'required|email|max:255',
+        ]);
+
+        $event = Event::findOrFail($request->event_id);
+
+        // Handle Role / Certificate Type
+        $roleName = $request->input('role');
+        if ($roleName === 'manual') {
+            $roleName = $request->input('role_manual');
+        }
+        $certificateType = null;
+        if (!empty($roleName)) {
+            $certificateType = \App\Models\CertificateType::firstOrCreate(
+                ['event_id' => $event->id, 'name' => $roleName],
+                ['role_text' => $roleName, 'is_active' => true, 'sort_order' => 0]
+            );
+        }
+
+        $count = 0;
+        foreach ($request->participants as $participant) {
+            $email = trim($participant['email'] ?? '');
+            $name = trim($participant['name'] ?? '');
+            
+            if (empty($email) || empty($name)) continue;
+            
+            $dummyCert = new Certificate(['event_id' => $event->id, 'event' => $event->name]);
+            if ($certificateType) {
+                $dummyCert->setRelation('certificateType', $certificateType);
+            }
+
+            $certificate = Certificate::create([
+                'event_id' => $event->id,
+                'name' => $name,
+                'email' => $email,
+                'event' => $event->name,
+                'certificate_type_id' => $certificateType ? $certificateType->id : null,
+                'certificate_type_name' => $certificateType ? $certificateType->name : null,
+                'status' => 'approved',
+                'certificate_number' => $this->generateCertificateNumber($dummyCert),
+                'approved_by' => Auth::user()->name,
+                'approved_at' => now(),
+            ]);
+
+            \App\Jobs\GenerateCertificate::dispatch($certificate->id);
+            AdminActivityLog::record('quick_generated', $certificate);
+            $count++;
+        }
+
+        return back()->with('success', $count . ' Sertifikat berhasil dikirim secara manual dan sedang diproses.');
+    }
 }

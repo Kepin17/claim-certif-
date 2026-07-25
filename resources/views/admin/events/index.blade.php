@@ -267,6 +267,10 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Import Excel
         </a>
+        <a href="#" class="create-btn" style="margin-bottom: 0; background: #3B82F6;" onclick="openManualModal(event)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Kirim Manual
+        </a>
     </div>
 
     @if($events->count() === 0)
@@ -404,6 +408,58 @@
     </div>
 </div>
 
+{{-- ── Manual Send Modal ── --}}
+<div id="manualModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; overflow-y:auto; padding:20px;">
+    <div class="modal-content" style="background:var(--card); width:100%; max-width:600px; border-radius:var(--radius-lg); padding:30px; box-shadow:0 15px 50px rgba(0,0,0,0.1); margin:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0; font-family:'Fraunces', serif; font-weight:300; font-size:24px;">Kirim Sertifikat Manual</h3>
+            <button onclick="closeManualModal()" style="background:none; border:none; cursor:pointer; color:var(--ink-muted);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        
+        <form action="{{ route('admin.manual-send') }}" method="POST">
+            @csrf
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Pilih Event</label>
+                <select name="event_id" required style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
+                    <option value="">-- Pilih Event --</option>
+                    @foreach($allEvents as $ev)
+                        <option value="{{ $ev->id }}">{{ $ev->name }} {{ $ev->is_active ? '' : '(Inactive)' }}</option>
+                    @endforeach
+                </select>
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Sebagai Apa (Role)</label>
+                <select name="role" id="role_select_manual" onchange="handleRoleChangeManual()" style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
+                    <option value="">-- Tidak ada role khusus --</option>
+                    <option value="Peserta">Peserta</option>
+                    <option value="Pemateri">Pemateri</option>
+                    <option value="Panitia">Panitia</option>
+                    <option value="manual">Lainnya (Input Manual)...</option>
+                </select>
+                <input type="text" name="role_manual" id="role_manual_input" placeholder="Ketik role di sini..." style="display:none; width:100%; margin-top:8px; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Daftar Peserta</label>
+                <div id="participants-container">
+                    <div class="participant-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" name="participants[0][name]" placeholder="Nama Lengkap" required style="flex:1; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+                        <input type="email" name="participants[0][email]" placeholder="Email" required style="flex:1; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+                        <button type="button" onclick="removeRow(this)" style="padding:8px 12px; background:var(--danger-lt); color:var(--danger); border:1px solid rgba(140,44,26,0.15); border-radius:8px; cursor:pointer;" title="Hapus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                </div>
+                <button type="button" onclick="addParticipantRow()" style="margin-top:10px; padding:8px 16px; background:var(--surface); border:1px dashed rgba(0,0,0,0.2); border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; width:100%; transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.03)'" onmouseout="this.style.background='var(--surface)'">+ Tambah Baris Peserta</button>
+            </div>
+            
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:30px;">
+                <button type="button" onclick="closeManualModal()" style="padding:10px 20px; border:1px solid rgba(0,0,0,0.1); background:transparent; border-radius:8px; cursor:pointer; font-weight:500;">Batal</button>
+                <button type="submit" style="padding:10px 20px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer; font-weight:500;">Kirim Sertifikat</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 function openImportModal(e) {
@@ -416,6 +472,52 @@ function closeImportModal() {
 function handleRoleChange() {
     var select = document.getElementById('role_select');
     var manualInput = document.getElementById('role_manual');
+    if (select.value === 'manual') {
+        manualInput.style.display = 'block';
+        manualInput.required = true;
+    } else {
+        manualInput.style.display = 'none';
+        manualInput.required = false;
+        manualInput.value = '';
+    }
+}
+
+let pIndex = 1;
+function addParticipantRow() {
+    const container = document.getElementById('participants-container');
+    const div = document.createElement('div');
+    div.className = 'participant-row';
+    div.style.display = 'flex';
+    div.style.gap = '10px';
+    div.style.marginBottom = '10px';
+    div.innerHTML = `
+        <input type="text" name="participants[${pIndex}][name]" placeholder="Nama Lengkap" required style="flex:1; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+        <input type="email" name="participants[${pIndex}][email]" placeholder="Email" required style="flex:1; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+        <button type="button" onclick="removeRow(this)" style="padding:8px 12px; background:var(--danger-lt); color:var(--danger); border:1px solid rgba(140,44,26,0.15); border-radius:8px; cursor:pointer;" title="Hapus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    `;
+    container.appendChild(div);
+    pIndex++;
+}
+
+function removeRow(btn) {
+    if (document.querySelectorAll('.participant-row').length > 1) {
+        btn.parentElement.remove();
+    } else {
+        alert("Minimal harus ada 1 baris peserta.");
+    }
+}
+
+function openManualModal(e) {
+    e.preventDefault();
+    document.getElementById('manualModal').style.display = 'flex';
+}
+function closeManualModal() {
+    document.getElementById('manualModal').style.display = 'none';
+}
+
+function handleRoleChangeManual() {
+    var select = document.getElementById('role_select_manual');
+    var manualInput = document.getElementById('role_manual_input');
     if (select.value === 'manual') {
         manualInput.style.display = 'block';
         manualInput.required = true;

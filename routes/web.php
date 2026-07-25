@@ -44,6 +44,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::get('/generated', [CertificateAdminController::class, 'generated'])->name('generated');
     Route::get('/generated/event/{eventId}', [CertificateAdminController::class, 'generatedByEvent'])->name('generated.by-event');
     Route::post('/certificate/import-excel', [CertificateAdminController::class, 'importExcel'])->name('import-excel');
+    Route::post('/certificate/manual-send', [CertificateAdminController::class, 'manualSend'])->name('manual-send');
     Route::get('/certificate/template', [CertificateAdminController::class, 'downloadTemplate'])->name('download-template');
     Route::get('/certificate/{id}', [CertificateAdminController::class, 'show'])->name('show');
     Route::post('/certificate/{id}/approve', [CertificateAdminController::class, 'approve'])->name('approve');
