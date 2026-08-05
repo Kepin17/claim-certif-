@@ -11,6 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: '*');
+        
         $middleware->alias([
             'otp.verified' => \App\Http\Middleware\CheckOTPVerification::class,
             'superadmin'   => \App\Http\Middleware\SuperAdmin::class,
