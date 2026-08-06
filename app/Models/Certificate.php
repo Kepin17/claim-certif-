@@ -20,6 +20,7 @@ class Certificate extends Model
         'attendance_photo',
         'payment_proof',
         'custom_email_message',
+        'google_drive_file_id',
         'message',
         'next_event',
         'status',

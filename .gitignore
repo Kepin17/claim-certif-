@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Google Service Account (jangan pernah di-commit!)
+/storage/app/google-service-account.json
+*service-account*.json

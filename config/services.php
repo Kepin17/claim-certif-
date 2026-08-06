@@ -31,4 +31,19 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Google Drive Integration
+    |--------------------------------------------------------------------------
+    | Konfigurasi upload sertifikat otomatis ke Google Drive per folder event.
+    */
+    'google_drive' => [
+        'enabled'              => env('GOOGLE_DRIVE_ENABLED', false),
+        'root_folder_id'       => env('GOOGLE_DRIVE_ROOT_FOLDER_ID', ''),
+        'service_account_json' => env(
+            'GOOGLE_SERVICE_ACCOUNT_JSON',
+            storage_path('app/google-service-account.json')
+        ),
+    ],
+
 ];

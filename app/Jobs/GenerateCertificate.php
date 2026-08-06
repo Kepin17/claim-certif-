@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\CertificateApproved;
 use App\Models\Certificate;
 use App\Services\CertificateService;
+use App\Services\GoogleDriveService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +38,7 @@ class GenerateCertificate implements ShouldQueue
 
         if (!in_array($certificate->status, ['approved', 'generated'])) {
             Log::warning('GenerateCertificate job skipped', [
-                'id' => $certificate->id,
+                'id'     => $certificate->id,
                 'status' => $certificate->status,
             ]);
             return;
@@ -47,7 +48,7 @@ class GenerateCertificate implements ShouldQueue
             $service = app(CertificateService::class);
 
             $pdfPath = $service->generateCertificate($certificate);
-            $qrCode = $service->generateQRCode($certificate);
+            $qrCode  = $service->generateQRCode($certificate);
 
             $certificate->update([
                 'status'   => 'generated',
@@ -55,12 +56,14 @@ class GenerateCertificate implements ShouldQueue
                 'qr_code'  => $qrCode,
             ]);
 
-            Mail::to($certificate->email)
-                ->send(new CertificateApproved($certificate));
+            // ── Upload ke Google Drive ──────────────────────────────
+            $this->uploadToGoogleDrive($certificate, $pdfPath);
 
-            $certificate->update([
-                'status' => 'sent'
-            ]);
+            // ── Kirim email ─────────────────────────────────────────
+            Mail::to($certificate->email)
+                ->send(new CertificateApproved($certificate->fresh()));
+
+            $certificate->update(['status' => 'sent']);
 
             \App\Http\Controllers\Admin\CertificateAdminController::clearDashboardCache();
 
@@ -70,21 +73,55 @@ class GenerateCertificate implements ShouldQueue
 
         } catch (\Throwable $e) {
             Log::error('GenerateCertificate job failed', [
-                'id' => $certificate->id,
+                'id'      => $certificate->id,
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+                'trace'   => $e->getTraceAsString(),
             ]);
 
             throw $e;
         }
     }
 
+    /**
+     * Upload PDF sertifikat ke Google Drive (non-blocking).
+     * Kegagalan upload Drive tidak akan menggagalkan job utama.
+     */
+    private function uploadToGoogleDrive(Certificate $certificate, string $pdfPath): void
+    {
+        try {
+            $drive = app(GoogleDriveService::class);
+
+            if (!$drive->isEnabled()) return;
+
+            $localPath = storage_path('app/public/' . $pdfPath);
+            $eventName = $certificate->event ?? 'Uncategorized';
+            $sanitized = preg_replace('/[^a-zA-Z0-9-]/', '-', $certificate->name);
+            $filename  = $certificate->certificate_number . '-' . $sanitized . '.pdf';
+
+            $driveFileId = $drive->uploadCertificate($localPath, $filename, $eventName);
+
+            if ($driveFileId) {
+                $certificate->update(['google_drive_file_id' => $driveFileId]);
+                Log::info('[GDrive] File ID saved to certificate', [
+                    'certificate_id' => $certificate->id,
+                    'drive_file_id'  => $driveFileId,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Jangan lempar exception — proses email harus tetap jalan
+            Log::error('[GDrive] uploadToGoogleDrive failed silently', [
+                'certificate_id' => $certificate->id,
+                'error'          => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function failed(\Throwable $exception): void
     {
         Log::error('GenerateCertificate job permanently failed', [
-            'id' => $this->certificateId,
+            'id'      => $this->certificateId,
             'message' => $exception->getMessage(),
         ]);
     }
