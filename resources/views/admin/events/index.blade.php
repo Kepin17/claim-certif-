@@ -361,9 +361,9 @@
 </div>
 
 {{-- ── Import Excel Modal ── --}}
-<div id="importModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-    <div class="modal-content" style="background:var(--card); width:100%; max-width:500px; border-radius:var(--radius-lg); padding:30px; box-shadow:0 15px 50px rgba(0,0,0,0.1);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+<div id="importModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; overflow-y:auto; padding:20px;">
+    <div class="modal-content" style="background:var(--card); width:100%; max-width:520px; border-radius:var(--radius-lg); padding:32px; box-shadow:0 15px 50px rgba(0,0,0,0.12); margin:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
             <h3 style="margin:0; font-family:'Fraunces', serif; font-weight:300; font-size:24px;">Import Excel (CSV)</h3>
             <button onclick="closeImportModal()" style="background:none; border:none; cursor:pointer; color:var(--ink-muted);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
@@ -371,38 +371,68 @@
         <form action="{{ route('admin.import-excel') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Pilih Event</label>
-                <select name="event_id" required style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">Pilih Event</label>
+                <select name="event_id" required style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface); box-sizing:border-box;">
                     <option value="">-- Pilih Event --</option>
                     @foreach($allEvents as $ev)
                         <option value="{{ $ev->id }}">{{ $ev->name }} {{ $ev->is_active ? '' : '(Inactive)' }}</option>
                     @endforeach
                 </select>
             </div>
-            
+
+            {{-- Kategori Penghargaan --}}
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Sebagai Apa (Role)</label>
-                <select name="role" id="role_select" onchange="handleRoleChange()" style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
-                    <option value="">-- Tidak ada role khusus --</option>
-                    <option value="Peserta">Peserta</option>
-                    <option value="Pemateri">Pemateri</option>
-                    <option value="Panitia">Panitia</option>
-                    <option value="manual">Lainnya (Input Manual)...</option>
-                </select>
-                <input type="text" name="role_manual" id="role_manual" placeholder="Ketik role di sini..." style="display:none; width:100%; margin-top:8px; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:10px;">Kategori Penghargaan</label>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="iml-peserta">
+                        <input type="radio" name="role" value="Peserta" checked onchange="styleImportPills()" style="display:none;"> 🎓 Peserta
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="iml-juara1">
+                        <input type="radio" name="role" value="Juara 1" onchange="styleImportPills()" style="display:none;"> 🥇 Juara 1
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="iml-juara2">
+                        <input type="radio" name="role" value="Juara 2" onchange="styleImportPills()" style="display:none;"> 🥈 Juara 2
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="iml-juara3">
+                        <input type="radio" name="role" value="Juara 3" onchange="styleImportPills()" style="display:none;"> 🥉 Juara 3
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="iml-lainnya">
+                        <input type="radio" name="role" value="manual" onchange="styleImportPills(); toggleImportRoleManual(this)" style="display:none;"> ✏️ Lainnya…
+                    </label>
+                </div>
+                <div id="import-role-manual-wrap" style="display:none; margin-top:10px;">
+                    <input type="text" name="role_manual" class="form-input-modal" placeholder="Contoh: Panitia, Juri, Pemateri…" style="width:100%; padding:9px 12px; border:1px solid rgba(0,0,0,0.12); border-radius:8px; font-size:14px; box-sizing:border-box;">
+                </div>
+                <p style="font-size:12px; color:var(--ink-muted); margin:6px 0 0;">Menentukan tampilan & judul email yang diterima peserta.</p>
             </div>
             
+            {{-- Pesan Khusus --}}
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Upload File CSV</label>
-                <input type="file" name="file" accept=".csv" required style="width:100%; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">
+                    Pesan Khusus ke Email
+                    <span style="font-size:10px; font-weight:500; background:rgba(0,0,0,0.06); color:var(--ink-muted); padding:2px 8px; border-radius:100px; margin-left:6px; letter-spacing:0.05em; text-transform:uppercase;">Opsional</span>
+                </label>
+                <div style="position:relative;">
+                    <span style="position:absolute; top:-10px; right:12px; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; background:#FFFBEB; color:#92400E; border:1px solid #FCD34D; padding:2px 10px; border-radius:100px;">✉️ Tampil di email</span>
+                    <textarea name="custom_email_message"
+                              style="width:100%; min-height:90px; background:#FFFDF5; border:1.5px solid #FCD34D; border-radius:8px; padding:10px 14px; font-size:14px; font-family:inherit; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box;"
+                              placeholder="Contoh: Selamat atas pencapaian Anda! Semoga sertifikat ini menjadi kebanggaan dan motivasi untuk terus berprestasi. 🎉"
+                              maxlength="2000"></textarea>
+                </div>
+                <p style="font-size:12px; color:var(--ink-muted); margin:6px 0 0;">Kosongkan jika tidak ada pesan tambahan dari panitia.</p>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">Upload File CSV</label>
+                <input type="file" name="file" accept=".csv" required style="width:100%; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; box-sizing:border-box;">
                 <div style="margin-top:8px; font-size:12px; color:var(--ink-muted);">
                     Silakan gunakan format CSV. <a href="{{ route('admin.download-template') }}" style="color:var(--accent); font-weight:500; text-decoration:none;">Download Template</a>
                 </div>
             </div>
             
-            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:30px;">
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:28px;">
                 <button type="button" onclick="closeImportModal()" style="padding:10px 20px; border:1px solid rgba(0,0,0,0.1); background:transparent; border-radius:8px; cursor:pointer; font-weight:500;">Batal</button>
-                <button type="submit" style="padding:10px 20px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer; font-weight:500;">Import & Generate</button>
+                <button type="submit" style="padding:10px 24px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer; font-weight:500;">Import &amp; Generate</button>
             </div>
         </form>
     </div>
@@ -410,8 +440,8 @@
 
 {{-- ── Manual Send Modal ── --}}
 <div id="manualModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; overflow-y:auto; padding:20px;">
-    <div class="modal-content" style="background:var(--card); width:100%; max-width:600px; border-radius:var(--radius-lg); padding:30px; box-shadow:0 15px 50px rgba(0,0,0,0.1); margin:auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div class="modal-content" style="background:var(--card); width:100%; max-width:600px; border-radius:var(--radius-lg); padding:32px; box-shadow:0 15px 50px rgba(0,0,0,0.12); margin:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
             <h3 style="margin:0; font-family:'Fraunces', serif; font-weight:300; font-size:24px;">Kirim Sertifikat Manual</h3>
             <button onclick="closeManualModal()" style="background:none; border:none; cursor:pointer; color:var(--ink-muted);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
@@ -419,29 +449,59 @@
         <form action="{{ route('admin.manual-send') }}" method="POST">
             @csrf
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Pilih Event</label>
-                <select name="event_id" required style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">Pilih Event</label>
+                <select name="event_id" required style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface); box-sizing:border-box;">
                     <option value="">-- Pilih Event --</option>
                     @foreach($allEvents as $ev)
                         <option value="{{ $ev->id }}">{{ $ev->name }} {{ $ev->is_active ? '' : '(Inactive)' }}</option>
                     @endforeach
                 </select>
             </div>
-            
+
+            {{-- Kategori Penghargaan --}}
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Sebagai Apa (Role)</label>
-                <select name="role" id="role_select_manual" onchange="handleRoleChangeManual()" style="width:100%; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px; outline:none; background:var(--surface);">
-                    <option value="">-- Tidak ada role khusus --</option>
-                    <option value="Peserta">Peserta</option>
-                    <option value="Pemateri">Pemateri</option>
-                    <option value="Panitia">Panitia</option>
-                    <option value="manual">Lainnya (Input Manual)...</option>
-                </select>
-                <input type="text" name="role_manual" id="role_manual_input" placeholder="Ketik role di sini..." style="display:none; width:100%; margin-top:8px; padding:10px 14px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:10px;">Kategori Penghargaan</label>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="mml-peserta">
+                        <input type="radio" name="role" value="Peserta" checked onchange="styleManualPills()" style="display:none;"> 🎓 Peserta
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="mml-juara1">
+                        <input type="radio" name="role" value="Juara 1" onchange="styleManualPills()" style="display:none;"> 🥇 Juara 1
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="mml-juara2">
+                        <input type="radio" name="role" value="Juara 2" onchange="styleManualPills()" style="display:none;"> 🥈 Juara 2
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="mml-juara3">
+                        <input type="radio" name="role" value="Juara 3" onchange="styleManualPills()" style="display:none;"> 🥉 Juara 3
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:100px; border:1.5px solid rgba(0,0,0,0.12); font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); transition:all 0.15s;" id="mml-lainnya">
+                        <input type="radio" name="role" value="manual" onchange="styleManualPills(); toggleManualRoleManual(this)" style="display:none;"> ✏️ Lainnya…
+                    </label>
+                </div>
+                <div id="manual-role-manual-wrap" style="display:none; margin-top:10px;">
+                    <input type="text" name="role_manual" placeholder="Contoh: Panitia, Juri, Pemateri…" style="width:100%; padding:9px 12px; border:1px solid rgba(0,0,0,0.12); border-radius:8px; font-size:14px; box-sizing:border-box;">
+                </div>
+                <p style="font-size:12px; color:var(--ink-muted); margin:6px 0 0;">Menentukan tampilan & judul email yang diterima peserta.</p>
+            </div>
+
+            {{-- Pesan Khusus --}}
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">
+                    Pesan Khusus ke Email
+                    <span style="font-size:10px; font-weight:500; background:rgba(0,0,0,0.06); color:var(--ink-muted); padding:2px 8px; border-radius:100px; margin-left:6px; letter-spacing:0.05em; text-transform:uppercase;">Opsional</span>
+                </label>
+                <div style="position:relative;">
+                    <span style="position:absolute; top:-10px; right:12px; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; background:#FFFBEB; color:#92400E; border:1px solid #FCD34D; padding:2px 10px; border-radius:100px;">✉️ Tampil di email</span>
+                    <textarea name="custom_email_message"
+                              style="width:100%; min-height:90px; background:#FFFDF5; border:1.5px solid #FCD34D; border-radius:8px; padding:10px 14px; font-size:14px; font-family:inherit; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box;"
+                              placeholder="Contoh: Selamat atas pencapaian Anda! Semoga sertifikat ini menjadi kebanggaan dan motivasi untuk terus berprestasi. 🎉"
+                              maxlength="2000"></textarea>
+                </div>
+                <p style="font-size:12px; color:var(--ink-muted); margin:6px 0 0;">Kosongkan jika tidak ada pesan tambahan dari panitia.</p>
             </div>
 
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:8px;">Daftar Peserta</label>
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">Daftar Peserta</label>
                 <div id="participants-container">
                     <div class="participant-row" style="display:flex; gap:10px; margin-bottom:10px;">
                         <input type="text" name="participants[0][name]" placeholder="Nama Lengkap" required style="flex:1; padding:8px 10px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; font-size:14px;">
@@ -452,9 +512,9 @@
                 <button type="button" onclick="addParticipantRow()" style="margin-top:10px; padding:8px 16px; background:var(--surface); border:1px dashed rgba(0,0,0,0.2); border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; width:100%; transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.03)'" onmouseout="this.style.background='var(--surface)'">+ Tambah Baris Peserta</button>
             </div>
             
-            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:30px;">
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:28px;">
                 <button type="button" onclick="closeManualModal()" style="padding:10px 20px; border:1px solid rgba(0,0,0,0.1); background:transparent; border-radius:8px; cursor:pointer; font-weight:500;">Batal</button>
-                <button type="submit" style="padding:10px 20px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer; font-weight:500;">Kirim Sertifikat</button>
+                <button type="submit" style="padding:10px 24px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer; font-weight:500;">Kirim Sertifikat</button>
             </div>
         </form>
     </div>
@@ -465,21 +525,58 @@
 function openImportModal(e) {
     e.preventDefault();
     document.getElementById('importModal').style.display = 'flex';
+    styleImportPills();
 }
 function closeImportModal() {
     document.getElementById('importModal').style.display = 'none';
 }
-function handleRoleChange() {
-    var select = document.getElementById('role_select');
-    var manualInput = document.getElementById('role_manual');
-    if (select.value === 'manual') {
-        manualInput.style.display = 'block';
-        manualInput.required = true;
-    } else {
-        manualInput.style.display = 'none';
-        manualInput.required = false;
-        manualInput.value = '';
-    }
+
+/* ── Import: Award pill styling ── */
+function styleImportPills() {
+    const radios = document.querySelectorAll('#importModal input[name="role"]');
+    const labels = { 'Peserta': 'iml-peserta', 'Juara 1': 'iml-juara1', 'Juara 2': 'iml-juara2', 'Juara 3': 'iml-juara3', 'manual': 'iml-lainnya' };
+    radios.forEach(r => {
+        const lbl = document.getElementById(labels[r.value]);
+        if (!lbl) return;
+        if (r.checked) {
+            lbl.style.borderColor = 'var(--accent)';
+            lbl.style.background  = 'var(--accent-lt)';
+            lbl.style.color       = 'var(--accent)';
+            lbl.style.fontWeight  = '600';
+        } else {
+            lbl.style.borderColor = 'rgba(0,0,0,0.12)';
+            lbl.style.background  = 'var(--surface)';
+            lbl.style.color       = 'inherit';
+            lbl.style.fontWeight  = '500';
+        }
+    });
+}
+function toggleImportRoleManual(el) {
+    document.getElementById('import-role-manual-wrap').style.display = el.checked ? 'block' : 'none';
+}
+
+/* ── Manual: Award pill styling ── */
+function styleManualPills() {
+    const radios = document.querySelectorAll('#manualModal input[name="role"]');
+    const labels = { 'Peserta': 'mml-peserta', 'Juara 1': 'mml-juara1', 'Juara 2': 'mml-juara2', 'Juara 3': 'mml-juara3', 'manual': 'mml-lainnya' };
+    radios.forEach(r => {
+        const lbl = document.getElementById(labels[r.value]);
+        if (!lbl) return;
+        if (r.checked) {
+            lbl.style.borderColor = 'var(--accent)';
+            lbl.style.background  = 'var(--accent-lt)';
+            lbl.style.color       = 'var(--accent)';
+            lbl.style.fontWeight  = '600';
+        } else {
+            lbl.style.borderColor = 'rgba(0,0,0,0.12)';
+            lbl.style.background  = 'var(--surface)';
+            lbl.style.color       = 'inherit';
+            lbl.style.fontWeight  = '500';
+        }
+    });
+}
+function toggleManualRoleManual(el) {
+    document.getElementById('manual-role-manual-wrap').style.display = el.checked ? 'block' : 'none';
 }
 
 let pIndex = 1;
@@ -503,29 +600,17 @@ function removeRow(btn) {
     if (document.querySelectorAll('.participant-row').length > 1) {
         btn.parentElement.remove();
     } else {
-        alert("Minimal harus ada 1 baris peserta.");
+        alert('Minimal harus ada 1 baris peserta.');
     }
 }
 
 function openManualModal(e) {
     e.preventDefault();
     document.getElementById('manualModal').style.display = 'flex';
+    styleManualPills();
 }
 function closeManualModal() {
     document.getElementById('manualModal').style.display = 'none';
-}
-
-function handleRoleChangeManual() {
-    var select = document.getElementById('role_select_manual');
-    var manualInput = document.getElementById('role_manual_input');
-    if (select.value === 'manual') {
-        manualInput.style.display = 'block';
-        manualInput.required = true;
-    } else {
-        manualInput.style.display = 'none';
-        manualInput.required = false;
-        manualInput.value = '';
-    }
 }
 </script>
 @endpush
