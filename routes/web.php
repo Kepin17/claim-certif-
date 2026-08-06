@@ -57,6 +57,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'otp.verified'])->gr
     Route::post('/bulk-approve', [CertificateAdminController::class, 'bulkApprove'])->name('bulk-approve');
     Route::post('/bulk-reject', [CertificateAdminController::class, 'bulkReject'])->name('bulk-reject');
     Route::get('/export/{eventId}', [CertificateAdminController::class, 'exportCsv'])->name('export');
+    Route::get('/event/{eventId}/download-zip', [CertificateAdminController::class, 'downloadEventCertificatesZip'])->name('download-zip');
     Route::get('/activity-log', [CertificateAdminController::class, 'activityLog'])->name('activity-log');
     Route::get('/search', [CertificateAdminController::class, 'search'])->name('search');
     Route::post('/event/{eventId}/quick-generate', [CertificateAdminController::class, 'quickGenerate'])->name('quick-generate');

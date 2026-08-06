@@ -627,4 +627,44 @@ class CertificateAdminController extends Controller
 
         return back()->with('success', $count . ' Sertifikat berhasil dikirim secara manual dan sedang diproses.');
     }
+
+    public function downloadEventCertificatesZip($eventId)
+    {
+        $event = \App\Models\Event::findOrFail($eventId);
+        
+        $certificates = Certificate::where('event_id', $eventId)
+            ->whereIn('status', ['generated', 'sent'])
+            ->get();
+
+        if ($certificates->isEmpty()) {
+            return back()->with('error', 'Tidak ada sertifikat yang sudah di-generate untuk event ini.');
+        }
+
+        $zip = new \ZipArchive();
+        $zipFileName = 'Certificates_' . preg_replace('/[^A-Za-z0-9\-]/', '_', $event->title) . '_' . date('YmdHis') . '.zip';
+        $zipPath = storage_path('app/public/temp/' . $zipFileName);
+
+        if (!is_dir(storage_path('app/public/temp'))) {
+            mkdir(storage_path('app/public/temp'), 0755, true);
+        }
+
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($certificates as $cert) {
+                if ($cert->pdf_path) {
+                    $localPdfPath = storage_path('app/public/' . $cert->pdf_path);
+                    if (file_exists($localPdfPath)) {
+                        // Nama file di dalam zip
+                        $fileNameInZip = basename($localPdfPath);
+                        $zip->addFile($localPdfPath, $fileNameInZip);
+                    }
+                }
+            }
+            $zip->close();
+        } else {
+            return back()->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        // Return file and delete after send
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
 }

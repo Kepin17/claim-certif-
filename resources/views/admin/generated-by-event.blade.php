@@ -335,10 +335,14 @@
             <div class="empty-state">No generated certificates for this event.</div>
         </div>
     @else
-        <div class="toolbar">
+        <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px;">
             <a href="{{ route('admin.export', $event->id) }}?status=generated" class="export-btn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Export CSV
+            </a>
+            <a href="{{ route('admin.download-zip', $event->id) }}" class="export-btn" style="background: #1a365d; color: white; border-color: #1a365d;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download ZIP (.pdf)
             </a>
         </div>
         <div class="cards-grid">
