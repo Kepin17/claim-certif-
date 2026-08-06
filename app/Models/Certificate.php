@@ -19,6 +19,7 @@ class Certificate extends Model
         'proof_file',
         'attendance_photo',
         'payment_proof',
+        'custom_email_message',
         'message',
         'next_event',
         'status',
@@ -30,6 +31,31 @@ class Certificate extends Model
         'approved_at',
         'unique_key',
     ];
+
+    /**
+     * Deteksi tipe penghargaan berdasarkan nama tipe sertifikat / role.
+     * Returns: 'juara1' | 'juara2' | 'juara3' | 'peserta'
+     */
+    public function getAwardType(): string
+    {
+        $typeName = strtolower($this->certificate_type_name ?? $this->certificateType?->name ?? '');
+
+        $patterns = [
+            'juara1'  => ['juara 1', 'juara1', 'juara i', 'first', '1st place', 'winner', 'gold', 'emas', 'champion'],
+            'juara2'  => ['juara 2', 'juara2', 'juara ii', 'second', '2nd place', 'runner up', 'silver', 'perak'],
+            'juara3'  => ['juara 3', 'juara3', 'juara iii', 'third', '3rd place', 'bronze', 'perunggu'],
+        ];
+
+        foreach ($patterns as $type => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($typeName, $keyword)) {
+                    return $type;
+                }
+            }
+        }
+
+        return 'peserta';
+    }
 
     protected static function boot()
     {

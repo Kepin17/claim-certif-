@@ -432,23 +432,25 @@ class CertificateAdminController extends Controller
     public function quickGenerate(Request $request, $eventId)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'certificate_type_id' => 'nullable|exists:certificate_types,id',
+            'name'                 => 'required|string|max:255',
+            'email'                => 'required|email|max:255',
+            'certificate_type_id'  => 'nullable|exists:certificate_types,id',
+            'custom_email_message' => 'nullable|string|max:2000',
         ]);
 
         $event = Event::findOrFail($eventId);
 
         $certificate = Certificate::create([
-            'event_id' => $eventId,
-            'name' => $request->name,
-            'email' => $request->email,
-            'event' => $event->name,
-            'certificate_type_id' => $request->certificate_type_id,
-            'status' => 'approved',
-            'certificate_number' => $this->generateCertificateNumber(new Certificate(['event_id' => $eventId, 'event' => $event->name])),
-            'approved_by' => Auth::user()->name,
-            'approved_at' => now(),
+            'event_id'             => $eventId,
+            'name'                 => $request->name,
+            'email'                => $request->email,
+            'event'                => $event->name,
+            'certificate_type_id'  => $request->certificate_type_id,
+            'custom_email_message' => $request->input('custom_email_message'),
+            'status'               => 'approved',
+            'certificate_number'   => $this->generateCertificateNumber(new Certificate(['event_id' => $eventId, 'event' => $event->name])),
+            'approved_by'          => Auth::user()->name,
+            'approved_at'          => now(),
         ]);
 
         // Generate PDF immediately (sync)
@@ -456,7 +458,7 @@ class CertificateAdminController extends Controller
 
         // Send email immediately
         try {
-            Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate));
+            Mail::to($certificate->email)->send(new \App\Mail\CertificateApproved($certificate->fresh()));
             $certificate->update(['status' => 'sent']);
         } catch (\Exception $e) {
             Log::error('Quick generate email failed: ' . $e->getMessage());
@@ -487,21 +489,23 @@ class CertificateAdminController extends Controller
     public function importExcel(Request $request)
     {
         $request->validate([
-            'event_id' => 'required',
-            'file' => 'required|file|max:10240',
-            'role' => 'nullable|string|max:255',
+            'event_id'             => 'required',
+            'file'                 => 'required|file|max:10240',
+            'role'                 => 'nullable|string|max:255',
+            'custom_email_message' => 'nullable|string|max:2000',
         ]);
 
         $event = Event::findOrFail($request->event_id);
-        $file = $request->file('file');
-        
+        $file  = $request->file('file');
+        $customMessage = $request->input('custom_email_message');
+
         $path = $file->getRealPath();
-        
+
         // Read CSV
         $content = file_get_contents($path);
-        $lines = explode(PHP_EOL, $content);
-        $data = array_filter(array_map('str_getcsv', $lines));
-        
+        $lines   = explode(PHP_EOL, $content);
+        $data    = array_filter(array_map('str_getcsv', $lines));
+
         if (empty($data)) {
             return back()->with('error', 'File kosong atau tidak dapat dibaca.');
         }
@@ -520,39 +524,39 @@ class CertificateAdminController extends Controller
         }
 
         // Remove header
-        $header = array_shift($data);
-        
+        $header   = array_shift($data);
         $emailIdx = array_search('email', array_map('strtolower', $header));
-        $nameIdx = array_search('nama lengkap', array_map('strtolower', $header));
+        $nameIdx  = array_search('nama lengkap', array_map('strtolower', $header));
 
         if ($emailIdx === false) $emailIdx = 0;
-        if ($nameIdx === false) $nameIdx = 1;
-        
+        if ($nameIdx  === false) $nameIdx  = 1;
+
         $count = 0;
         foreach ($data as $row) {
             if (count($row) < 2) continue;
-            
+
             $email = trim($row[$emailIdx] ?? '');
-            $name = trim($row[$nameIdx] ?? '');
-            
+            $name  = trim($row[$nameIdx]  ?? '');
+
             if (empty($email) || empty($name)) continue;
-            
+
             $dummyCert = new Certificate(['event_id' => $event->id, 'event' => $event->name]);
             if ($certificateType) {
                 $dummyCert->setRelation('certificateType', $certificateType);
             }
 
             $certificate = Certificate::create([
-                'event_id' => $event->id,
-                'name' => $name,
-                'email' => $email,
-                'event' => $event->name,
-                'certificate_type_id' => $certificateType ? $certificateType->id : null,
-                'certificate_type_name' => $certificateType ? $certificateType->name : null,
-                'status' => 'approved',
-                'certificate_number' => $this->generateCertificateNumber($dummyCert),
-                'approved_by' => Auth::user()->name,
-                'approved_at' => now(),
+                'event_id'             => $event->id,
+                'name'                 => $name,
+                'email'                => $email,
+                'event'                => $event->name,
+                'certificate_type_id'  => $certificateType ? $certificateType->id   : null,
+                'certificate_type_name'=> $certificateType ? $certificateType->name : null,
+                'custom_email_message' => $customMessage,
+                'status'               => 'approved',
+                'certificate_number'   => $this->generateCertificateNumber($dummyCert),
+                'approved_by'          => Auth::user()->name,
+                'approved_at'          => now(),
             ]);
 
             \App\Jobs\GenerateCertificate::dispatch($certificate->id);
@@ -566,14 +570,16 @@ class CertificateAdminController extends Controller
     public function manualSend(Request $request)
     {
         $request->validate([
-            'event_id' => 'required',
-            'role' => 'nullable|string|max:255',
-            'participants' => 'required|array|min:1',
-            'participants.*.name' => 'required|string|max:255',
+            'event_id'             => 'required',
+            'role'                 => 'nullable|string|max:255',
+            'custom_email_message' => 'nullable|string|max:2000',
+            'participants'         => 'required|array|min:1',
+            'participants.*.name'  => 'required|string|max:255',
             'participants.*.email' => 'required|email|max:255',
         ]);
 
-        $event = Event::findOrFail($request->event_id);
+        $event         = Event::findOrFail($request->event_id);
+        $customMessage = $request->input('custom_email_message');
 
         // Handle Role / Certificate Type
         $roleName = $request->input('role');
@@ -591,26 +597,27 @@ class CertificateAdminController extends Controller
         $count = 0;
         foreach ($request->participants as $participant) {
             $email = trim($participant['email'] ?? '');
-            $name = trim($participant['name'] ?? '');
-            
+            $name  = trim($participant['name']  ?? '');
+
             if (empty($email) || empty($name)) continue;
-            
+
             $dummyCert = new Certificate(['event_id' => $event->id, 'event' => $event->name]);
             if ($certificateType) {
                 $dummyCert->setRelation('certificateType', $certificateType);
             }
 
             $certificate = Certificate::create([
-                'event_id' => $event->id,
-                'name' => $name,
-                'email' => $email,
-                'event' => $event->name,
-                'certificate_type_id' => $certificateType ? $certificateType->id : null,
-                'certificate_type_name' => $certificateType ? $certificateType->name : null,
-                'status' => 'approved',
-                'certificate_number' => $this->generateCertificateNumber($dummyCert),
-                'approved_by' => Auth::user()->name,
-                'approved_at' => now(),
+                'event_id'             => $event->id,
+                'name'                 => $name,
+                'email'                => $email,
+                'event'                => $event->name,
+                'certificate_type_id'  => $certificateType ? $certificateType->id   : null,
+                'certificate_type_name'=> $certificateType ? $certificateType->name : null,
+                'custom_email_message' => $customMessage,
+                'status'               => 'approved',
+                'certificate_number'   => $this->generateCertificateNumber($dummyCert),
+                'approved_by'          => Auth::user()->name,
+                'approved_at'          => now(),
             ]);
 
             \App\Jobs\GenerateCertificate::dispatch($certificate->id);
